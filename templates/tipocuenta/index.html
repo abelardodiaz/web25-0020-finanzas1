@@ -1,0 +1,15 @@
+<!-- file: templates/tipocuenta/index.html -->
+{% extends "base.html" %}
+{% block title %}Tipos de cuenta{% endblock %}
+{% block content %}
+<h1>Tipos de cuenta</h1>
+<a class="btn btn-primary mb-2" href="{% url 'core:tipocuenta_create' %}">Nuevo tipo</a>
+<table class="table table-striped">
+  <thead><tr><th>Código</th><th>Nombre</th></tr></thead>
+  <tbody>
+    {% for t in tipos %}
+      <tr><td>{{ t.codigo }}</td><td>{{ t.nombre }}</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

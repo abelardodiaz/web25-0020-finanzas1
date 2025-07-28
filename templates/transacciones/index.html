@@ -1,0 +1,60 @@
+<!-- file: templates/transacciones/index.html -->
+{% extends "base.html" %}
+{% load crispy_forms_tags %}           {# si usas django-crispy * opcional #}
+
+{% block title %}Transacciones{% endblock %}
+{% block content %}
+<h1 class="mb-3">Transacciones</h1>
+
+<form method="get" class="row g-2 mb-3">
+  {{ filter.form|crispy }}             {# o {{ filter.form.as_p }} #}
+  <div class="col-auto align-self-end">
+    <button class="btn btn-primary">Filtrar</button>
+    <a href="{% url 'core:transacciones_list' %}" class="btn btn-secondary">Limpiar</a>
+  </div>
+</form>
+
+<a href="{% url 'core:transacciones_create' %}" class="btn btn-success mb-3">+ Nueva Transacción</a>
+
+<table class="table table-striped table-sm">
+  <thead>
+    <tr>
+      <th>Fecha</th><th>Descripción</th><th>Cuenta</th>
+      <th>Categoría</th><th class="text-end">Monto</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for t in transacciones %}
+      <tr>
+        <td>{{ t.fecha }}</td>
+        <td>{{ t.descripcion }}</td>
+        <td>{{ t.medio_pago }}</td>
+        <td>{{ t.categoria }}</td>
+        <td class="text-end">
+          {{ t.monto|floatformat:2 }}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="5" class="text-center">Sin resultados.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<nav aria-label="Paginación">
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item"><a class="page-link" href="?{% querystring page=page_obj.previous_page_number %}">&laquo;</a></li>
+    {% endif %}
+    {% for num in paginator.page_range %}
+      <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+        <a class="page-link" href="?{% querystring page=num %}">{{ num }}</a>
+      </li>
+    {% endfor %}
+    {% if page_obj.has_next %}
+    <li class="page-item"><a class="page-link" href="?{% querystring page=page_obj.next_page_number %}">&raquo;</a></li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}

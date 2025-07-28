@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Estado de Cuenta{% endblock %}
+{% block content %}
+<h1 class="mb-3">Estado de Cuenta</h1>
+
+<!-- Barra de filtros -->
+<form method="get" class="row g-2 mb-3">
+  {{ form.as_p }}
+  <div class="col-auto align-self-end">
+    <button class="btn btn-primary">Ver</button>
+  </div>
+</form>
+
+{% if cuenta %}
+  <div class="mb-3">
+    <strong>Cuenta:</strong> {{ cuenta }} |
+    <strong>Saldo inicial:</strong> {{ saldo_inicial|floatformat:2 }} |
+    <strong>Saldo final:</strong> {{ saldo_final|floatformat:2 }}
+    <div class="float-end">
+      <a href="?{% querystring export='csv' %}" class="btn btn-sm btn-outline-secondary">CSV</a>
+      <a href="?{% querystring export='excel' %}" class="btn btn-sm btn-outline-secondary">Excel</a>
+    </div>
+  </div>
+
+<!-- Tabla de movimientos -->
+<table class="table table-sm table-striped">
+  <thead>
+    <tr>
+      <th>Fecha</th><th>Descripción</th><th>Categoría</th>
+      <th class="text-end">Cargo (-)</th>
+      <th class="text-end">Abono (+)</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for m in movs_page %}
+    <tr>
+      <td>{{ m.fecha }}</td>
+      <td>{{ m.descripcion }}</td>
+      <td>{{ m.categoria }}</td>
+
+      <td class="text-end">
+        {% if m.monto < 0 %}{{ m.monto|floatformat:2 }}{% endif %}
+      </td>
+      <td class="text-end">
+        {% if m.monto > 0 %}+{{ m.monto|floatformat:2 }}{% endif %}
+      </td>
+    </tr>
+  {% empty %}
+    <tr><td colspan="5" class="text-center">Sin movimientos.</td></tr>
+  {% endfor %}
+  </tbody>
+</table>
+
+  <!-- Paginación -->
+  {% if is_paginated %}
+  <nav>
+    <ul class="pagination">
+      {% if movs_page.has_previous %}
+      <li class="page-item"><a class="page-link" href="?{% querystring page=movs_page.previous_page_number %}">«</a></li>
+      {% endif %}
+      {% for num in movs_page.paginator.page_range %}
+      <li class="page-item {% if num == movs_page.number %}active{% endif %}">
+        <a class="page-link" href="?{% querystring page=num %}">{{ num }}</a>
+      </li>
+      {% endfor %}
+      {% if movs_page.has_next %}
+      <li class="page-item"><a class="page-link" href="?{% querystring page=movs_page.next_page_number %}">»</a></li>
+      {% endif %}
+    </ul>
+  </nav>
+  {% endif %}
+
+  <!-- Totales por categoría -->
+  <h3 class="mt-4">Totales por categoría</h3>
+  <table class="table table-bordered w-auto">
+    <thead><tr><th>Categoría</th><th class="text-end">Total</th></tr></thead>
+    <tbody>
+    {% for row in totales_categoria %}
+      <tr><td>{{ row.categoria__nombre }}</td><td class="text-end">{{ row.total|floatformat:2 }}</td></tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+{% endblock %}

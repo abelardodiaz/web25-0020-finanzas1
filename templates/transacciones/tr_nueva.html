@@ -1,0 +1,12 @@
+<!-- file: templates/trasacciones/tr_nueva.html -->
+{% extends "base.html" %}
+{% block title %}Nuevo Movimiento{% endblock %}
+{% block content %}
+<h1>Nuevo Movimiento</h1>
+<form method="post" novalidate>
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button class="btn btn-primary">Guardar</button>
+  <a href="{% url 'core:transacciones_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %}

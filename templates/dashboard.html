@@ -1,0 +1,24 @@
+<!-- file: templates/dashboard.html -->
+{% extends "base.html" %}
+{% block title %}Dashboard - Finanzas{% endblock %}
+{% block content %}
+<h1 class="display-6">Dashboard</h1>
+<p class="lead">Bienvenido, {{ request.user.first_name|default:request.user.username }}.</p>
+
+<div class="row g-3">
+  <div class="col-md-3"><a href="{% url 'core:cuentas_list' %}" class="btn btn-primary w-100">Cuentas</a></div>
+  <div class="col-md-3"><a href="{% url 'core:categorias_list' %}" class="btn btn-primary w-100">Categorías</a></div>
+  <div class="col-md-3"><a href="{% url 'core:periodos_list' %}" class="btn btn-primary w-100">Períodos</a></div> <!-- ← NUEVO -->
+  <div class="col-md-3"><a href="{% url 'core:transacciones_list' %}" class="btn btn-primary w-100">Transacciones</a></div>
+  <div class="col-md-3"><a href="{% url 'core:reportes_estado_cuenta' %}" class="btn btn-primary w-100">Reportes</a></div>
+  <div class="col-md-3">
+  <a href="{% url 'core:ingreso_create' %}" class="btn btn-success w-100">Alta ingreso</a>
+  <!-- añade un botón -->
+  <div class="col-md-3">
+    <a href="{% url 'core:tipocuenta_list' %}" class="btn btn-secondary w-100">Tipos de cuenta</a>
+  </div>
+
+</div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,33 @@
+# Python/Django
+__pycache__/
+*.py[cod]
+*.pyc
+*.pyo
+*.pyd
+
+# Entorno virtual
+venv/
+env/
+.venv/
+
+# Archivos de configuración sensibles
+.env
+*.env
+
+# Base de datos local de Django
+*.sqlite3
+
+# Archivos de desarrollo
+*.log
+*.pot
+*.DS_Store
+
+# Carpeta de medios (si usas media para archivos subidos)
+media/
+
+# Carpeta de archivos estáticos recolectados
+staticfiles/
+
+# Archivos de IDE
+.idea/
+.vscode/

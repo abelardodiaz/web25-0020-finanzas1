@@ -1,0 +1,9 @@
+[
+  {"model": "core.tipocuenta", "pk": 1, "fields": {"codigo": "CCH", "nombre": "CAJA CHICA", "grupo": "DEB"}},
+  {"model": "core.tipocuenta", "pk": 2, "fields": {"codigo": "DEB", "nombre": "CUENTA DEBITO", "grupo": "DEB"}},
+  {"model": "core.tipocuenta", "pk": 3, "fields": {"codigo": "EFE", "nombre": "EFECTIVO", "grupo": "DEB"}},
+  {"model": "core.tipocuenta", "pk": 4, "fields": {"codigo": "PROV", "nombre": "PROVEEDOR", "grupo": "SER"}},
+  {"model": "core.tipocuenta", "pk": 5, "fields": {"codigo": "SERV", "nombre": "SERVICIOS", "grupo": "SER"}},
+  {"model": "core.tipocuenta", "pk": 6, "fields": {"codigo": "TDC", "nombre": "TARJETA DE CREDITO", "grupo": "CRE"}},
+  {"model": "core.tipocuenta", "pk": 7, "fields": {"codigo": "HIP", "nombre": "CREDITO HIPOTECARIO", "grupo": "CRE"}}
+]

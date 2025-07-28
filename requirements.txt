@@ -1,0 +1,12 @@
+Django
+django-environ
+mariadb
+mysqlclient
+django-filter
+django-crispy-forms
+crispy-bootstrap5
+pandas
+openpyxl
+
+
+

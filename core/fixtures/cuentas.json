@@ -1,0 +1,257 @@
+[
+  {
+    "model": "core.cuenta",
+    "pk": 1,
+    "fields": {
+      "nombre": "TOTALPLAY  EMP 0200109921",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 2,
+    "fields": {
+      "nombre": "TOTALPLAY EMP 0200153346",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 3,
+    "fields": {
+      "nombre": "INTERAPAS 461000 casa 170",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 4,
+    "fields": {
+      "nombre": "TELMEX COTO4 4448328030",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 5,
+    "fields": {
+      "nombre": "TELMEX MORALES 4441390343",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 6,
+    "fields": {
+      "nombre": "CFE CASA 514 929061204716",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 7,
+    "fields": {
+      "nombre": "CFE PAPE 929120411941",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 8,
+    "fields": {
+      "nombre": "NATURGY C142 1641422-2",
+      "tipo": 5,
+      "referencia": "24001641422",
+      "ref_comentario": "REFERENCIA PARA OXXO",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 9,
+    "fields": {
+      "nombre": "INTERAPAS 460986 casa 142",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 10,
+    "fields": {
+      "nombre": "CFE CASA 170 929230304407",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 11,
+    "fields": {
+      "nombre": "CFE CASA 142 929170809580",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 12,
+    "fields": {
+      "nombre": "GASTOS PERSONALES ABELARDO",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 13,
+    "fields": {
+      "nombre": "GASTOS DESPENSA ABELARDO",
+      "tipo": 5,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 14,
+    "fields": {
+      "nombre": "TDC MER-PAGO 0904",
+      "tipo": 6,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 15,
+    "fields": {
+      "nombre": "TD LIVERPOOL 4501",
+      "tipo": 6,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 16,
+    "fields": {
+      "nombre": "CREDITO COCHE YARIS 2022",
+      "tipo": 6,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 17,
+    "fields": {
+      "nombre": "CREDITO CASA 142",
+      "tipo": 6,
+      "referencia": "",
+      "ref_comentario": "",
+      "moneda": "MXN",
+      "activo": true,
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": ""
+    }
+  }
+]

@@ -1,0 +1,44 @@
+{# templates/periodos/index.html #}
+{% extends "base.html" %}
+{% block title %}Períodos{% endblock %}
+{% block content %}
+<h1>Períodos</h1>
+<!-- Botón nuevo periodo (fuera de la tabla) -->
+<a href="{% url 'core:periodos_create' %}" class="btn btn-primary mb-3">
+    Nuevo Periodo
+</a>
+{# templates/periodos/index.html #}
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Cuenta</th>
+      <th>Tipo</th>
+      <th>Fecha corte</th>
+      <th>Total</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+  {% for p in periodos %}
+    <tr>
+      <td>{{ p.cuenta }}</td>
+      <td>{{ p.cuenta.tipo.nombre }}</td>
+      <td>{{ p.fecha_corte }}</td>
+      <td>
+        {% if p.cuenta.tipo.codigo == 'TDC' or p.cuenta.tipo.codigo == 'SERV' %}
+          {{ p.monto_total }}
+        {% else %}
+          N/A
+        {% endif %}
+      </td>
+      <td>
+        <a href="{% url 'core:periodos_create_for_account' p.cuenta.pk %}"
+           class="btn btn-sm btn-outline-primary">
+           Nuevo periodo
+        </a>
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% endblock %}

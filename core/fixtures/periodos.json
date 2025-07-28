@@ -1,0 +1,218 @@
+[
+  {
+    "model": "core.periodo",
+    "pk": 1,
+    "fields": {
+      "cuenta": 1,
+      "descripcion": "INTERNET TP 9921 JUNIO",
+      "tipo": "SERV",
+      "fecha_inicio": "2025-05-23",
+      "fecha_corte": "2025-06-22",
+      "fecha_limite_pago": "2025-07-11",
+      "monto_total": "966.00",
+      "pago_minimo": null,
+      "pago_no_intereses": null,
+      "fecha_pronto_pago": "2025-07-03",
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  },
+  {
+    "model": "core.periodo",
+    "pk": 2,
+    "fields": {
+      "cuenta": 2,
+      "descripcion": "INTERNET TP 3346 JUNIO",
+      "tipo": "SERV",
+      "fecha_inicio": "2025-05-23",
+      "fecha_corte": "2025-06-19",
+      "fecha_limite_pago": "2025-06-30",
+      "monto_total": "1044.00",
+      "pago_minimo": null,
+      "pago_no_intereses": null,
+      "fecha_pronto_pago": "2025-07-09",
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  },
+  {
+    "model": "core.periodo",
+    "pk": 3,
+    "fields": {
+      "cuenta": 3,
+      "descripcion": "AGUA C170 JUNIO",
+      "tipo": "SERV",
+      "fecha_inicio": "2025-04-01",
+      "fecha_corte": "2025-06-01",
+      "fecha_limite_pago": "2025-06-11",
+      "monto_total": "678.00",
+      "pago_minimo": null,
+      "pago_no_intereses": null,
+      "fecha_pronto_pago": null,
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  },
+  {
+    "model": "core.periodo",
+    "pk": 4,
+    "fields": {
+      "cuenta": 4,
+      "descripcion": "INTERNET CASA 163 JUNIO",
+      "tipo": "SERV",
+      "fecha_inicio": "2025-05-03",
+      "fecha_corte": "2025-06-04",
+      "fecha_limite_pago": "2025-06-25",
+      "monto_total": "449.00",
+      "pago_minimo": null,
+      "pago_no_intereses": null,
+      "fecha_pronto_pago": null,
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  },
+  {
+    "model": "core.periodo",
+    "pk": 5,
+    "fields": {
+      "cuenta": 5,
+      "descripcion": "TELEFONO CASA 514 JUNIO",
+      "tipo": "SERV",
+      "fecha_inicio": "2025-05-05",
+      "fecha_corte": "2025-06-06",
+      "fecha_limite_pago": "2025-06-28",
+      "monto_total": "399.00",
+      "pago_minimo": null,
+      "pago_no_intereses": null,
+      "fecha_pronto_pago": null,
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  },
+  {
+    "model": "core.periodo",
+    "pk": 6,
+    "fields": {
+      "cuenta": 6,
+      "descripcion": "ELECTRICIDAD 514 JUNIO",
+      "tipo": "SERV",
+      "fecha_inicio": "2025-04-11",
+      "fecha_corte": "2025-06-11",
+      "fecha_limite_pago": "2025-06-28",
+      "monto_total": "683.00",
+      "pago_minimo": null,
+      "pago_no_intereses": null,
+      "fecha_pronto_pago": null,
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  },
+  {
+    "model": "core.periodo",
+    "pk": 7,
+    "fields": {
+      "cuenta": 7,
+      "descripcion": "ELECTRICIDAD PAPE JUNIO",
+      "tipo": "SERV",
+      "fecha_inicio": "2025-04-11",
+      "fecha_corte": "2025-06-11",
+      "fecha_limite_pago": "2025-06-28",
+      "monto_total": "162.00",
+      "pago_minimo": null,
+      "pago_no_intereses": null,
+      "fecha_pronto_pago": null,
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  },
+  {
+    "model": "core.periodo",
+    "pk": 8,
+    "fields": {
+      "cuenta": 8,
+      "descripcion": "GAS C142 JUNIO",
+      "tipo": "SERV",
+      "fecha_inicio": "2025-05-09",
+      "fecha_corte": "2025-06-09",
+      "fecha_limite_pago": "2025-06-23",
+      "monto_total": "485.00",
+      "pago_minimo": null,
+      "pago_no_intereses": null,
+      "fecha_pronto_pago": null,
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  },
+  {
+    "model": "core.periodo",
+    "pk": 9,
+    "fields": {
+      "cuenta": 9,
+      "descripcion": "AGUA C142 JUNIO",
+      "tipo": "SERV",
+      "fecha_inicio": "2025-04-01",
+      "fecha_corte": "2025-06-01",
+      "fecha_limite_pago": "2025-06-11",
+      "monto_total": "678.00",
+      "pago_minimo": null,
+      "pago_no_intereses": null,
+      "fecha_pronto_pago": null,
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  },
+  {
+    "model": "core.periodo",
+    "pk": 10,
+    "fields": {
+      "cuenta": 10,
+      "descripcion": "ELECTRICIDAD C170 JUNIO",
+      "tipo": "SERV",
+      "fecha_inicio": "2025-04-02",
+      "fecha_corte": "2025-06-03",
+      "fecha_limite_pago": "2025-06-20",
+      "monto_total": "180.00",
+      "pago_minimo": null,
+      "pago_no_intereses": null,
+      "fecha_pronto_pago": null,
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  },
+  {
+    "model": "core.periodo",
+    "pk": 11,
+    "fields": {
+      "cuenta": 11,
+      "descripcion": "ELECTRICIDAD C142 JUNIO",
+      "tipo": "SERV",
+      "fecha_inicio": "2025-04-02",
+      "fecha_corte": "2025-06-03",
+      "fecha_limite_pago": "2025-06-20",
+      "monto_total": "286.00",
+      "pago_minimo": null,
+      "pago_no_intereses": null,
+      "fecha_pronto_pago": null,
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  },
+  {
+    "model": "core.periodo",
+    "pk": 15,
+    "fields": {
+      "cuenta": 14,
+      "descripcion": "EDO CUENTA JUNIO MPAGO",
+      "tipo": "TDC",
+      "fecha_inicio": "2025-05-24",
+      "fecha_corte": "2025-06-21",
+      "fecha_limite_pago": "2025-07-01",
+      "monto_total": "0",
+      "pago_minimo": "433",
+      "pago_no_intereses": "6186.09",
+      "fecha_pronto_pago": null,
+      "monto_pronto_pago": null,
+      "estado": "PAGADO"
+    }
+  }
+]

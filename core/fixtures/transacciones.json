@@ -1,0 +1,212 @@
+[
+  {
+    "model": "core.transaccion",
+    "pk": 1,
+    "fields": {
+      "monto": "-966.00",
+      "tipo": "GASTO",
+      "fecha": "2025-07-01",
+      "descripcion": "INTERNET TP 9921 JUNIO",
+      "cuenta_servicio": 1,
+      "categoria": 5,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 2,
+    "fields": {
+      "monto": "-1044.00",
+      "tipo": "GASTO",
+      "fecha": "2025-07-01",
+      "descripcion": "INTERNET TP 3346 JUNIO",
+      "cuenta_servicio": 2,
+      "categoria": 5,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 3,
+    "fields": {
+      "monto": "-678.00",
+      "tipo": "GASTO",
+      "fecha": "2025-06-27",
+      "descripcion": "AGUA C170 JUNIO",
+      "cuenta_servicio": 3,
+      "categoria": 4,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 4,
+    "fields": {
+      "monto": "-439.00",
+      "tipo": "GASTO",
+      "fecha": "2025-06-26",
+      "descripcion": "INTERNET CASA 163 JUNIO",
+      "cuenta_servicio": 4,
+      "categoria": 5,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 5,
+    "fields": {
+      "monto": "-399.00",
+      "tipo": "GASTO",
+      "fecha": "2025-06-26",
+      "descripcion": "TELEFONO CASA 514 JUNIO",
+      "cuenta_servicio": 5,
+      "categoria": 5,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 6,
+    "fields": {
+      "monto": "-683.00",
+      "tipo": "GASTO",
+      "fecha": "2025-06-26",
+      "descripcion": "ELECTRICIDAD 514 JUNIO",
+      "cuenta_servicio": 6,
+      "categoria": 1,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 7,
+    "fields": {
+      "monto": "-162.00",
+      "tipo": "GASTO",
+      "fecha": "2025-06-26",
+      "descripcion": "ELECTRICIDAD PAPE JUNIO",
+      "cuenta_servicio": 7,
+      "categoria": 2,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 8,
+    "fields": {
+      "monto": "-485.00",
+      "tipo": "GASTO",
+      "fecha": "2025-06-22",
+      "descripcion": "GAS C142 JUNIO",
+      "cuenta_servicio": 8,
+      "categoria": 7,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 9,
+    "fields": {
+      "monto": "-678.00",
+      "tipo": "GASTO",
+      "fecha": "2025-06-22",
+      "descripcion": "AGUA C142 JUNIO",
+      "cuenta_servicio": 9,
+      "categoria": 3,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 10,
+    "fields": {
+      "monto": "-180.00",
+      "tipo": "GASTO",
+      "fecha": "2025-06-22",
+      "descripcion": "ELECTRICIDAD C170 JUNIO",
+      "cuenta_servicio": 10,
+      "categoria": 2,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 11,
+    "fields": {
+      "monto": "-286.00",
+      "tipo": "GASTO",
+      "fecha": "2025-06-22",
+      "descripcion": "ELECTRICIDAD C142 JUNIO",
+      "cuenta_servicio": 11,
+      "categoria": 1,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 12,
+    "fields": {
+      "monto": "-148.75",
+      "tipo": "GASTO",
+      "fecha": "2025-06-22",
+      "descripcion": "MERCADO PAGO 4/4 MSI",
+      "cuenta_servicio": 12,
+      "categoria": 20,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 13,
+    "fields": {
+      "monto": "-205.00",
+      "tipo": "GASTO",
+      "fecha": "2025-06-22",
+      "descripcion": "MERCADO PAGO 4/4 MSI",
+      "cuenta_servicio": 12,
+      "categoria": 20,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  },
+  {
+    "model": "core.transaccion",
+    "pk": 14,
+    "fields": {
+      "monto": "-889.32",
+      "tipo": "GASTO",
+      "fecha": "2025-06-17",
+      "descripcion": "WALMART SUPER",
+      "cuenta_servicio": 13,
+      "categoria": 12,
+      "medio_pago": 14,
+      "moneda": "MXN",
+      "conciliado": false
+    }
+  }
+]

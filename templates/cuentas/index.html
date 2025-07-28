@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Cuentas – Finanzas{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Cuentas</h1>
+  <a href="{% url 'core:cuentas_create' %}" class="btn btn-success">+ Nueva Cuenta</a>
+</div>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Nombre</th><th>Tipo</th><th>Fecha Corte</th><th>Fecha Pago</th><th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for cuenta in cuentas %}
+    <tr>
+      <td>{{ cuenta.nombre }}</td>
+      <td>{{ cuenta.tipo }}</td>
+      <td>{{ cuenta.fecha_corte }}</td>
+      <td>{{ cuenta.fecha_pago }}</td>
+      <td>
+        <a href="{% url 'core:cuentas_edit' cuenta.pk %}" class="btn btn-sm btn-primary">Editar</a>
+        <a href="{% url 'core:cuentas_delete' cuenta.pk %}" class="btn btn-sm btn-danger">Borrar</a>
+      </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5" class="text-center">No hay cuentas.</td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{% if is_paginated %}
+<nav>
+  <ul class="pagination">
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page_obj.previous_page_number }}">«</a>
+    </li>
+    {% endif %}
+    {% for num in paginator.page_range %}
+      <li class="page-item {% if num == page_obj.number %}active{% endif %}">
+        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+      </li>
+    {% endfor %}
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a class="page-link" href="?page={{ page_obj.next_page_number }}">»</a>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+{% endblock %}
