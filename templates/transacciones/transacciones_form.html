@@ -1,0 +1,155 @@
+<!-- file: templates/trasacciones/tr_nueva.html -->
+{% extends "base.html" %}
+{% block title %}Nuevo Movimiento{% endblock %}
+{% block content %}
+<h1>Nuevo Movimiento</h1>
+<form method="post" novalidate id="transaccion-form">
+  {% csrf_token %}
+  <p>
+    {{ form.monto.label_tag }} {{ form.monto }}
+  </p>
+  <p>
+    {{ form.tipo.label_tag }} {{ form.tipo }}
+  </p>
+  <p>
+    {{ form.fecha.label_tag }} {{ form.fecha }}
+  </p>
+  <p>
+    {{ form.descripcion.label_tag }} {{ form.descripcion }}
+  </p>
+  <p id="row-servicio">
+    <label id="lbl-servicio">{{ form.cuenta_servicio.label }}</label>
+    {{ form.cuenta_servicio }}
+    <button type="button" class="btn btn-outline-secondary btn-sm" id="refresh-cuentas" title="Actualizar cuentas de servicio">↻</button>
+  </p>
+  <p>
+    {{ form.categoria.label_tag }} {{ form.categoria }}
+    <button type="button" class="btn btn-outline-secondary btn-sm" id="refresh-categorias" title="Actualizar categorías">↻</button>
+  </p>
+  <div class="form-group">
+    {{ form.medio_pago.label_tag }}
+    <div class="d-flex">
+      {{ form.medio_pago }}
+      <button type="button" class="btn btn-outline-secondary btn-sm ms-2" id="refresh-medios" title="Actualizar medios de pago">
+        <i class="bi bi-arrow-repeat"></i>
+      </button>
+    </div>
+  </div>
+
+  <p>
+    {{ form.ajuste }} {{ form.ajuste.label_tag }}
+    <small class="text-muted">Marcar solo si deseas registrar un único movimiento (ajuste manual).</small>
+  </p>
+  <button class="btn btn-primary">Guardar</button>
+  <a href="{% url 'core:transacciones_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+
+<!-- Aviso / previsualización de partida doble -->
+<div id="preview-doble" class="alert alert-info d-none">
+  <strong>Se crearán dos movimientos:</strong>
+  <ul class="mb-0">
+    <li id="prev-cargo"></li>
+    <li id="prev-abono"></li>
+  </ul>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  function actualizarCampo(url, selectId) {
+    fetch(url)
+      .then(response => response.json())
+      .then(data => {
+        const select = document.getElementById(selectId);
+        if (!select) return;
+        const valorActual = select.value;
+        select.innerHTML = '';
+        const optVacio = document.createElement('option');
+        optVacio.value = '';
+        optVacio.textContent = '---------';
+        select.appendChild(optVacio);
+        data.forEach(item => {
+          const opt = document.createElement('option');
+          opt.value = item.id;
+          opt.textContent = item.text;
+          select.appendChild(opt);
+        });
+        // intenta mantener la selección previa si sigue existiendo
+        select.value = valorActual;
+      });
+  }
+  document.getElementById('refresh-cuentas').addEventListener('click', function() {
+    actualizarCampo('{% url "core:refresh_cuentas" %}', 'id_cuenta_servicio');
+  });
+  document.getElementById('refresh-categorias').addEventListener('click', function() {
+    actualizarCampo('{% url "core:refresh_categorias" %}', 'id_categoria');
+  });
+
+  // Añadir manejador para medios de pago
+  document.getElementById('refresh-medios').addEventListener('click', function() {
+    actualizarCampo('{% url "core:refresh_medios_pago" %}', 'id_medio_pago');
+  });
+
+  // ==== Vista previa de doble movimiento ====
+  const selServicio = document.getElementById('id_cuenta_servicio');
+  const selPago     = document.getElementById('id_medio_pago');
+  const inpMonto    = document.getElementById('id_monto');
+  const chkAjuste   = document.getElementById('id_ajuste');
+  const boxPrev     = document.getElementById('preview-doble');
+  const liCargo     = document.getElementById('prev-cargo');
+  const liAbono     = document.getElementById('prev-abono');
+
+  function actualizarPreview() {
+    const servTxt = selServicio.options[selServicio.selectedIndex]?.text;
+    const pagoTxt = selPago.options[selPago.selectedIndex]?.text;
+    const monto   = inpMonto.value || '';
+
+    const mostrar = !chkAjuste.checked && monto && selServicio.value && selPago.value && selServicio.value !== selPago.value;
+    boxPrev.classList.toggle('d-none', !mostrar);
+    if (mostrar) {
+      liCargo.textContent = `Cargo en ${pagoTxt}: -$${monto}`;
+      liAbono.textContent = `Abono en ${servTxt}: +$${monto}`;
+    }
+  }
+
+  [selServicio, selPago, inpMonto, chkAjuste].forEach(el => {
+    if (el) el.addEventListener('change', actualizarPreview);
+    if (el) el.addEventListener('input', actualizarPreview);
+  });
+
+  // inicializar al cargar
+  actualizarPreview();
+
+  // === Toggle campos según tipo ====
+  const selTipo = document.getElementById('id_tipo');
+  const rowServ = document.getElementById('row-servicio');
+  const rowPago = document.getElementById('row-mediopago');
+  const lblServ = document.getElementById('lbl-servicio');
+  const lblPago = document.getElementById('lbl-mediopago');
+
+  function toggleTipo() {
+    const v = selTipo.value;
+    if (v === 'TRANSFERENCIA') {
+      rowServ.hidden = false;
+      rowPago.hidden = false;
+      lblServ.textContent = 'Cuenta destino';
+      lblPago.textContent = 'Cuenta origen';
+    } else if (v === 'AJUSTE') {
+      rowServ.hidden = true;
+      rowPago.hidden = false;
+      lblPago.textContent = 'Cuenta';
+    } else {
+      // GASTO o INGRESO
+      rowServ.hidden = false;
+      rowPago.hidden = false;
+      lblServ.textContent = 'Servicio / Proveedor';
+      lblPago.textContent = 'Cuenta de pago';
+    }
+  }
+
+  if (selTipo) {
+    selTipo.addEventListener('change', () => { toggleTipo(); actualizarPreview(); });
+    toggleTipo();
+  }
+});
+</script>
+{% endblock %}

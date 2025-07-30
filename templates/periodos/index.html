@@ -15,7 +15,7 @@
       <th>Tipo</th>
       <th>Fecha corte</th>
       <th>Total</th>
-      <th></th>
+      <th>Acciones</th>
     </tr>
   </thead>
   <tbody>
@@ -23,7 +23,9 @@
     <tr>
       <td>{{ p.cuenta }}</td>
       <td>{{ p.cuenta.tipo.nombre }}</td>
-      <td>{{ p.fecha_corte }}</td>
+      <td>
+        <a href="{% url 'core:periodo_detail' p.pk %}">{{ p.fecha_corte }}</a>
+      </td>
       <td>
         {% if p.cuenta.tipo.codigo == 'TDC' or p.cuenta.tipo.codigo == 'SERV' %}
           {{ p.monto_total }}
@@ -31,11 +33,31 @@
           N/A
         {% endif %}
       </td>
-      <td>
-        <a href="{% url 'core:periodos_create_for_account' p.cuenta.pk %}"
-           class="btn btn-sm btn-outline-primary">
-           Nuevo periodo
-        </a>
+      <td class="d-flex gap-1">
+        <a href="{% url 'core:periodo_edit' p.pk %}"
+           class="btn btn-sm btn-primary">Editar</a>
+        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deletePeriodoModal{{ p.pk }}">Eliminar</button>
+        <a href="{% url 'core:periodos_create_for_account' p.cuenta.pk %}" class="btn btn-sm btn-outline-secondary" title="Nuevo periodo para esta cuenta">+</a>
+
+        <!-- Modal -->
+        <div class="modal fade" id="deletePeriodoModal{{ p.pk }}" tabindex="-1" aria-labelledby="deletePeriodoLabel{{ p.pk }}" aria-hidden="true">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="deletePeriodoLabel{{ p.pk }}">Confirmar eliminación</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+              </div>
+              <div class="modal-body">¿Seguro que deseas eliminar este período?</div>
+              <div class="modal-footer">
+                <form method="post" action="{% url 'core:periodo_delete' p.pk %}">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+                </form>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </td>
     </tr>
   {% endfor %}

@@ -8,15 +8,38 @@ from datetime import date
 
 
 class CuentaForm(forms.ModelForm):
-    tipo = forms.ModelChoiceField(                       #
-        queryset=TipoCuenta.objects.all(),
-        label="Tipo de cuenta"
+    # Agregar campo para editar el grupo
+    grupo = forms.ChoiceField(
+        choices=TipoCuenta.GRUPOS,
+        required=True,
+        label="Grupo de cuenta"
     )
-
+    
     class Meta:
-        model  = Cuenta
-        fields = ["nombre", "tipo"]
+        model = Cuenta
+        fields = ["nombre", "tipo", "dia_corte", "grupo"]  # Agregar grupo
         
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Cambiar esta condición para evitar el error en cuentas nuevas
+        if self.instance and self.instance.pk and self.instance.tipo_id:
+            # Solo si la cuenta ya existe y tiene un tipo asociado
+            self.fields['grupo'].initial = self.instance.tipo.grupo
+            
+    def save(self, commit=True):
+        cuenta = super().save(commit=False)
+        grupo = self.cleaned_data['grupo']
+        
+        # Actualizar el grupo del tipo de cuenta
+        if cuenta.tipo:
+            cuenta.tipo.grupo = grupo
+            cuenta.tipo.save()
+        
+        if commit:
+            cuenta.save()
+        return cuenta
+
 
 class CategoriaForm(forms.ModelForm):
     class Meta:
@@ -30,11 +53,31 @@ class TransaccionForm(forms.ModelForm):
         fields = [
             "monto", "tipo", "fecha", "descripcion",
             "cuenta_servicio", "categoria", "medio_pago",
-            
+            "ajuste",
         ]
         widgets = {
-            "fecha": forms.DateInput(attrs={"type": "date"}),
+            "fecha": forms.DateInput(attrs={"type": "date"}, format='%Y-%m-%d'),
         }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Etiquetas más descriptivas
+        self.fields["medio_pago"].label = "Cuenta de pago"
+        self.fields["cuenta_servicio"].label = "Servicio / Proveedor"
+        self.fields["ajuste"].label = "Es ajuste (un solo movimiento)"
+        # Mostrar sólo cuentas de pago (DEB, CRE, EFE) para medio_pago
+        self.fields["medio_pago"].queryset = (
+            Cuenta.objects.filter(tipo__grupo__in=["DEB", "CRE", "EFE"]).order_by("nombre")
+        )
+
+        # Fuerza formato ISO para el campo fecha (requerido por input[type=date])
+        if self.instance and self.instance.pk:
+            self.initial['fecha'] = self.instance.fecha.isoformat()
+
+        # Modificar este filtro para incluir SID
+        self.fields['cuenta_servicio'].queryset = Cuenta.objects.filter(
+            tipo__codigo__in=["SERV", "SID"]  # Agregar "SID" aquí
+        )
 
 def clean_monto(self):
     monto = self.cleaned_data["monto"]
@@ -76,7 +119,9 @@ class PeriodoForm(forms.ModelForm):
         model = Periodo
         fields = '__all__'
         widgets = {
+            'fecha_inicio': forms.DateInput(attrs={'type': 'date'}),
             'fecha_corte': forms.DateInput(attrs={'type': 'date'}),
+            'fecha_fin_periodo': forms.DateInput(attrs={'type': 'date'}),
             'fecha_limite_pago': forms.DateInput(attrs={'type': 'date'}),
             'fecha_pronto_pago': forms.DateInput(attrs={'type': 'date'}),
         }
@@ -92,7 +137,28 @@ class PeriodoForm(forms.ModelForm):
         else:
             # Set grupo based on account type
             self.fields['grupo'].initial = self.cuenta.tipo.grupo
-    
+        
+        # Hacer campos no obligatorios inicialmente
+        self.fields['monto_total'].required = False
+        self.fields['pago_minimo'].required = False
+        self.fields['pago_no_intereses'].required = False
+        
+        # Configurar formatos ISO para todos los campos de fecha
+        date_fields = [
+            'fecha_corte', 
+            'fecha_fin_periodo',
+            'fecha_limite_pago',
+            'fecha_pronto_pago'
+        ]
+        
+        for field_name in date_fields:
+            if field_name in self.fields:
+                self.fields[field_name].widget = forms.DateInput(
+                    attrs={'type': 'date'},
+                    format='%Y-%m-%d'
+                )
+                self.fields[field_name].input_formats = ['%Y-%m-%d']
+
     def clean(self):
         cleaned_data = super().clean()
         cuenta = cleaned_data.get('cuenta', self.cuenta)
@@ -105,30 +171,39 @@ class PeriodoForm(forms.ModelForm):
         grupo = cuenta.tipo.grupo
         cleaned_data['grupo'] = grupo  # Store group for template
         
-        # Group-specific validations
+        # Group-specific validations except fecha_limite_pago which is always required below
         if grupo == 'CRE':          # --- Créditos -------------------------------
-            if not cleaned_data.get('fecha_limite_pago'):
-                self.add_error('fecha_limite_pago', 'Requerido: último día para pagar')
             if cleaned_data.get('pago_minimo') is None:
                 self.add_error('pago_minimo', 'Requerido para tarjetas de crédito')
             if cleaned_data.get('pago_no_intereses') is None:
                 self.add_error('pago_no_intereses', 'Requerido: pago sin intereses')
 
         elif grupo == 'SER':        # --- Servicios ------------------------------
-            if not cleaned_data.get('fecha_limite_pago'):
-                self.add_error('fecha_limite_pago', 'Requerido: último día para pagar')
             if cleaned_data.get('pago_no_intereses') is None:   # se usa como “pago total”
                 self.add_error('pago_no_intereses', 'Indique el pago total del recibo')
             # pronto-pago sigue opcional:
             if cleaned_data.get('monto_pronto_pago') and not cleaned_data.get('fecha_pronto_pago'):
                 self.add_error('fecha_pronto_pago', 'Si das monto de pronto pago, incluye la fecha')
-                    
+
         elif grupo in ['DEB', 'EFE']:  # Débito/Efectivo
             cleaned_data['pago_minimo'] = None
             cleaned_data['pago_no_intereses'] = None
             cleaned_data['monto_pronto_pago'] = None
             cleaned_data['fecha_pronto_pago'] = None
             
+        # Validación siempre requerida para fecha_limite_pago
+        if not cleaned_data.get('fecha_limite_pago'):
+            self.add_error('fecha_limite_pago', 'Requerido: último día para pagar')
+
+        # Validación condicional para servicios
+        if grupo == 'SER' and not cleaned_data.get('monto_total'):
+            self.add_error('monto_total', "Requerido para servicios")
+
+        # Validación condicional para créditos la arriba ya manejó
+        
+        if 'monto_total' not in cleaned_data:
+            cleaned_data['monto_total'] = 0.00
+
         return cleaned_data
     
 class IngresoForm(forms.ModelForm):

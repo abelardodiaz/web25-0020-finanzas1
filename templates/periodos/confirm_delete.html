@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %}Eliminar periodo{% endblock %}
+
+{% block content %}
+<h1>Eliminar periodo</h1>
+<p>¿Estás seguro de eliminar el periodo de <strong>{{ object.cuenta }}</strong> con corte el {{ object.fecha_corte|date:"d/m/Y" }}?</p>
+<form method="post" class="mt-3">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+    <a href="{% url 'core:periodos_list' %}" class="btn btn-secondary">Cancelar</a>
+</form>
+{% endblock %} 

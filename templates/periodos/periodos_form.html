@@ -1,0 +1,238 @@
+<!-- templates/periodos/per_nuevo.html -->
+{% extends "base.html" %}
+{% block title %}Nuevo periodo{% endblock %}
+{% block content %}
+<h1>
+  {% if cuenta %}
+    Nuevo periodo – {{ cuenta }}
+  {% else %}
+    Nuevo periodo
+  {% endif %}
+</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {% if form.errors %}
+  <div class="alert alert-danger">
+     <strong>Corrige los siguientes errores:</strong>
+     <ul>
+       {% for field in form %}
+           {% for error in field.errors %}
+               <li>{{ field.label }}: {{ error }}</li>
+           {% endfor %}
+       {% endfor %}
+       {% for error in form.non_field_errors %}
+           <li>{{ error }}</li>
+       {% endfor %}
+     </ul>
+  </div>
+  {% endif %}
+  
+  {{ form.grupo.as_hidden }}  <!-- Hidden group field -->
+  
+{% if cuenta %}
+    {{ form.cuenta.as_hidden }}
+{% else %}
+    <div class="mb-3">
+        <label class="form-label">Cuenta</label>
+        <!-- Custom select with group data attributes -->
+        <select name="cuenta" class="form-select" id="id_cuenta" required>
+            {% for c in cuentas %}
+                <option value="{{ c.pk }}" data-grupo="{{ c.tipo.grupo }}" data-diacorte="{{ c.dia_corte }}"
+                    {% if form.instance.cuenta_id == c.pk %}selected{% endif %}>
+                    {{ c.nombre }} ({{ c.tipo.nombre }})
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+{% endif %}
+  
+  <!-- Common fields -->
+  <div class="mb-3">
+    <label class="form-label">Fecha de corte</label>
+    {{ form.fecha_corte }}
+    {{ form.fecha_corte.errors }}
+  </div>
+  <!-- ELIMINAR campo fecha_inicio -->
+  <!-- <div class="mb-3">
+       <label class="form-label">Inicio del periodo</label>
+       {{ form.fecha_inicio }}
+       {{ form.fecha_inicio.errors }}
+  </div> -->
+
+  <!-- Mostrar error para fecha_fin_periodo -->
+  <div class="mb-3">
+    <label class="form-label">Fin del periodo</label>
+    {{ form.fecha_fin_periodo }}
+    {{ form.fecha_fin_periodo.errors }}
+  </div>
+
+  <!-- Fecha límite de pago (única) -->
+  <div class="mb-3">
+    <label class="form-label">Fecha límite de pago</label>
+    {{ form.fecha_limite_pago }}
+    {{ form.fecha_limite_pago.errors }}
+  </div>
+
+
+  <!-- Group-specific fields -->
+  <div id="cre-fields" class="card mb-3" {% if form.grupo.value != 'CRE' %}style="display:none"{% endif %}>
+    <div class="card-header">Detalles de crédito</div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label class="form-label">Pago mínimo</label>
+        {{ form.pago_minimo }}
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Pago sin intereses</label>
+        {{ form.pago_no_intereses }}
+      </div>
+    </div>
+  </div>
+
+  <div id="ser-fields" class="card mb-3" {% if form.grupo.value != 'SER' %}style="display:none"{% endif %}>
+    <div class="card-header">Detalles de servicio</div>
+    <div class="card-body">
+      <div class="mb-3">
+        <label class="form-label">Monto pronto pago</label>
+        {{ form.monto_pronto_pago }}
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Fecha pronto pago</label>
+        {{ form.fecha_pronto_pago }}
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Monto total del periodo</label>
+        {{ form.monto_total }}
+      </div>
+    </div>
+  </div>
+
+  <div id="deb-fields" class="card mb-3" 
+       {% if form.grupo.value != 'DEB' and form.grupo.value != 'EFE' %}style="display:none"{% endif %}>
+    <div class="card-body">
+      <p class="text-muted">
+        Las cuentas de débito y efectivo no requieren información adicional.
+      </p>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <button type="submit" class="btn btn-primary">Guardar</button>
+  </div>
+
+  <script>
+document.addEventListener('DOMContentLoaded', function () {
+  const cuentaField = document.querySelector('[name="cuenta"]');
+  const grupoField  = document.querySelector('[name="grupo"]');
+  const fechaCorteInput = document.querySelector('#id_fecha_corte');
+  const fechaFinInput   = document.querySelector('#id_fecha_fin_periodo');
+
+  function updateFields() {
+    const g = grupoField.value;
+    document.getElementById('cre-fields').style.display = g === 'CRE' ? 'block' : 'none';
+    document.getElementById('ser-fields').style.display = g === 'SER' ? 'block' : 'none';
+    document.getElementById('deb-fields').style.display = (g === 'DEB' || g === 'EFE') ? 'block' : 'none';
+  }
+
+  function calcNextCutoff(baseDay) {
+    const today = new Date();
+    // Crea fecha tentativa para este mes
+    let tentative = new Date(today.getFullYear(), today.getMonth(), Math.min(baseDay,28));
+    if (today >= tentative) {
+      // usar siguiente mes
+      tentative.setMonth(tentative.getMonth()+1);
+    }
+    tentative.setDate(baseDay);
+    return tentative.toISOString().slice(0,10); // yyyy-mm-dd
+  }
+
+  /* ---------- NUEVO: fijar grupo inicial ---------- */
+  if (!grupoField.value && cuentaField) {                // si grupo viene vacío
+    const opt = cuentaField.options[cuentaField.selectedIndex];
+    if (opt) grupoField.value = opt.getAttribute('data-grupo');  // DEB / SER / CRE / EFE
+  }
+  /* ------------------------------------------------ */
+
+  // Cambiar grupo cuando el usuario elija otra cuenta
+  if (cuentaField) {
+    cuentaField.addEventListener('change', function () {
+      const opt = this.options[this.selectedIndex];
+      grupoField.value = opt.getAttribute('data-grupo');
+      updateFields();
+
+      const diacorte = opt.getAttribute('data-diacorte');
+      if (diacorte) {
+         const fc = calcNextCutoff(parseInt(diacorte));
+         fechaCorteInput.value = fc;
+         // fin de periodo = misma fecha corte por ahora
+         fechaFinInput.value  = fc;
+      }
+    });
+  }
+
+  // Mostrar campos correctos en el primer render
+  updateFields();
+
+  function toggleRequiredFields() {
+    const grupo = grupoField.value;
+    
+    // Servicios
+    const serFields = ['monto_total', 'pago_no_intereses'];
+    serFields.forEach(field => {
+      const el = document.querySelector(`[name="${field}"]`);
+      if (el) el.required = (grupo === 'SER');
+    });
+
+    // Créditos
+    const creFields = ['pago_minimo', 'pago_no_intereses'];
+    creFields.forEach(field => {
+      const el = document.querySelector(`[name="${field}"]`);
+      if (el) el.required = (grupo === 'CRE');
+    });
+  }
+
+  // Actualizar al cambiar grupo
+  if (cuentaField) {
+    cuentaField.addEventListener('change', function() {
+      updateFields();
+      toggleRequiredFields();
+    });
+  }
+  
+  // Inicializar
+  toggleRequiredFields();
+});
+</script>
+{% if debug_info %}
+<div class="card border-danger mt-4">
+  <div class="card-header bg-danger text-white">
+    <h5>Panel de Diagnóstico</h5>
+  </div>
+  <div class="card-body">
+    <div class="row">
+      <div class="col-md-4">
+        <h6>Datos Enviados (POST):</h6>
+        <pre>{{ debug_info.post_data|pprint }}</pre>
+      </div>
+      <div class="col-md-4">
+        <h6>Datos Limpiados:</h6>
+        <pre>{{ debug_info.cleaned_data|pprint }}</pre>
+      </div>
+      <div class="col-md-4">
+        <h6>Errores:</h6>
+        <pre>{{ debug_info.errors|pprint }}</pre>
+      </div>
+    </div>
+    
+    <h6 class="mt-4">Solución sugerida:</h6>
+    <ol>
+      <li>Verifica que el formato de fecha sea YYYY-MM-DD</li>
+      <li>Revisa que el campo no esté siendo modificado por JavaScript</li>
+      <li>Prueba con diferentes navegadores (Chrome, Firefox)</li>
+    </ol>
+  </div>
+</div>
+{% endif %}
+</form>
+{% endblock %}

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+{% block title %}Estado de cuenta – {{ object }}{% endblock %}
+
+{% block content %}
+<h1>Detalle del Periodo</h1>
+<a href="{% url 'core:periodo_pdf' object.id %}" class="btn btn-primary mb-3">
+    Generar PDF
+</a>
+
+<p>
+  <strong>Periodo:</strong> {{ object.fecha_corte|date:"d/m/Y" }} – {{ object.fecha_fin_periodo|date:"d/m/Y" }}<br>
+  <strong>Fecha límite de pago:</strong> {{ object.fecha_limite_pago|default:"—" }}<br>
+  <strong>Pago mínimo:</strong> {{ object.pago_minimo|default:"—" }}<br>
+  <strong>Pago sin intereses:</strong> {{ object.pago_no_intereses|default:"—" }}
+</p>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Fecha</th>
+      <th>Descripción</th>
+      <th class="text-end">Cargos</th>  <!-- Nueva columna -->
+      <th class="text-end">Abonos</th>  <!-- Nueva columna -->
+    </tr>
+  </thead>
+  <tbody>
+    {% for m in movs %}
+      <tr>
+        <td>{{ m.fecha|date:"d/m/Y" }}</td>
+        <td>{{ m.descripcion }}</td>
+        <td class="text-end">
+          {% if m.monto < 0 %}
+            {{ m.monto|floatformat:2|cut:"-" }}  <!-- Muestra valor absoluto -->
+          {% endif %}
+        </td>
+        <td class="text-end">
+          {% if m.monto > 0 %}
+            {{ m.monto|floatformat:2 }}
+          {% endif %}
+        </td>
+      </tr>
+    {% empty %}
+      <tr><td colspan="4" class="text-center text-muted">Sin movimientos asociados.</td></tr>
+    {% endfor %}
+  </tbody>
+  <tfoot>
+    <tr>
+      <th colspan="2" class="text-end">Total cargos</th>
+      <th class="text-end">{{ total_cargos|floatformat:2|cut:"-" }}</th>  <!-- Valor absoluto -->
+      <th></th>
+    </tr>
+    <tr>
+      <th colspan="2" class="text-end">Total abonos</th>
+      <th></th>
+      <th class="text-end">{{ total_abonos|floatformat:2 }}</th>
+    </tr>
+    <tr>
+      <th colspan="2" class="text-end">Saldo final</th>
+      <th colspan="2" class="text-end">{{ saldo|floatformat:2 }}</th>
+    </tr>
+  </tfoot>
+</table>
+
+<button class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#modalDeletePeriodo">Eliminar período</button>
+<a href="{% url 'core:periodos_list' %}" class="btn btn-secondary">Regresar</a>
+
+{% if object.cerrado %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  <strong>Estado de cuenta verificado</strong>
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
+
+<div class="mb-3">
+  {% if not object.cerrado %}
+    <button class="btn btn-warning me-2" data-bs-toggle="modal" data-bs-target="#modalCerrar">Cerrar período</button>
+  {% else %}
+    <button class="btn btn-outline-warning me-2" data-bs-toggle="modal" data-bs-target="#modalAbrir">Reabrir período</button>
+  {% endif %}
+
+  {% if not object.cerrado %}
+    <form class="d-inline" method="post" action="{% url 'core:periodo_refresh' object.pk %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-outline-primary">Actualizar movimientos</button>
+    </form>
+  {% endif %}
+</div>
+
+<!-- Modal cierre -->
+<div class="modal fade" id="modalCerrar" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">Confirmar cierre</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </div>
+    <div class="modal-body">¿Seguro que deseas cerrar este periodo? No podrás editarlo.</div>
+    <div class="modal-footer">
+      <form method="post" action="{% url 'core:periodo_cerrar' object.pk %}">{% csrf_token %}
+        <button type="submit" class="btn btn-warning">Sí, cerrar</button>
+      </form>
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- Modal abrir -->
+<div class="modal fade" id="modalAbrir" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog"><div class="modal-content">
+    <div class="modal-header"><h5 class="modal-title">Confirmar reapertura</h5>
+      <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+    </div>
+    <div class="modal-body">¿Seguro que deseas reabrir este periodo? Podrás editarlo nuevamente.</div>
+    <div class="modal-footer">
+      <form method="post" action="{% url 'core:periodo_abrir' object.pk %}">{% csrf_token %}
+        <button type="submit" class="btn btn-warning">Sí, reabrir</button>
+      </form>
+      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+    </div>
+  </div></div>
+</div>
+
+<!-- Modal de confirmación eliminación período -->
+<div class="modal fade" id="modalDeletePeriodo" tabindex="-1" aria-labelledby="modalDeletePeriodoLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalDeletePeriodoLabel">Confirmar eliminación</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        ¿Seguro que deseas eliminar este período?
+      </div>
+      <div class="modal-footer">
+        <form method="post" action="{% url 'core:periodo_delete' object.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-danger">Sí, eliminar</button>
+        </form>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% if object.cerrado %}
+<div class="card mt-4"><div class="card-body">
+  <h6>Estado verificado</h6>
+  <p class="mb-0">Cerrado por: {{ object.cerrado_por|default:"—" }}<br>
+  Fecha: {{ object.fecha_cierre|date:"d/m/Y H:i"|default:"—" }}</p>
+  <button class="btn btn-sm btn-link" data-bs-toggle="collapse" data-bs-target="#historialEstado">Historial</button>
+  <div id="historialEstado" class="collapse">
+    <ul class="list-group list-group-flush mt-2">
+      {% for h in object.historial_estado.all %}
+      <li class="list-group-item">{{ h.timestamp|date:"d/m/Y H:i" }} — {{ h.get_accion_display }} por {{ h.usuario|default:"—" }}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</div></div>
+{% endif %}
+{% endblock %} 

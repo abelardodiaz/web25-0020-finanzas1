@@ -6,7 +6,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.views.generic import (
     ListView, CreateView, UpdateView, DeleteView
 )
-from .models import Cuenta, Categoria, TipoCuenta
+from .models import Cuenta, Categoria, TipoCuenta, Periodo
 from .forms import CuentaForm, CategoriaForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.urls import reverse_lazy
@@ -20,7 +20,7 @@ from django.contrib import messages
 from django.db import transaction
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
-from .forms import TransferenciaForm, Periodo, IngresoForm, forms
+from .forms import TransferenciaForm, IngresoForm, forms
 from .models import Transaccion, Transferencia, Categoria
 
 import csv, io, pandas as pd
@@ -33,8 +33,30 @@ from .forms import EstadoCuentaForm
 from .models import Transaccion
 from django.http import Http404 
 from django import forms as django_forms  
+from django.http import JsonResponse
+from uuid import uuid4
 
+# Agregamos importaciones para manejo de fecha de corte base
+from datetime import date, timedelta
+from dateutil.relativedelta import relativedelta
+# Nuevo: para filtros compuestos
+from django.db.models import Q
 
+# Detalle de periodo / estado de cuenta
+from django.views.generic import DetailView
+from django.db.models import Sum
+from django.db.models import Count
+
+from django.views.generic import View
+from django.shortcuts import get_object_or_404, redirect
+from django.utils import timezone
+from datetime import timedelta
+from .models import PeriodoEstadoLog
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from django.http import HttpResponse
 
 
 class DashboardView(LoginRequiredMixin, TemplateView):
@@ -67,14 +89,14 @@ class CuentaListView(ListView):
 class CuentaCreateView(SuccessMessageMixin, CreateView):
     model = Cuenta
     form_class = CuentaForm
-    template_name = 'cuentas/form.html'
+    template_name = 'cuentas/cuentas_form.html'
     success_url = reverse_lazy('core:cuentas_list')
     success_message = "Cuenta «%(nombre)s» creada correctamente."
 
 class CuentaUpdateView(SuccessMessageMixin, UpdateView):
     model = Cuenta
     form_class = CuentaForm
-    template_name = 'cuentas/form.html'
+    template_name = 'cuentas/cuentas_form.html'
     success_url = reverse_lazy('core:cuentas_list')
     success_message = "Cuenta «%(nombre)s» actualizada correctamente."
 
@@ -95,14 +117,14 @@ class CategoriaListView(ListView):
 class CategoriaCreateView(SuccessMessageMixin, CreateView):
     model = Categoria
     form_class = CategoriaForm
-    template_name = 'categorias/form.html'
+    template_name = 'categorias/categorias_form.html'
     success_url = reverse_lazy('core:categorias_list')
     success_message = "Categoría «%(nombre)s» creada correctamente."
 
 class CategoriaUpdateView(SuccessMessageMixin, UpdateView):
     model = Categoria
     form_class = CategoriaForm
-    template_name = 'categorias/form.html'
+    template_name = 'categorias/categorias_form.html'
     success_url = reverse_lazy('core:categorias_list')
     success_message = "Categoría «%(nombre)s» actualizada correctamente."
 
@@ -121,21 +143,71 @@ class TransaccionListView(FilterView):
     paginate_by         = 50
     ordering            = ["-fecha"]  # redundante: ya viene del Meta
 
+    def get_queryset(self):
+        # 1) Obtener queryset base y aplicar filtros normales
+        qs_base = super().get_queryset()
+        self.filterset = self.filterset_class(self.request.GET, queryset=qs_base)
+
+        if self.filterset.is_valid():
+            qs_filtrado = self.filterset.qs
+            # 2) Tomar todos los grupo_uuid presentes en el resultado filtrado
+            grupos = qs_filtrado.values_list("grupo_uuid", flat=True)
+            # 3) Devolver TODOS los movimientos de esos grupos (pares completos)
+            qs_completo = Transaccion.objects.filter(grupo_uuid__in=grupos).order_by("-fecha")
+            return qs_completo
+
+        # Si el filtro no es válido, regresa base
+        return qs_base
+
 class TransaccionCreateView(SuccessMessageMixin, CreateView):
     model         = Transaccion
     form_class    = TransaccionForm
-    template_name = "transacciones/tr_nueva.html"
+    template_name = "transacciones/transacciones_form.html"
     success_url   = reverse_lazy("core:transacciones_list")
     success_message = "Transacción registrada exitosamente."
 
     def form_valid(self, form):
         with transaction.atomic():
-            self.object = form.save()              # 1) movimiento principal
+            tipo = form.cleaned_data["tipo"]
+            if tipo == TransaccionTipo.TRANSFERENCIA:
+                origen   = form.cleaned_data["medio_pago"]
+                destino  = form.cleaned_data["cuenta_servicio"]
+                monto    = abs(form.cleaned_data["monto"])
+                fecha    = form.cleaned_data["fecha"]
+                desc     = form.cleaned_data["descripcion"] or f"Transferencia {origen} → {destino}"
 
-            # 2) ¿hay doble partida?
+                # Categoría especial
+                categoria, _ = Categoria.objects.get_or_create(nombre="Transferencia interna", defaults={"tipo": "INTERNA"})
+
+                grupo = uuid4()
+                Transaccion.objects.create(
+                    monto=-monto,
+                    tipo=TransaccionTipo.GASTO,
+                    fecha=fecha,
+                    descripcion=desc,
+                    medio_pago=origen,
+                    categoria=categoria,
+                    grupo_uuid=grupo,
+                )
+                Transaccion.objects.create(
+                    monto=monto,
+                    tipo=TransaccionTipo.INGRESO,
+                    fecha=fecha,
+                    descripcion=desc,
+                    medio_pago=destino,
+                    categoria=categoria,
+                    grupo_uuid=grupo,
+                )
+                messages.success(self.request, "Transferencia registrada correctamente.")
+                return super().form_valid(form)  # redirects using success_url
+
+            # 1) movimiento principal estándar
+            self.object = form.save()
+
+            # 2) ¿hay doble partida para servicio?
             cs  = self.object.cuenta_servicio
             mp  = self.object.medio_pago
-            if cs and cs != mp:
+            if (not self.object.ajuste) and cs and cs != mp:
                 Transaccion.objects.create(
                     monto        = -self.object.monto,            # signo opuesto
                     tipo         = (TransaccionTipo.INGRESO
@@ -147,12 +219,71 @@ class TransaccionCreateView(SuccessMessageMixin, CreateView):
                     medio_pago      = cs,
                     categoria    = self.object.categoria,
                     moneda       = self.object.moneda,
+                    grupo_uuid   = self.object.grupo_uuid,
                 )
         messages.success(self.request, self.success_message)
         return super().form_valid(form)
 
+
+# ——— Edición de transacciones ———
+class TransaccionUpdateView(SuccessMessageMixin, UpdateView):
+    model         = Transaccion
+    form_class    = TransaccionForm
+    template_name = "transacciones/transacciones_form.html"
+    success_url   = reverse_lazy("core:transacciones_list")
+    success_message = "Transacción actualizada correctamente."
+
+    def form_valid(self, form):
+        with transaction.atomic():
+            self.object = form.save()
+
+            # Recalcular pareja
+            cs = self.object.cuenta_servicio
+            mp = self.object.medio_pago
+            cond = (not self.object.ajuste) and cs and cs != mp
+
+            pares_qs = Transaccion.objects.filter(grupo_uuid=self.object.grupo_uuid).exclude(pk=self.object.pk)
+
+            if cond:
+                if pares_qs.exists():
+                    par = pares_qs.first()
+                    par.monto = -self.object.monto
+                    par.tipo  = (TransaccionTipo.INGRESO if self.object.tipo == TransaccionTipo.GASTO else TransaccionTipo.GASTO)
+                    par.fecha = self.object.fecha
+                    par.descripcion = f"Pago {self.object.descripcion}"
+                    par.cuenta_servicio = cs
+                    par.medio_pago = cs
+                    par.categoria = self.object.categoria
+                    par.moneda = self.object.moneda
+                    par.ajuste = False
+                    par.save()
+                else:
+                    Transaccion.objects.create(
+                        monto = -self.object.monto,
+                        tipo  = (TransaccionTipo.INGRESO if self.object.tipo == TransaccionTipo.GASTO else TransaccionTipo.GASTO),
+                        fecha = self.object.fecha,
+                        descripcion = f"Pago {self.object.descripcion}",
+                        cuenta_servicio = cs,
+                        medio_pago = cs,
+                        categoria = self.object.categoria,
+                        moneda = self.object.moneda,
+                        grupo_uuid = self.object.grupo_uuid,
+                    )
+            else:
+                # No debería haber pareja
+                pares_qs.delete()
+
+        messages.success(self.request, self.success_message)
+        return super().form_valid(form)
+
+class TransaccionDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    model = Transaccion
+    template_name = "transacciones/confirm_delete.html"
+    success_url = reverse_lazy("core:transacciones_list")
+    success_message = "Transacción eliminada correctamente."
+
 class TransferenciaCreateView(FormView):
-    template_name  = "transferencias/form.html"
+    template_name  = "transferencias/transferencias_form.html"
     form_class     = TransferenciaForm
     success_url    = reverse_lazy("core:transacciones_list")
 
@@ -163,7 +294,7 @@ class TransferenciaCreateView(FormView):
         fecha    = form.cleaned_data["fecha"]
         desc     = form.cleaned_data["descripcion"] or f"Transferencia {origen} → {destino}"
 
-        # Categoría especial “Transferencia” (crea si no existe)
+        # Categoría especial "Transferencia" (crea si no existe)
         categoria, _ = Categoria.objects.get_or_create(nombre="Transferencia interna", defaults={"tipo": "INTERNA"})
 
         with transaction.atomic():
@@ -305,7 +436,7 @@ class EstadoCuentaView(TemplateView):
 
 
 class PeriodoCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
-    template_name = "periodos/per_nuevo.html"
+    template_name = "periodos/periodos_form.html"
     form_class = PeriodoForm
     success_url = reverse_lazy("core:periodos_list")
     success_message = "Periodo registrado correctamente."
@@ -331,6 +462,32 @@ class PeriodoCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             initial['cuenta'] = self.cuenta
             # Solo forzar tipo si hay cuenta predefinida
             initial['tipo'] = self.cuenta.tipo.codigo
+
+            # === NUEVO: cálculo de fecha_corte predeterminada =============
+            base_day = getattr(self.cuenta, "dia_corte", None)
+            if base_day:
+                # 1) Si existe al menos un periodo previo, usa último +1 mes
+                last_period = (
+                    Periodo.objects.filter(cuenta=self.cuenta)
+                    .order_by("-fecha_corte")
+                    .first()
+                )
+                if last_period and last_period.fecha_corte:
+                    next_cut = last_period.fecha_corte + relativedelta(months=1)
+                else:
+                    # 2) Sin periodos previos → usa próximo mes con mismo día
+                    today_ = date.today()
+                    # Primer intento: próximo mes misma fecha
+                    tentative = date(today_.year, today_.month, min(base_day, 28))
+                    # Si ya pasó en este mes, sumamos 1 mes para caer en siguiente mes
+                    if today_ >= tentative:
+                        tentative = tentative + relativedelta(months=1)
+                    next_cut = tentative.replace(day=base_day)
+
+                initial.setdefault("fecha_corte", next_cut)
+                # Fin de periodo por defecto = fecha_corte
+                initial.setdefault("fecha_fin_periodo", next_cut)
+            # ==============================================================
         else:
             # 👇 Dejar tipo como None en lugar de cadena vacía
             initial['tipo'] = None  # Corregido: valor nulo válido
@@ -360,12 +517,202 @@ class PeriodoCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
             context['cuentas'] = cuentas
         return context
     
+    def form_valid(self, form):
+        # Marcar como generado
+        form.instance.generado = True
+        # Guardar primero para obtener instancia
+        response = super().form_valid(form)
+
+        # -----------------------------------------------------------------
+        # Enlazar movimientos automáticamente al nuevo periodo
+        # -----------------------------------------------------------------
+        periodo = self.object  # ya guardado
+
+        # 1) Determinar rango de fechas
+        inicio = periodo.fecha_corte
+        fin    = periodo.fecha_fin_periodo
+        
+        # Si no hay fecha_fin_periodo, usar fecha_corte + 30 días
+        if not fin and periodo.fecha_corte:
+            fin = periodo.fecha_corte + timedelta(days=30)
+
+        # 2) Solo si tenemos al menos fecha de fin determinar, asignamos
+        if fin:
+            filtros = Q(medio_pago=periodo.cuenta) | Q(cuenta_servicio=periodo.cuenta)
+            if inicio:
+                filtros &= Q(fecha__gte=inicio)
+                filtros &= ~Q(fecha__lt=inicio) # Excluir explícitamente fechas < inicio
+            filtros &= Q(fecha__lte=fin)
+
+            # Actualizar en bloque solo transacciones sin periodo
+            Transaccion.objects.filter(filtros, periodo__isnull=True).update(periodo=periodo)
+
+        return response
+
+    def form_invalid(self, form):
+        # Agregar datos de depuración al contexto
+        context = self.get_context_data(form=form)
+        context['debug_info'] = {
+            'post_data': self.request.POST.dict(),
+            'cleaned_data': getattr(form, 'cleaned_data', {}),
+            'errors': form.errors.get_json_data()
+        }
+        return self.render_to_response(context)
+
 
 class PeriodoListView(LoginRequiredMixin, ListView):
-    model = Periodo  # Cambiar a nuestro nuevo modelo único
+    model = Periodo
     template_name = "periodos/index.html"
     context_object_name = "periodos"
     paginate_by = 50
+
+    def get_queryset(self):
+        return super().get_queryset().filter(generado=True)
+
+
+# ----------------------------------------------------------------------
+# Detalle de periodo (estado de cuenta)
+# ----------------------------------------------------------------------
+
+
+class PeriodoDetailView(LoginRequiredMixin, DetailView):
+    model = Periodo
+    template_name = "periodos/detalle.html"
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        periodo = self.object
+        movs = periodo.transacciones.order_by("fecha")
+        ctx["movs"] = movs
+        ctx["total_cargos"] = periodo.total_cargos
+        ctx["total_abonos"] = periodo.total_abonos
+        ctx["saldo"] = periodo.saldo
+        return ctx
+
+# ------------------------------------------------------------------
+# Edición y eliminación de periodos
+# ------------------------------------------------------------------
+
+
+class PeriodoUpdateView(LoginRequiredMixin, SuccessMessageMixin, UpdateView):
+    """Permite editar un periodo existente reutilizando el mismo formulario."""
+    model = Periodo
+    form_class = PeriodoForm
+    template_name = "periodos/periodos_form.html"
+    success_url = reverse_lazy("core:periodos_list")
+    success_message = "Periodo actualizado correctamente."
+
+    # Queremos permitir cambiar la cuenta, por eso NO fijamos kwargs['cuenta']
+    def get_form_kwargs(self):
+        return super().get_form_kwargs()
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        # Para que el template muestre el <select>, eliminamos 'cuenta'
+        ctx["cuenta"] = None
+        # Lista de cuentas disponibles para el selector
+        ctx["cuentas"] = Cuenta.objects.filter(tipo__codigo__in=("TDC","SERV","DEB","EFE"))
+        return ctx
+
+    def form_valid(self, form):
+        # Mantener el estado generado
+        form.instance.generado = True
+        
+        # Reutilizamos la lógica de asignación de transacciones de CreateView
+        response = super().form_valid(form)
+
+        periodo = self.object
+
+        # Recalcular rango y volver a vincular movimientos (útil si cambió rango)
+        inicio = periodo.fecha_corte
+        fin    = periodo.fecha_fin_periodo
+        
+        # Obtener fechas válidas
+        inicio = periodo.fecha_corte
+        fin = periodo.fecha_fin_periodo
+        
+        # Construir filtro base
+        filtros = Q(medio_pago=periodo.cuenta) | Q(cuenta_servicio=periodo.cuenta)
+        
+        # Manejar casos donde inicio o fin son nulos
+        if inicio and fin:
+            filtros &= Q(fecha__range=(inicio, fin))
+        elif inicio:
+            filtros &= Q(fecha__gte=inicio)
+        elif fin:
+            filtros &= Q(fecha__lte=fin)
+
+        # Liberar transacciones previamente ligadas si ya no encajan
+        Transaccion.objects.filter(periodo=periodo).exclude(filtros).update(periodo=None)
+        # Vincular las que correspondan y aún no lo estén
+        Transaccion.objects.filter(filtros, periodo__isnull=True).update(periodo=periodo)
+
+        return response
+
+
+class PeriodoDeleteView(LoginRequiredMixin, SuccessMessageMixin, DeleteView):
+    """Confirma y elimina un periodo; las transacciones quedan sin periodo."""
+    model = Periodo
+    template_name = "periodos/confirm_delete.html"
+    success_url = reverse_lazy("core:periodos_list")
+    success_message = "Periodo eliminado correctamente."
+
+# Actualizar movimientos manualmente (solo si abierto)
+class PeriodoRefreshView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        periodo = get_object_or_404(Periodo, pk=pk)
+        if periodo.cerrado:
+            messages.warning(request, "El período está cerrado y no puede actualizarse.")
+            return redirect('core:periodo_detail', pk=pk)
+
+        # Reutilizar lógica de vinculación
+        inicio = periodo.fecha_corte
+        fin = periodo.fecha_fin_periodo or (periodo.fecha_corte + timedelta(days=30))
+
+        filtros = Q(medio_pago=periodo.cuenta) | Q(cuenta_servicio=periodo.cuenta)
+        if inicio and fin:
+            filtros &= Q(fecha__range=(inicio, fin))
+
+        Transaccion.objects.filter(periodo=periodo).exclude(filtros).update(periodo=None)
+        Transaccion.objects.filter(filtros, periodo__isnull=True).update(periodo=periodo)
+
+        # Registrar en historial (opcional)
+        PeriodoEstadoLog.objects.create(
+            periodo=periodo,
+            accion="ACTUALIZAR",
+            usuario=request.user,
+        )
+
+        messages.success(request, "Movimientos actualizados correctamente.")
+        return redirect('core:periodo_detail', pk=pk)
+
+class CerrarPeriodoView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        periodo = get_object_or_404(Periodo, pk=pk)
+        if periodo.cerrado:
+            messages.info(request, "El período ya estaba cerrado.")
+        else:
+            periodo.cerrado = True
+            periodo.cerrado_por = request.user
+            periodo.fecha_cierre = timezone.now()
+            periodo.save()
+            PeriodoEstadoLog.objects.create(periodo=periodo, accion="CERRAR", usuario=request.user)
+            messages.success(request, "Período cerrado correctamente.")
+        return redirect('core:periodo_detail', pk=pk)
+
+class AbrirPeriodoView(LoginRequiredMixin, View):
+    def post(self, request, pk):
+        periodo = get_object_or_404(Periodo, pk=pk)
+        if not periodo.cerrado:
+            messages.info(request, "El período ya estaba abierto.")
+        else:
+            periodo.cerrado = False
+            periodo.cerrado_por = None
+            periodo.fecha_cierre = None
+            periodo.save()
+            PeriodoEstadoLog.objects.create(periodo=periodo, accion="ABRIR", usuario=request.user)
+            messages.success(request, "Período reabierto correctamente.")
+        return redirect('core:periodo_detail', pk=pk)
 
 
 # --- NUEVO -------------------------------------------------------------
@@ -384,8 +731,113 @@ class TipoCuentaListView(LoginRequiredMixin, ListView):
 
 class TipoCuentaCreateView(LoginRequiredMixin, SuccessMessageMixin, CreateView):
     model             = TipoCuenta
-    template_name     = "tipocuenta/form.html"
+    template_name     = "tipocuenta/tipocuenta_form.html"
     fields            = ["codigo", "nombre"]
     success_url       = reverse_lazy("core:tipocuenta_list")
     success_message   = "Tipo de cuenta creado."
+    
+
+# --- AJAX Endpoints -------------------------------------------------
+
+def cuentas_servicio_json(request):
+    """Devuelve cuentas cuyo tipo es 'SERV' (servicios)"""
+    cuentas = Cuenta.objects.filter(tipo__codigo="SERV").order_by("nombre")
+    data = [{"id": c.id, "text": str(c)} for c in cuentas]
+    return JsonResponse(data, safe=False)
+
+
+def categorias_json(request):
+    """Devuelve todas las categorías ordenadas por nombre"""
+    categorias = Categoria.objects.order_by("nombre")
+    data = [{"id": cat.id, "text": str(cat)} for cat in categorias]
+    return JsonResponse(data, safe=False)
+
+
+def medios_pago_json(request):
+    """Devuelve cuentas de tipo DEB o CRE (medios de pago)"""
+    cuentas = Cuenta.objects.filter(tipo__grupo__in=["DEB", "CRE"]).order_by("nombre")
+    data = [{"id": c.id, "text": str(c)} for c in cuentas]
+    return JsonResponse(data, safe=False)
+
+
+class PeriodoPDFView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        periodo = get_object_or_404(Periodo, pk=pk)
+        movs = periodo.transacciones.order_by("fecha")
+        
+        # Crear respuesta HTTP con PDF
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="estado_cuenta_{periodo.id}.pdf"'
+        
+        # Crear PDF
+        p = canvas.Canvas(response, pagesize=letter)
+        width, height = letter
+        
+        # Encabezado
+        p.setFont("Helvetica-Bold", 16)
+        p.drawString(1*inch, height-1*inch, f"Estado de Cuenta: {periodo.cuenta.nombre}")
+        p.setFont("Helvetica", 12)
+        p.drawString(1*inch, height-1.2*inch, f"Periodo: {periodo.fecha_corte} - {periodo.fecha_fin_periodo}")
+        p.drawString(1*inch, height-1.4*inch, f"Saldo inicial: ${periodo.saldo_inicial:.2f}")
+        
+        # Encabezados de tabla con formato mejorado
+        p.setFont("Helvetica-Bold", 10)
+        p.drawString(1*inch, height-1.6*inch, "Fecha")
+        p.drawString(2.0*inch, height-1.6*inch, "Descripción")
+        p.drawString(5.0*inch, height-1.6*inch, "Cargos")  # Columna para cargos
+        p.drawString(6.0*inch, height-1.6*inch, "Abonos")  # Columna para abonos
+        
+        # Línea divisoria debajo de los encabezados
+        p.line(1*inch, height-1.65*inch, 7*inch, height-1.65*inch)
+        
+        y_position = height - 1.8*inch
+        p.setFont("Helvetica", 10)
+        
+        for mov in movs:
+            # Formatear fecha
+            fecha_str = mov.fecha.strftime("%d/%m/%Y")
+            p.drawString(1*inch, y_position, fecha_str)
+            
+            # Descripción (limitada a 40 caracteres)
+            desc = mov.descripcion[:40] + "..." if len(mov.descripcion) > 40 else mov.descripcion
+            p.drawString(2.0*inch, y_position, desc)
+            
+            # Mostrar cargos y abonos en columnas separadas
+            if mov.monto < 0:
+                # Cargo (valor absoluto)
+                cargo = f"${abs(mov.monto):.2f}"
+                p.drawRightString(5.5*inch, y_position, cargo)  # Alineado a la derecha
+            else:
+                # Abono
+                abono = f"${mov.monto:.2f}"
+                p.drawRightString(6.5*inch, y_position, abono)  # Alineado a la derecha
+            
+            y_position -= 0.2*inch
+            
+            # Nueva página si se acaba el espacio
+            if y_position < 1*inch:
+                p.showPage()
+                y_position = height - 1*inch
+                # Redibujar encabezados en nueva página
+                p.setFont("Helvetica-Bold", 10)
+                p.drawString(1*inch, height-0.2*inch, "Fecha")
+                p.drawString(2.0*inch, height-0.2*inch, "Descripción")
+                p.drawString(5.0*inch, height-0.2*inch, "Cargos")
+                p.drawString(6.0*inch, height-0.2*inch, "Abonos")
+                p.line(1*inch, height-0.25*inch, 7*inch, height-0.25*inch)
+                p.setFont("Helvetica", 10)
+                y_position = height - 0.4*inch
+        
+        # Totales con formato mejorado
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(1*inch, y_position - 0.4*inch, f"Total Cargos: ${abs(periodo.total_cargos):.2f}")
+        p.drawString(1*inch, y_position - 0.6*inch, f"Total Abonos: ${periodo.total_abonos:.2f}")
+        p.drawString(1*inch, y_position - 0.8*inch, f"Saldo Final: ${periodo.saldo:.2f}")
+        
+        # Línea divisoria sobre los totales
+        p.line(1*inch, y_position - 0.35*inch, 7*inch, y_position - 0.35*inch)
+        
+        p.showPage()
+        p.save()
+        return response
     

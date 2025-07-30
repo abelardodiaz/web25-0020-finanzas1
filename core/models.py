@@ -2,6 +2,19 @@
 from django.db import models, transaction
 from django.utils.translation import gettext_lazy as _
 from decimal import Decimal
+from uuid import uuid4
+from django.conf import settings
+from django.utils import timezone
+from django.db.models import Sum
+from django.views.generic import View
+from django.shortcuts import get_object_or_404
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import path
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
+from django.http import HttpResponse
 
 
 class Moneda(models.TextChoices):
@@ -40,6 +53,11 @@ class Cuenta(models.Model):
     no_cliente        = models.CharField(max_length=30,  blank=True)
     fecha_apertura    = models.DateField(null=True, blank=True)
     no_contrato       = models.CharField(max_length=40,  blank=True)
+    dia_corte          = models.PositiveSmallIntegerField(
+        null=True,
+        blank=True,
+        help_text="Día del mes en que cierra el periodo (1-31)"  # fecha de corte base
+    )
 
     class Meta:
         ordering = ["nombre"]
@@ -56,7 +74,8 @@ class Cuenta(models.Model):
 class CategoriaTipo(models.TextChoices):
     PERSONAL = "PERSONAL", _("Personal")
     NEGOCIO  = "NEGOCIO", _("Negocio")
-
+    MIXTO  = "MIXTO", _("Mixto")
+    TERCEROS  = "TERCEROS", _("Terceros")
 
 class Categoria(models.Model):
     nombre    = models.CharField(max_length=100)
@@ -78,7 +97,8 @@ class Categoria(models.Model):
         ordering        = ["nombre"]
 
     def __str__(self):
-        return self.nombre if not self.padre else f"{self.padre} › {self.nombre}"
+        base = self.nombre if not self.padre else f"{self.padre} › {self.nombre}"
+        return f"{base} ({self.get_tipo_display()})"
 
 
 class TransaccionTipo(models.TextChoices):
@@ -114,19 +134,26 @@ class Transaccion(models.Model):
         on_delete=models.RESTRICT,
         related_name="transacciones_pago",
     )
-    
+
+    # === Nuevos campos para partida doble ===
+    grupo_uuid = models.UUIDField(default=uuid4, editable=False)
+    ajuste = models.BooleanField(
+        default=False,
+        help_text="Marca este movimiento como ajuste para evitar la creación automática del segundo asiento."
+    )
+
     moneda              = models.CharField(
         max_length=3,
         choices=Moneda.choices,
         default=Moneda.MXN,
     )
-    # periodo      = models.ForeignKey( 
-    #     "Periodo",
-    #     null=True,
-    #     blank=True,
-    #     on_delete=models.SET_NULL,
-    #     related_name="transacciones",
-    # )
+    periodo      = models.ForeignKey(
+        "Periodo",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="transacciones",
+    )
     conciliado          = models.BooleanField(default=False)
 
     class Meta:
@@ -140,7 +167,7 @@ class Transaccion(models.Model):
     def __str__(self):
         signo = "-" if self.tipo == TransaccionTipo.GASTO else "+"
         return f"{self.fecha}: {signo}${self.monto} {self.categoria}"
-    
+
     def save(self, *args, **kwargs):
         """
         Garantiza que:
@@ -263,17 +290,28 @@ class Periodo(models.Model):
         ('DEB',  'Débito'),
         ('EFE',  'Efectivo'),
     )
-    
+
     cuenta = models.ForeignKey("Cuenta", on_delete=models.RESTRICT, related_name="periodos")
-    tipo = models.CharField(max_length=10, choices=TIPO_CHOICES)
+    tipo = models.CharField(
+        max_length=10, 
+        choices=TIPO_CHOICES, 
+        blank=True,  # Permite vacío
+        null=True,   # Permite NULL en BD
+        default=None
+    )
     fecha_corte = models.DateField(null=True, blank=True)
     fecha_limite_pago = models.DateField(null=True, blank=True)
-    monto_total = models.DecimalField(max_digits=12, decimal_places=2)
-    
+    monto_total = models.DecimalField(
+        max_digits=12, 
+        decimal_places=2,
+        null=True,  # Permitir NULL en BD
+        blank=True  # Permitir vacío en formularios
+    )
+
     # Campos específicos para tarjetas de crédito (opcionales)
     pago_minimo = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     pago_no_intereses = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
-    
+
     # Campos específicos para servicios (opcionales)
     monto_pronto_pago = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
     fecha_pronto_pago = models.DateField(null=True, blank=True)
@@ -281,19 +319,156 @@ class Periodo(models.Model):
     descripcion = models.CharField(max_length=120, blank=True)
     fecha_inicio = models.DateField(null=True, blank=True)
 
-    descripcion        = models.CharField(max_length=120, blank=True)
+    # Nuevo: fin real del periodo (puede coincidir con fecha_corte)
+    fecha_fin_periodo = models.DateField(
+        null=True,
+        blank=True,
+        help_text="Fecha de fin del periodo (generalmente igual a fecha_corte)"
+    )
+
+    # Gestión de verificación (abierto/cerrado)
+    cerrado = models.BooleanField(default=False)
+    cerrado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="periodos_cerrados"
+    )
+    fecha_cierre = models.DateTimeField(null=True, blank=True)
 
     ESTADOS = [
         ("PENDIENTE", "Pendiente"),
         ("PAGADO",    "Pagado"),
         ("CANCELADO", "Cancelado"),
     ]
-    estado = models.CharField(max_length=10,
-                                         choices=ESTADOS,
-                                         default="PENDIENTE")
-    
+    estado = models.CharField(
+        max_length=10,
+        choices=ESTADOS,
+        default="PENDIENTE",  # Valor por defecto
+        blank=True            # Permite blanco en formularios
+    )
+
+    generado = models.BooleanField(
+        default=False,
+        verbose_name="Estado de cuenta generado"
+    )
+
     class Meta:
         ordering = ["-fecha_corte"]
-    
+
     def __str__(self):
         return f"{self.cuenta} {self.fecha_corte:%b %Y}"
+
+    # --- Propiedades dinámicas -----------------------------------------
+    @property
+    def total_cargos(self):
+        return (
+            self.transacciones.filter(monto__lt=0).aggregate(Sum("monto"))["monto__sum"]
+            or 0
+        )
+
+    @property
+    def total_abonos(self):
+        return (
+            self.transacciones.filter(monto__gt=0).aggregate(Sum("monto"))["monto__sum"]
+            or 0
+        )
+
+    @property
+    def saldo(self):
+        return self.total_cargos + self.total_abonos
+
+    @property
+    def saldo_inicial(self):
+        # Calcular saldo antes del periodo
+        return (
+            Transaccion.objects
+            .filter(medio_pago=self.cuenta, fecha__lt=self.fecha_corte)
+            .aggregate(total=Sum("monto"))["total"] or 0
+        )
+
+    def save(self, *args, **kwargs):
+        # Fecha_inicio siempre = fecha_corte
+        self.fecha_inicio = self.fecha_corte
+        super().save(*args, **kwargs)
+
+
+# --- Historial de cambios de estado (abrir/cerrar) ---------------------
+
+class PeriodoEstadoLog(models.Model):
+    periodo = models.ForeignKey(
+        'Periodo',
+        on_delete=models.CASCADE,
+        related_name='logs'
+    )
+    ACCIONES = [
+        ("ABRIR", "Abrir"),
+        ("CERRAR", "Cerrar"),
+        ("ACTUALIZAR", "Actualizar")
+    ]
+    
+    accion = models.CharField(
+        max_length=10,
+        choices=ACCIONES
+    )
+    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-timestamp"]
+
+    def __str__(self):
+        periodo_str = str(self.periodo) if self.periodo else "Periodo desconocido"
+        return f"{periodo_str} – {self.get_accion_display()} ({self.timestamp:%d/%m/%Y %H:%M})"
+
+
+class PeriodoPDFView(LoginRequiredMixin, View):
+    def get(self, request, pk):
+        periodo = get_object_or_404(Periodo, pk=pk)
+        movs = periodo.transacciones.order_by("fecha")
+        
+        # Crear respuesta HTTP con PDF
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="estado_cuenta_{periodo.id}.pdf"'
+        
+        # Crear PDF
+        p = canvas.Canvas(response, pagesize=letter)
+        width, height = letter
+        
+        # Encabezado
+        p.setFont("Helvetica-Bold", 16)
+        p.drawString(1*inch, height-1*inch, f"Estado de Cuenta: {periodo.cuenta.nombre}")
+        p.setFont("Helvetica", 12)
+        p.drawString(1*inch, height-1.2*inch, f"Periodo: {periodo.fecha_corte} - {periodo.fecha_fin_periodo}")
+        p.drawString(1*inch, height-1.4*inch, f"Saldo inicial: ${periodo.saldo_inicial}")
+        
+        # Tabla de movimientos
+        p.setFont("Helvetica-Bold", 10)
+        p.drawString(1*inch, height-1.6*inch, "Fecha")
+        p.drawString(2.5*inch, height-1.6*inch, "Descripción")
+        p.drawString(5*inch, height-1.6*inch, "Monto")
+        
+        y_position = height - 1.8*inch
+        p.setFont("Helvetica", 10)
+        
+        for mov in movs:
+            p.drawString(1*inch, y_position, str(mov.fecha))
+            p.drawString(2.5*inch, y_position, mov.descripcion[:50])  # Limitar a 50 caracteres
+            p.drawString(5*inch, y_position, f"${mov.monto}")
+            y_position -= 0.2*inch
+            
+            # Nueva página si se acaba el espacio
+            if y_position < 1*inch:
+                p.showPage()
+                y_position = height - 1*inch
+        
+        # Totales
+        p.setFont("Helvetica-Bold", 12)
+        p.drawString(1*inch, y_position - 0.4*inch, f"Total Cargos: ${periodo.total_cargos}")
+        p.drawString(1*inch, y_position - 0.6*inch, f"Total Abonos: ${periodo.total_abonos}")
+        p.drawString(1*inch, y_position - 0.8*inch, f"Saldo Final: ${periodo.saldo}")
+        
+        p.showPage()
+        p.save()
+        return response

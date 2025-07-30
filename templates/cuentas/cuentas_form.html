@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load widget_tweaks %}
+
+{% block content %}
+    <h1>{% if object %}Editar{% else %}Nueva{% endif %} Cuenta</h1>
+    <form method="post">
+        {% csrf_token %}
+        
+        <!-- Renderizar todos los campos EXCEPTO 'grupo' -->
+        {% for field in form %}
+            {% if field.name != 'grupo' %}
+                <div class="form-group">
+                    {{ field.label_tag }}
+                    {{ field }}
+                    {{ field.errors }}
+                </div>
+            {% endif %}
+        {% endfor %}
+        
+        <!-- Renderizar manualmente solo el campo 'grupo' -->
+        <div class="form-group">
+            {{ form.grupo.label_tag }}
+            {{ form.grupo|add_class:"form-select"|attr:"style:height:auto !important; max-height:200px; overflow-y:auto;" }}
+        </div>
+        
+        <button type="submit" class="btn btn-primary">
+            {% if object %}Actualizar{% else %}Crear{% endif %}
+        </button>
+    </form>
+{% endblock %}

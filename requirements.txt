@@ -7,6 +7,5 @@ django-crispy-forms
 crispy-bootstrap5
 pandas
 openpyxl
-
-
-
+reportlab
+django-widget-tweaks

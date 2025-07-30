@@ -27,9 +27,15 @@ class TransaccionFilter(django_filters.FilterSet):
         label="Categoría"
     )
 
+    # Nuevo filtro: Cuenta de servicio / proveedor
+    cuenta_servicio = django_filters.ModelChoiceFilter(
+        queryset=Cuenta.objects.none(),
+        label="Cuenta servicio"
+    )
+
     class Meta:
         model  = Transaccion
-        fields = ["fecha_desde", "fecha_hasta", "medio_pago", "categoria"]
+        fields = ["fecha_desde", "fecha_hasta", "medio_pago", "cuenta_servicio", "categoria"]
 
     # ------------ rellenamos los queryset en tiempo de ejecución -------
     def __init__(self, *args, **kwargs):
@@ -39,6 +45,9 @@ class TransaccionFilter(django_filters.FilterSet):
             self.filters["medio_pago"].queryset = Cuenta.objects.exclude(tipo=tipo_serv)
         except TipoCuenta.DoesNotExist:
             self.filters["medio_pago"].queryset = Cuenta.objects.all()
+
+        # Cuentas de servicio (grupo SER)
+        self.filters["cuenta_servicio"].queryset = Cuenta.objects.filter(tipo__grupo="SER")
 
         # todas las categorías son seguras una vez la tabla existe
         self.filters["categoria"].queryset = Categoria.objects.all()
