@@ -40,10 +40,10 @@
       <td>{{ m.categoria }}</td>
 
       <td class="text-end">
-        {% if m.monto < 0 %}{{ m.monto|floatformat:2 }}{% endif %}
+        {% if m.es_cargo %}{{ m.monto_abs|floatformat:2 }}{% endif %}
       </td>
       <td class="text-end">
-        {% if m.monto > 0 %}+{{ m.monto|floatformat:2 }}{% endif %}
+        {% if not m.es_cargo %}{{ m.monto_abs|floatformat:2 }}{% endif %}
       </td>
     </tr>
   {% empty %}
@@ -70,6 +70,34 @@
     </ul>
   </nav>
   {% endif %}
+
+    <div class="row mt-4">
+      <div class="col-md-6">
+          <div class="card">
+              <div class="card-body">
+                  <h5 class="card-title">Resumen General</h5>
+                  <table class="table table-sm">
+                      <tr>
+                          <th>Total Cargos:</th>
+                          <td class="text-end">{{ total_cargos|floatformat:2 }}</td>
+                      </tr>
+                      <tr>
+                          <th>Total Abonos:</th>
+                          <td class="text-end">{{ total_abonos|floatformat:2 }}</td>
+                      </tr>
+                      <tr>
+                          <th>Saldo Inicial:</th>
+                          <td class="text-end">{{ saldo_inicial|floatformat:2 }}</td>
+                      </tr>
+                      <tr>
+                          <th>Saldo Final:</th>
+                          <td class="text-end">{{ saldo_final|floatformat:2 }}</td>
+                      </tr>
+                  </table>
+              </div>
+          </div>
+      </div>
+  </div>
 
   <!-- Totales por categoría -->
   <h3 class="mt-4">Totales por categoría</h3>

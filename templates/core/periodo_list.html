@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Listado de Períodos</h2>
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Cuenta</th>
+                        <th>Fecha Fin</th>
+                        <th>Monto Total</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for periodo in periodos %}
+                    <tr>
+                        <td>{{ periodo.cuenta.nombre }}</td>
+                        <td>{{ periodo.fecha_fin_periodo|date:"d/m/Y" }}</td>
+                        <td class="text-end">${{ periodo.monto_total|floatformat:2|intcomma }}</td>
+                        <td>
+                            <a href="{% url 'core:periodo_detail' periodo.id %}" class="btn btn-sm btn-info">
+                                <i class="fas fa-eye"></i> Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No se encontraron períodos</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %} 

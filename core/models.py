@@ -15,6 +15,10 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from django.http import HttpResponse
+from django.views.generic import TemplateView
+from django.db.models import Q
+from django.core.paginator import Paginator
+from django.template.loader import render_to_string
 
 
 class Moneda(models.TextChoices):
@@ -27,10 +31,18 @@ class TipoCuenta(models.Model):
     nombre  = models.CharField(max_length=50)
     GRUPOS  = [
         ("DEB", "Debito"),
-        ("SER", "Servicios"),
+        ("SER", "Servicios/gastos/proveedores"),
         ("CRE", "Creditos"),
+        ("ING", "Ingresos"),
     ]
     grupo   = models.CharField(max_length=3, choices=GRUPOS, default="DEB",)
+
+    NATURALEZA = [
+        ("DEUDORA", "Deudora"),
+        ("ACREEDORA", "Acreedora"),
+    ]
+    naturaleza = models.CharField(max_length=10, choices=NATURALEZA, default="DEUDORA")
+
 
     class Meta:
         verbose_name = "tipo de cuenta"
@@ -38,6 +50,20 @@ class TipoCuenta(models.Model):
 
     def __str__(self):
         return f"{self.nombre} ({self.grupo})"
+
+class CuentaManager(models.Manager):
+    def medios_pago(self):
+        return self.filter(tipo__grupo__in=["DEB", "CRE", "EFE"])
+
+    def servicios(self):
+        return self.filter(tipo__codigo__in=["SERV", "SID"])
+
+    def transferibles(self):
+        return self.medios_pago()
+
+    def proveedores(self):
+        return self.filter(tipo__codigo="PROV")
+
 
 class Cuenta(models.Model):
     nombre            = models.CharField(max_length=100, unique=True)
@@ -59,6 +85,15 @@ class Cuenta(models.Model):
         help_text="Día del mes en que cierra el periodo (1-31)"  # fecha de corte base
     )
 
+    saldo_inicial = models.DecimalField(
+        max_digits=10, 
+        decimal_places=2,
+        default=0.00,
+        verbose_name="Saldo Inicial"
+    )
+
+    objects = CuentaManager()
+
     class Meta:
         ordering = ["nombre"]
 
@@ -70,6 +105,19 @@ class Cuenta(models.Model):
         return self.transacciones_pago.aggregate(
             total=models.Sum("monto"))["total"] or Decimal("0.00")
 
+    def aplicar_cargo(self, monto):
+        """
+        Devuelve el monto con el signo correcto según naturaleza.
+        Cargo ➜ + en deudoras / - en acreedoras
+        """
+        return  monto if self.tipo.naturaleza == "DEUDORA" else -monto
+
+    def aplicar_abono(self, monto):
+        """
+        Abono ➜ - en deudoras / + en acreedoras
+        """
+        return -monto if self.tipo.naturaleza == "DEUDORA" else monto    #Helpers para saber si un movimiento es cargo o abono
+        
 
 class CategoriaTipo(models.TextChoices):
     PERSONAL = "PERSONAL", _("Personal")
@@ -168,21 +216,34 @@ class Transaccion(models.Model):
         signo = "-" if self.tipo == TransaccionTipo.GASTO else "+"
         return f"{self.fecha}: {signo}${self.monto} {self.categoria}"
 
+
     def save(self, *args, **kwargs):
-        """
-        Garantiza que:
-          • GASTO   → monto negativo
-          • INGRESO → monto positivo
-        """
-        if self.tipo == TransaccionTipo.GASTO  and self.monto > 0:
-            self.monto = -self.monto
-        elif self.tipo == TransaccionTipo.INGRESO and self.monto < 0:
-            self.monto = -self.monto
-
-        if self.monto == 0:
-            raise ValueError("El monto no puede ser cero")
-
+        # Solo aplicar lógica de signo si no es ajuste
+        if not self.ajuste:
+            # Obtener naturaleza de la cuenta de pago
+            naturaleza = self.medio_pago.tipo.naturaleza if self.medio_pago and self.medio_pago.tipo else None
+            
+            if self.tipo == TransaccionTipo.INGRESO:
+                # Lógica para INGRESOS
+                if naturaleza == "DEUDORA":
+                    # Activos: entra dinero → CARGO (positivo)
+                    self.monto = abs(self.monto)
+                elif naturaleza == "ACREEDORA":
+                    # Pasivos: entra dinero (pago de deuda) → CARGO (negativo)
+                    self.monto = -abs(self.monto)
+            
+            elif self.tipo == TransaccionTipo.GASTO:
+                # Lógica para GASTOS
+                if naturaleza == "DEUDORA":
+                    # Activos: gastos disminuyen (abono) -> monto negativo
+                    self.monto = -abs(self.monto)
+                elif naturaleza == "ACREEDORA":
+                    # Pasivos: gastos aumentan (abono) -> monto positivo
+                    self.monto = abs(self.monto)
+        
         super().save(*args, **kwargs)
+       
+
 
 
 class Transferencia(models.Model):
@@ -246,9 +307,10 @@ def generar_movs_recibo(
     Devuelve (cargo_serv, abono_serv | None, cargo_pago | None)
     """
     with transaction.atomic():
+        # Cargo (aumenta) al servicio/proveedor
         cargo_serv = Transaccion.objects.create(
-            monto=-monto,
-            tipo=TransaccionTipo.GASTO,
+            monto=monto,
+            tipo=TransaccionTipo.INGRESO,   # Produce CARGO en cuenta de servicio
             fecha=fecha_recibo,
             descripcion=descripcion,
             cuenta_servicio=cuenta_servicio,
@@ -260,9 +322,10 @@ def generar_movs_recibo(
         if registrar_pago:
             if not (cuenta_pago and fecha_pago):
                 raise ValueError("Pago inmediato requiere cuenta_pago y fecha_pago")
+            # Abono (disminuye) al servicio/proveedor al registrar el pago
             abono_serv = Transaccion.objects.create(
                 monto=monto,
-                tipo=TransaccionTipo.INGRESO,
+                tipo=TransaccionTipo.GASTO,  # Produce ABONO en cuenta de servicio
                 fecha=fecha_pago,
                 descripcion=f"Pago {descripcion}",
                 cuenta_servicio=cuenta_servicio,
@@ -270,9 +333,10 @@ def generar_movs_recibo(
                 categoria=categoria,
 
             )
+            # Cargo (dinero sale) en la cuenta de pago
             cargo_pago = Transaccion.objects.create(
-                monto=-monto,
-                tipo=TransaccionTipo.GASTO,
+                monto=monto,
+                tipo=TransaccionTipo.GASTO,  # ABONO en cuenta de pago según lógica en save()
                 fecha=fecha_pago,
                 descripcion=f"Pago {descripcion}",
                 medio_pago=cuenta_pago,
@@ -354,6 +418,30 @@ class Periodo(models.Model):
         verbose_name="Estado de cuenta generado"
     )
 
+    # Permite decidir si se arrastra o no el saldo previo al iniciar el periodo
+    usar_saldo_prev = models.BooleanField(
+        default=True,
+        verbose_name="Usar saldo anterior como saldo inicial"
+    )
+
+    # Saldo inicial editable manualmente (opcional)
+    saldo_inicial_manual = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        verbose_name="Saldo inicial manual"
+    )
+
+    # Enlace al periodo inmediatamente anterior de la MISMA cuenta
+    periodo_anterior = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='periodo_siguiente'
+    )
+
     class Meta:
         ordering = ["-fecha_corte"]
 
@@ -363,30 +451,65 @@ class Periodo(models.Model):
     # --- Propiedades dinámicas -----------------------------------------
     @property
     def total_cargos(self):
-        return (
-            self.transacciones.filter(monto__lt=0).aggregate(Sum("monto"))["monto__sum"]
-            or 0
-        )
+        if self.cuenta.tipo.naturaleza == "ACREEDORA":
+            # Para tarjetas (pasivo): cargos = pagos registrados en esta cuenta (montos < 0)
+            base_neg = self.transacciones.filter(medio_pago=self.cuenta, monto__lt=0)
+            return -(base_neg.aggregate(Sum("monto"))["monto__sum"] or 0)
+        else:
+            # Para cuentas deudoras (activo): cargos = salidas de dinero de la cuenta (montos > 0 en esta cuenta)
+            base_pos = self.transacciones.filter(medio_pago=self.cuenta, monto__gt=0)
+            return base_pos.aggregate(Sum("monto"))["monto__sum"] or 0
 
     @property
     def total_abonos(self):
-        return (
-            self.transacciones.filter(monto__gt=0).aggregate(Sum("monto"))["monto__sum"]
-            or 0
-        )
+        if self.cuenta.tipo.naturaleza == "ACREEDORA":
+            # Para tarjetas: abonos = compras registradas en esta cuenta (montos > 0)
+            base_pos = self.transacciones.filter(medio_pago=self.cuenta, monto__gt=0)
+            return base_pos.aggregate(Sum("monto"))["monto__sum"] or 0
+        else:
+            # Para cuentas deudoras: abonos = retiros registrados en esta cuenta (montos < 0)
+            base_neg = self.transacciones.filter(medio_pago=self.cuenta, monto__lt=0)
+            return -(base_neg.aggregate(Sum("monto"))["monto__sum"] or 0)
 
     @property
     def saldo(self):
-        return self.total_cargos + self.total_abonos
+        # El saldo final debe ser: saldo_inicial + (total_abonos - total_cargos) para acreedoras
+        # o saldo_inicial + (total_cargos - total_abonos) para deudoras
+        if self.cuenta.tipo.naturaleza == "ACREEDORA":
+            return self.saldo_inicial + (self.total_abonos - self.total_cargos)
+        else:
+            return self.saldo_inicial + (self.total_cargos - self.total_abonos)
+
 
     @property
     def saldo_inicial(self):
-        # Calcular saldo antes del periodo
+        """Devuelve el saldo inicial del periodo."""
+        # 1) Valor manual prevalece
+        if self.saldo_inicial_manual is not None:
+            return self.saldo_inicial_manual
+
+        # 2) Si se decidió no usar saldo previo → 0
+        if not self.usar_saldo_prev:
+            return 0
+
+        # 3) Tomar saldo final del periodo anterior, si existe
+        if self.periodo_anterior_id:
+            return self.periodo_anterior.saldo_final
+
+        # 4) Primer periodo → calcula histórico
         return (
             Transaccion.objects
             .filter(medio_pago=self.cuenta, fecha__lt=self.fecha_corte)
             .aggregate(total=Sum("monto"))["total"] or 0
         )
+
+    @property
+    def saldo_final(self):
+        """Saldo al cierre del periodo."""
+        if self.cuenta.tipo.naturaleza == "ACREEDORA":
+            return self.saldo_inicial + (self.total_abonos - self.total_cargos)
+        else:
+            return self.saldo_inicial + (self.total_cargos - self.total_abonos)
 
     def save(self, *args, **kwargs):
         # Fecha_inicio siempre = fecha_corte
@@ -412,7 +535,12 @@ class PeriodoEstadoLog(models.Model):
         max_length=10,
         choices=ACCIONES
     )
-    usuario = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,  # Permitir valores nulos
+        blank=True  # Permitir en formularios
+    )
     timestamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -4,6 +4,38 @@
 ## 📊 Sistema de Gestión Financiera
 
 
+### [0.5.0] - 2025-08-02
+**Mejoras y Nuevas Funcionalidades:**
+- Migración completa a Tailwind CSS para todas las plantillas
+- Implementación de modo día/noche con conmutador en navbar
+- Rediseño completo de interfaces:
+  - Listado de cuentas con filtros por grupo y paginación
+  - Detalles de cuenta con historial de movimientos
+  - Dashboard con resumen financiero
+  - Listados de transacciones, períodos y tipos de cuenta
+- Nuevo sistema de plantillas unificado con base.html mejorado
+- Soporte para fechas localizadas en español con tooltips
+- Mejoras en la responsividad para dispositivos móviles
+
+**Correcciones:**
+- Solucionado error de TemplateSyntaxError con filtros personalizados
+- Corregido FieldError en DashboardView
+- Reparado NoReverseMatch para vistas de edición/eliminación
+- Arreglado problema de contraste en modo claro
+- Solucionado ValueError en PeriodoRefreshView para usuarios no autenticados
+- Eliminadas dependencias innecesarias de Bootstrap y jQuery
+
+**Optimizaciones:**
+- Reducción de espacio entre columnas en tablas
+- Ajuste de anchos de contenedores (70% en pantallas grandes)
+- Formato de números mejorado (1,000.00)
+- Fechas abreviadas (01/Ago) con tooltip para fecha completa
+- Eliminación de columna "Transacción principal" innecesaria
+
+### [0.4.1] - 2025-07-31
+- Implementación inicial de sistema de autenticación
+- Correcciones en generación de estados de cuenta
+- Mejoras en el cálculo de saldos
 
 ## [0.4.0] - 2025-07-29 - 19:50 hrs
 
@@ -205,3 +237,4 @@ Este proyecto es una herramienta integral para administrar finanzas personales y
 - Clasificación de gastos para análisis presupuestal
 - Automatización de pagos recurrentes
 - Control de tarjetas de crédito (cortes y pagos)
+

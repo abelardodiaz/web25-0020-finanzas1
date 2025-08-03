@@ -14,10 +14,15 @@ class CuentaForm(forms.ModelForm):
         required=True,
         label="Grupo de cuenta"
     )
+    naturaleza = forms.ChoiceField(
+        choices=TipoCuenta.NATURALEZA,
+        required=True,
+        label="Naturaleza contable"
+    )
     
     class Meta:
         model = Cuenta
-        fields = ["nombre", "tipo", "dia_corte", "grupo"]  # Agregar grupo
+        fields = ["nombre", "tipo", "grupo", "naturaleza"]
         
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -26,14 +31,17 @@ class CuentaForm(forms.ModelForm):
         if self.instance and self.instance.pk and self.instance.tipo_id:
             # Solo si la cuenta ya existe y tiene un tipo asociado
             self.fields['grupo'].initial = self.instance.tipo.grupo
+            self.fields['naturaleza'].initial = self.instance.tipo.naturaleza
             
     def save(self, commit=True):
         cuenta = super().save(commit=False)
         grupo = self.cleaned_data['grupo']
+        naturaleza = self.cleaned_data['naturaleza']
         
-        # Actualizar el grupo del tipo de cuenta
+        # Actualizar grupo y naturaleza del tipo de cuenta
         if cuenta.tipo:
             cuenta.tipo.grupo = grupo
+            cuenta.tipo.naturaleza = naturaleza
             cuenta.tipo.save()
         
         if commit:
@@ -67,17 +75,35 @@ class TransaccionForm(forms.ModelForm):
         self.fields["ajuste"].label = "Es ajuste (un solo movimiento)"
         # Mostrar sólo cuentas de pago (DEB, CRE, EFE) para medio_pago
         self.fields["medio_pago"].queryset = (
-            Cuenta.objects.filter(tipo__grupo__in=["DEB", "CRE", "EFE"]).order_by("nombre")
+            Cuenta.objects.medios_pago().order_by("nombre") 
         )
+
+        # -- Ajustes dinámicos para transferencias --
+        tipo_value = self.data.get('tipo') if self.data else self.initial.get('tipo')
+        if str(tipo_value) == str(TransaccionTipo.TRANSFERENCIA):
+            self.fields["medio_pago"].label = "Cuenta origen"
+            self.fields["cuenta_servicio"].label = "Cuenta destino"
+            self.fields['cuenta_servicio'].queryset = Cuenta.objects.medios_pago().order_by("nombre")
 
         # Fuerza formato ISO para el campo fecha (requerido por input[type=date])
         if self.instance and self.instance.pk:
             self.initial['fecha'] = self.instance.fecha.isoformat()
 
-        # Modificar este filtro para incluir SID
-        self.fields['cuenta_servicio'].queryset = Cuenta.objects.filter(
-            tipo__codigo__in=["SERV", "SID"]  # Agregar "SID" aquí
-        )
+        # Si no es transferencia, mantener filtro de servicio + SID
+        if str(tipo_value) != str(TransaccionTipo.TRANSFERENCIA):
+            self.fields['cuenta_servicio'].queryset = Cuenta.objects.filter(tipo__grupo="SER").order_by("nombre")
+
+    def clean(self):
+        cleaned = super().clean()
+        tipo = cleaned.get("tipo")
+        if tipo == TransaccionTipo.TRANSFERENCIA:
+            origen = cleaned.get("medio_pago")
+            destino = cleaned.get("cuenta_servicio")
+            if not origen or not destino:
+                raise forms.ValidationError("Debe seleccionar cuenta origen y destino para una transferencia.")
+            if origen == destino:
+                raise forms.ValidationError("Las cuentas origen y destino deben ser distintas.")
+        return cleaned
 
 def clean_monto(self):
     monto = self.cleaned_data["monto"]

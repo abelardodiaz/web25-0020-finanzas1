@@ -47,6 +47,19 @@
     </div>
 {% endif %}
   
+  <!-- Saldo inicial manual opcional -->
+  <div class="mb-3">
+    <label class="form-label">Saldo inicial manual</label>
+    {{ form.saldo_inicial_manual }}
+    <div class="form-text">Déjalo vacío para que el sistema lo calcule automáticamente.</div>
+  </div>
+
+  <!-- Usar saldo previo -->
+  <div class="form-check form-switch mb-3">
+    {{ form.usar_saldo_prev }}
+    <label class="form-check-label" for="id_usar_saldo_prev">Usar saldo del periodo anterior</label>
+  </div>
+
   <!-- Common fields -->
   <div class="mb-3">
     <label class="form-label">Fecha de corte</label>

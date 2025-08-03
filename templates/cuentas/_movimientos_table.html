@@ -1,0 +1,34 @@
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Fecha</th>
+            <th>Descripción</th>
+            <th>Cargo</th>
+            <th>Abono</th>
+            <th>Categoría</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for mov in movimientos %}
+        <tr>
+            <td>{{ mov.fecha|date:"d M Y" }}</td>
+            <td>{{ mov.descripcion }}</td>
+            <td>
+                {% if mov.tipo == 'GASTO' or mov.tipo == 'TRANSFERENCIA' and mov.medio_pago == cuenta %}
+                ${{ mov.monto|floatformat:2 }}
+                {% endif %}
+            </td>
+            <td>
+                {% if mov.tipo == 'INGRESO' or mov.tipo == 'TRANSFERENCIA' and mov.cuenta_servicio == cuenta %}
+                ${{ mov.monto|floatformat:2 }}
+                {% endif %}
+            </td>
+            <td>{{ mov.categoria.nombre }}</td>
+        </tr>
+        {% empty %}
+        <tr>
+            <td colspan="5">No hay movimientos</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

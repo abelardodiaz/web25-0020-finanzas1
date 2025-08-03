@@ -1,0 +1,81 @@
+/* Estilos para la tabla de saldos */
+.table tbody tr td {
+    vertical-align: middle;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.text-success {
+    color: #28a745;
+    font-weight: 500;
+}
+
+.text-danger {
+    color: #dc3545;
+    font-weight: 500;
+}
+
+.card-header {
+    font-weight: 600;
+} 
+
+/* Estilos para el menú desplegable */
+.dropdown-menu {
+    background-color: #343a40;
+    border: 1px solid #495057;
+}
+
+.dropdown-item {
+    color: #ffffff;
+}
+
+.dropdown-item:hover {
+    background-color: #495057;
+    color: #ffffff;
+}
+
+.dropdown-item.active {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+.navbar-nav .dropdown-menu {
+    margin-top: 0;
+} 
+
+/* Asegurar que el submenú funcione correctamente */
+.dropdown-menu {
+    background-color: #343a40;
+    border: 1px solid #495057;
+    margin-top: 0;
+}
+
+.dropdown-item {
+    color: #ffffff;
+    padding: 0.5rem 1rem;
+}
+
+.dropdown-item:hover, .dropdown-item:focus {
+    background-color: #495057;
+    color: #ffffff;
+}
+
+.dropdown-item.active {
+    background-color: #007bff;
+    color: #ffffff;
+}
+
+/* Asegurar que el dropdown funcione en móviles */
+@media (max-width: 991.98px) {
+    .dropdown-menu {
+        background-color: #212529;
+        border: none;
+    }
+}
+
+/* Animación suave */
+.dropdown-menu {
+    transition: all 0.3s ease;
+} 

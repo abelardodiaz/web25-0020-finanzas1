@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4><i class="fas fa-user-circle"></i> Perfil de usuario</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <i class="fas fa-user fa-5x mb-3"></i>
+                            <h5>{{ user.username }}</h5>
+                        </div>
+                        <div class="col-md-9">
+                            <dl class="row">
+                                <dt class="col-sm-3">Nombre completo</dt>
+                                <dd class="col-sm-9">{{ user.get_full_name|default:"No especificado" }}</dd>
+                                
+                                <dt class="col-sm-3">Correo electrónico</dt>
+                                <dd class="col-sm-9">{{ user.email|default:"No especificado" }}</dd>
+                                
+                                <dt class="col-sm-3">Último inicio</dt>
+                                <dd class="col-sm-9">{{ user.last_login|date:"d M Y H:i" }}</dd>
+                                
+                                <dt class="col-sm-3">Miembro desde</dt>
+                                <dd class="col-sm-9">{{ user.date_joined|date:"d M Y" }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{% url 'logout' %}" class="btn btn-danger">
+                        <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

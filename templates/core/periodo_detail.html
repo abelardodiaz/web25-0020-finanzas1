@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Detalle del Período</h2>
+    <div class="card">
+        <div class="card-header">
+            <h3>{{ periodo.cuenta.nombre }}</h3>
+        </div>
+        <div class="card-body">
+            <p><strong>Fecha de corte:</strong> {{ periodo.fecha_corte|date:"d/m/Y" }}</p>
+            <p><strong>Fecha fin de período:</strong> {{ periodo.fecha_fin_periodo|date:"d/m/Y" }}</p>
+            <p><strong>Monto total:</strong> ${{ periodo.monto_total|floatformat:2|intcomma }}</p>
+            <p><strong>Estado:</strong> {{ periodo.get_estado_display }}</p>
+            
+            <a href="{% url 'core:periodo_list' %}" class="btn btn-secondary mt-3">
+                <i class="fas fa-arrow-left"></i> Volver a la lista
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %} 

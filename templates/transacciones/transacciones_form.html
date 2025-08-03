@@ -26,8 +26,8 @@
     {{ form.categoria.label_tag }} {{ form.categoria }}
     <button type="button" class="btn btn-outline-secondary btn-sm" id="refresh-categorias" title="Actualizar categorías">↻</button>
   </p>
-  <div class="form-group">
-    {{ form.medio_pago.label_tag }}
+  <div class="form-group" id="row-mediopago">
+    <label id="lbl-mediopago" for="id_medio_pago">{{ form.medio_pago.label }}</label>
     <div class="d-flex">
       {{ form.medio_pago }}
       <button type="button" class="btn btn-outline-secondary btn-sm ms-2" id="refresh-medios" title="Actualizar medios de pago">
@@ -71,6 +71,7 @@ document.addEventListener('DOMContentLoaded', function() {
           const opt = document.createElement('option');
           opt.value = item.id;
           opt.textContent = item.text;
+          opt.dataset.naturaleza = item.naturaleza;  // Guardar la naturaleza
           select.appendChild(opt);
         });
         // intenta mantener la selección previa si sigue existiendo
@@ -99,16 +100,52 @@ document.addEventListener('DOMContentLoaded', function() {
   const liAbono     = document.getElementById('prev-abono');
 
   function actualizarPreview() {
-    const servTxt = selServicio.options[selServicio.selectedIndex]?.text;
-    const pagoTxt = selPago.options[selPago.selectedIndex]?.text;
-    const monto   = inpMonto.value || '';
-
-    const mostrar = !chkAjuste.checked && monto && selServicio.value && selPago.value && selServicio.value !== selPago.value;
-    boxPrev.classList.toggle('d-none', !mostrar);
-    if (mostrar) {
-      liCargo.textContent = `Cargo en ${pagoTxt}: -$${monto}`;
-      liAbono.textContent = `Abono en ${servTxt}: +$${monto}`;
+    const servOpt = selServicio.options[selServicio.selectedIndex];
+    const pagoOpt = selPago.options[selPago.selectedIndex];
+    
+    // Usar valor absoluto para el monto
+    const monto = Math.abs(parseFloat(inpMonto.value)) || 0;
+    
+    const camposValidos = servOpt && pagoOpt && monto > 0 && 
+                          selServicio.value !== selPago.value;
+    
+    if (chkAjuste.checked || !camposValidos) {
+      boxPrev.classList.add('d-none');
+      return;
     }
+
+    // Determinar etiquetas según el tipo de operación
+    const tipoOp = selTipo.value;
+    let txtPago, txtServ;
+
+    if (tipoOp === 'GASTO') {
+      // Dinero sale de la cuenta de pago → Abono / entra al servicio → Cargo
+      txtPago = 'Abono';
+      txtServ = 'Cargo';
+    } else if (tipoOp === 'INGRESO') {
+      // Dinero entra a la cuenta de pago → Cargo / sale del servicio (o cuenta contraparte) → Abono
+      txtPago = 'Cargo';
+      txtServ = 'Abono';
+    } else if (tipoOp === 'TRANSFERENCIA') {
+      // Etiquetas dependen de la naturaleza de cada cuenta
+      const natPago = pagoOpt.dataset.naturaleza;
+      const natServ = servOpt.dataset.naturaleza;
+
+      // Origen
+      txtPago = (natPago === 'DEUDORA') ? 'Abono' : 'Cargo';
+      // Destino
+      txtServ = (natServ === 'DEUDORA') ? 'Cargo' : 'Abono';
+    } else {
+      // Fallback genérico
+      txtPago = 'Cargo';
+      txtServ = 'Abono';
+    }
+ 
+    // Asignación correcta:
+    liCargo.textContent = `${txtPago} en ${pagoOpt.text}: $${monto.toFixed(2)}`;
+    liAbono.textContent = `${txtServ} en ${servOpt.text}: $${monto.toFixed(2)}`;
+    
+    boxPrev.classList.remove('d-none');
   }
 
   [selServicio, selPago, inpMonto, chkAjuste].forEach(el => {
@@ -133,16 +170,20 @@ document.addEventListener('DOMContentLoaded', function() {
       rowPago.hidden = false;
       lblServ.textContent = 'Cuenta destino';
       lblPago.textContent = 'Cuenta origen';
+      actualizarCampo('{% url "core:refresh_medios_pago" %}', 'id_cuenta_servicio');
     } else if (v === 'AJUSTE') {
       rowServ.hidden = true;
       rowPago.hidden = false;
       lblPago.textContent = 'Cuenta';
+      // Para ajustes mostramos igualmente medios de pago por consistencia
+      actualizarCampo('{% url "core:refresh_medios_pago" %}', 'id_cuenta_servicio');
     } else {
       // GASTO o INGRESO
       rowServ.hidden = false;
       rowPago.hidden = false;
       lblServ.textContent = 'Servicio / Proveedor';
       lblPago.textContent = 'Cuenta de pago';
+      actualizarCampo('{% url "core:refresh_cuentas" %}', 'id_cuenta_servicio');
     }
   }
 
@@ -150,6 +191,10 @@ document.addEventListener('DOMContentLoaded', function() {
     selTipo.addEventListener('change', () => { toggleTipo(); actualizarPreview(); });
     toggleTipo();
   }
+
+  // Recargar naturalezas al abrir el formulario
+  actualizarCampo('{% url "core:refresh_cuentas" %}', 'id_cuenta_servicio');
+  actualizarCampo('{% url "core:refresh_medios_pago" %}', 'id_medio_pago');
 });
 </script>
 {% endblock %}

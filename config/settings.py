@@ -48,14 +48,26 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'config.urls'
 
+# Añade estas configuraciones
+
+# URL a redirigir después de login exitoso
+LOGIN_REDIRECT_URL = '/'
+
+# URL a redirigir después de logout
+LOGOUT_REDIRECT_URL = '/'
+
+# URL para login
+LOGIN_URL = '/accounts/login/'
+
+# Configuración de plantillas
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Le decimos a Django que también busque en <proyecto>/templates
-        'DIRS': [ BASE_DIR / "templates" ],
+        'DIRS': [BASE_DIR / 'templates'],  # Asegúrate de tener esta línea
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
@@ -116,12 +128,20 @@ USE_TZ = True
 STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-# Sitio al que redirige LoginRequiredMixin si no hay sesión
-LOGIN_URL = "login"  
-# Tras hacer login, redirige al dashboard
-LOGIN_REDIRECT_URL = "/"  
-LOGOUT_REDIRECT_URL = "/accounts/login/"  
-
 # Opciones de crispy
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+# Asegúrate de tener estas configuraciones
+
+import os
+
+# Configuración de archivos estáticos
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+# Configuración de archivos de medios (si los usas)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')

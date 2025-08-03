@@ -6,12 +6,21 @@ from .views import (
     DashboardView, TransaccionListView, TransaccionCreateView, ReportesView, 
     TransferenciaCreateView, EstadoCuentaView, PeriodoCreateView, PeriodoListView, PeriodoDetailView,
     PeriodoUpdateView, PeriodoDeleteView, TransaccionDeleteView, PeriodoRefreshView,
-    IngresoCreateView, TipoCuentaCreateView, TipoCuentaListView, PeriodoPDFView
+    IngresoCreateView, TipoCuentaCreateView, TipoCuentaListView, PeriodoPDFView, CuentaSaldosView, cuentas_autocomplete, cuenta_movimientos,
+    UserProfileView, CuentaDetailView, TipoCuentaUpdateView, TipoCuentaDeleteView
 )
 import core.views as core_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
 from django.views.generic import View
+from django.db.models import Q
+from django.http import JsonResponse
+from django.core.paginator import Paginator
+from django.template.loader import render_to_string
+from django.db.models import Sum
+from .models import Cuenta, Transaccion
+from django.shortcuts import render
+from django.views.generic import TemplateView
 
 app_name = "core"
 
@@ -23,6 +32,10 @@ urlpatterns = [
     path("cuentas/nuevo/", CuentaCreateView.as_view(), name="cuentas_create"),
     path("cuentas/<int:pk>/editar/", CuentaUpdateView.as_view(), name="cuentas_edit"),
     path("cuentas/<int:pk>/eliminar/", CuentaDeleteView.as_view(), name="cuentas_delete"),
+    path('cuentas/saldos/', CuentaSaldosView.as_view(), name='cuentas_saldos'),
+    path('cuentas/autocomplete/', cuentas_autocomplete, name='cuentas_autocomplete'),
+    path('cuenta/movimientos/', cuenta_movimientos, name='cuenta_movimientos'),
+    path('cuentas/detalle/<int:pk>/', CuentaDetailView.as_view(), name='cuenta_detail'),
 
     # Categorías
     path("categorias/", CategoriaListView.as_view(), name="categorias_list"),
@@ -73,5 +86,13 @@ urlpatterns = [
     path("tipos-cuenta/nuevo/", TipoCuentaCreateView.as_view(), name="tipocuenta_create"), 
     path("ingresos/nuevo/", IngresoCreateView.as_view(), name="ingreso_create"),  
     path('periodos/<int:pk>/pdf/', PeriodoPDFView.as_view(), name='periodo_pdf'),
-
+    path('periodos/<int:pk>/corregir-saldo/', core_views.CorregirSaldoInicialView.as_view(), name='periodo_corregir_saldo'),
+    path('perfil/', core_views.UserProfileView.as_view(), name='user_profile'),
+    path('cuentas/', CuentaListView.as_view(), name='cuenta_list'),
+    path('cuentas/nueva/', CuentaCreateView.as_view(), name='cuenta_create'),
+    path('cuentas/editar/<int:pk>/', CuentaUpdateView.as_view(), name='cuenta_edit'),
+    path('cuentas/eliminar/<int:pk>/', CuentaDeleteView.as_view(), name='cuenta_delete'),
+    path('periodos/detalle/<int:pk>/', PeriodoDetailView.as_view(), name='periodo_detail'),
+    path('tipo-cuenta/<int:pk>/', TipoCuentaUpdateView.as_view(), name='tipocuenta_update'),
+    path('tipo-cuenta/eliminar/<int:pk>/', TipoCuentaDeleteView.as_view(), name='tipocuenta_delete'),
 ]

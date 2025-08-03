@@ -51,3 +51,21 @@ class TransaccionFilter(django_filters.FilterSet):
 
         # todas las categorías son seguras una vez la tabla existe
         self.filters["categoria"].queryset = Categoria.objects.all()
+
+
+# ------------------------------------------------------------------
+# Filtro para listado de cuentas
+# ------------------------------------------------------------------
+class CuentaFilter(django_filters.FilterSet):
+    nombre = django_filters.CharFilter(
+        lookup_expr='icontains',
+        label='Nombre'
+    )
+    tipo = django_filters.ModelChoiceFilter(
+        queryset=TipoCuenta.objects.all(),
+        label='Tipo de cuenta'
+    )
+
+    class Meta:
+        model = Cuenta
+        fields = ['nombre', 'tipo']

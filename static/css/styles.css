@@ -1,0 +1,33 @@
+/* Tema claro (default) */
+.light-theme {
+    --color-bg: #ffffff;
+    --color-text: #333333;
+    --color-primary: #3498db;
+    --color-accent: #f1c40f;
+}
+
+/* Tema oscuro */
+.dark-theme {
+    --color-bg: #1a202c;
+    --color-text: #e2e8f0;
+    --color-primary: #63b3ed;
+    --color-accent: #f6ad55;
+}
+
+/* Estilos globales */
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+/* Componentes comunes */
+.btn {
+    @apply px-4 py-2 rounded font-semibold transition;
+}
+.btn-primary {
+    @apply bg-primary hover:bg-primary-600 text-white;
+}
+.card {
+    @apply rounded-lg shadow p-6 bg-white dark:bg-gray-800;
+} 
