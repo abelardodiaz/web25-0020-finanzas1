@@ -1,26 +1,91 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h4><i class="fas fa-sign-out-alt"></i> Sesión cerrada</h4>
+<div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-md w-full space-y-8">
+        <!-- Icono de confirmación -->
+        <div class="text-center">
+            <div class="mx-auto h-20 w-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center shadow-lg mb-6">
+                <i class="fas fa-check text-white text-3xl"></i>
+            </div>
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">
+                Sesión Cerrada
+            </h2>
+            <p class="text-gray-600 dark:text-gray-400">
+                Has cerrado sesión correctamente
+            </p>
+        </div>
+
+        <!-- Card principal -->
+        <div class="bg-white dark:bg-gray-800 shadow-xl rounded-xl border border-gray-100 dark:border-gray-700 p-8">
+            <!-- Mensaje de confirmación -->
+            <div class="text-center mb-8">
+                <div class="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/20 rounded-full flex items-center justify-center mb-4">
+                    <i class="fas fa-shield-alt text-green-600 dark:text-green-400 text-2xl"></i>
                 </div>
-                <div class="card-body text-center">
-                    <p class="lead">Has cerrado sesión correctamente.</p>
-                    <div class="mt-4">
-                        <a href="{% url 'login' %}" class="btn btn-primary">
-                            <i class="fas fa-sign-in-alt"></i> Volver a iniciar sesión
-                        </a>
-                        <a href="{% url 'core:dashboard' %}" class="btn btn-secondary">
-                            <i class="fas fa-home"></i> Ir al inicio
-                        </a>
+                <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-2">
+                    Desconexión Exitosa
+                </h3>
+                <p class="text-gray-600 dark:text-gray-400 text-sm">
+                    Tu información está segura. Gracias por usar nuestro sistema financiero.
+                </p>
+            </div>
+
+            <!-- Botones de acción -->
+            <div class="space-y-4">
+                <a href="{% url 'login' %}" class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200 flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt mr-2"></i>
+                    Volver a Iniciar Sesión
+                </a>
+                
+                <a href="{% url 'core:dashboard' %}" class="w-full bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 font-semibold py-3 px-4 rounded-lg border border-gray-300 dark:border-gray-600 hover:border-gray-400 dark:hover:border-gray-500 transition-all duration-200 flex items-center justify-center">
+                    <i class="fas fa-home mr-2"></i>
+                    Ir al Inicio
+                </a>
+            </div>
+
+            <!-- Información adicional -->
+            <div class="mt-8 pt-6 border-t border-gray-200 dark:border-gray-600">
+                <div class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-600 dark:text-blue-400 mt-0.5 mr-3"></i>
+                        <div>
+                            <h4 class="text-sm font-medium text-blue-800 dark:text-blue-200 mb-1">
+                                Consejos de Seguridad
+                            </h4>
+                            <ul class="text-xs text-blue-700 dark:text-blue-300 space-y-1">
+                                <li>• Siempre cierra sesión en computadoras públicas</li>
+                                <li>• No compartas tus credenciales de acceso</li>
+                                <li>• Revisa tu actividad regularmente</li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
+
+        <!-- Footer -->
+        <div class="text-center">
+            <p class="text-xs text-gray-500 dark:text-gray-400">
+                © 2024 Sistema Financiero. Tu seguridad es nuestra prioridad.
+            </p>
+        </div>
     </div>
 </div>
+
+<!-- Animación de entrada -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const elements = document.querySelectorAll('.max-w-md > *');
+    elements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            el.style.transition = 'all 0.6s ease-out';
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+        }, index * 200);
+    });
+});
+</script>
 {% endblock %} 

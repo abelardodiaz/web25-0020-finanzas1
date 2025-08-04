@@ -1,157 +1,307 @@
 {% extends 'base.html' %}
 {% load humanize %}
-{% load math_filters %}
 
 {% block content %}
-<div class="container mx-auto px-4 py-6">
-    <h1 class="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-200">
-        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
-    </h1>
-    
-    <!-- Estadísticas generales -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <div class="bg-blue-500 dark:bg-blue-700 text-white rounded-lg p-4 shadow">
-            <h5 class="text-lg font-medium">Cuentas</h5>
-            <p class="text-3xl font-bold">{{ total_cuentas }}</p>
-        </div>
-        
-        <div class="bg-green-500 dark:bg-green-700 text-white rounded-lg p-4 shadow">
-            <h5 class="text-lg font-medium">Transacciones</h5>
-            <p class="text-3xl font-bold">{{ total_transacciones }}</p>
-        </div>
-        
-        <div class="bg-cyan-500 dark:bg-cyan-700 text-white rounded-lg p-4 shadow">
-            <h5 class="text-lg font-medium">Períodos</h5>
-            <p class="text-3xl font-bold">{{ total_periodos }}</p>
-        </div>
-        
-        <div class="bg-gray-500 dark:bg-gray-700 text-white rounded-lg p-4 shadow">
-            <h5 class="text-lg font-medium">Tamaño BD</h5>
-            <p class="text-3xl font-bold">{{ db_size }}</p>
-        </div>
-    </div>
-    
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <!-- Cuentas con más movimientos -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-            <div class="bg-yellow-500 dark:bg-yellow-700 text-gray-900 dark:text-gray-200 px-4 py-3">
-                <h5 class="text-lg font-medium">
-                    <i class="fas fa-chart-line mr-2"></i>Cuentas con más movimientos
-                </h5>
+<div class="container mx-auto px-4 py-6 space-y-8 max-w-7xl">
+    <!-- Header con acciones rápidas -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+        <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between space-y-4 lg:space-y-0">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100 flex items-center">
+                    <i class="fas fa-tachometer-alt mr-3 text-blue-600"></i>Dashboard Financiero
+                </h1>
+                <p class="text-gray-600 dark:text-gray-400 mt-2">
+                    Resumen completo de tu gestión financiera
+                </p>
             </div>
-            <div class="p-4">
-                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                    {% for cuenta in cuentas_movimientos %}
-                    <li class="py-3 flex justify-between items-center">
-                        <a href="{% url 'core:cuenta_detail' cuenta.id %}" class="text-blue-600 dark:text-blue-400 hover:underline">
-                            {{ cuenta.nombre }}
-                        </a>
-                        <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm font-medium px-3 py-1 rounded-full">
-                            {{ cuenta.num_movimientos }}
-                        </span>
-                    </li>
-                    {% empty %}
-                    <li class="py-3 text-gray-500 dark:text-gray-400">No hay datos disponibles</li>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
-        
-        <!-- Últimos períodos -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-            <div class="bg-cyan-500 dark:bg-cyan-700 text-white px-4 py-3">
-                <h5 class="text-lg font-medium">
-                    <i class="fas fa-file-invoice mr-2"></i>Últimos estados de cuenta
-                </h5>
-            </div>
-            <div class="p-4">
-                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
-                    {% for periodo in ultimos_periodos %}
-                    <li class="py-3 flex justify-between items-center">
-                        <a href="{% url 'core:periodo_detail' periodo.id %}" class="text-blue-600 dark:text-blue-400 hover:underline">
-                            <i class="fas fa-file-alt mr-2"></i>{{ periodo.cuenta.nombre }} - {{ periodo.fecha_fin_periodo|date:"F Y" }}
-                        </a>
-                        <span class="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-sm font-medium px-3 py-1 rounded-full">
-                            ${{ periodo.monto_total|default:0|floatformat:2|intcomma }}
-                        </span>
-                    </li>
-                    {% empty %}
-                    <li class="py-3 text-gray-500 dark:text-gray-400">No hay periodos recientes</li>
-                    {% endfor %}
-                </ul>
+            <div class="flex space-x-3">
+                <a href="{% url 'core:transacciones_create' %}" class="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-colors duration-200 flex items-center shadow-md hover:shadow-lg">
+                    <i class="fas fa-plus mr-2"></i>Nueva Transacción
+                </a>
+                <a href="{% url 'core:cuenta_create' %}" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium transition-colors duration-200 flex items-center shadow-md hover:shadow-lg">
+                    <i class="fas fa-wallet mr-2"></i>Nueva Cuenta
+                </a>
             </div>
         </div>
     </div>
-    
-    <!-- Últimas transacciones -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden mb-6">
-        <div class="bg-green-500 dark:bg-green-700 text-white px-4 py-3">
-            <h5 class="text-lg font-medium">
-                <i class="fas fa-exchange-alt mr-2"></i>Últimas transacciones
-            </h5>
+
+    <!-- KPI Cards mejoradas -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <!-- Card 1: Cuentas -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transform transition-all duration-300 hover:scale-105 hover:shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-500 to-blue-600"></div>
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-wallet text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ total_cuentas }}</h3>
+                    <p class="text-gray-600 dark:text-gray-400 font-medium">Cuentas Activas</p>
+                </div>
+            </div>
+            <div class="flex items-center text-sm font-medium text-green-600 dark:text-green-400">
+                <i class="fas fa-arrow-up mr-1"></i>
+                <span>+2 este mes</span>
+            </div>
         </div>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Descripción</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cuenta</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Categoría</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Monto</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    {% for trans in ultimas_transacciones %}
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ trans.fecha|date:"d/m/Y" }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ trans.descripcion|truncatechars:30 }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ trans.cuenta.nombre|truncatechars:20 }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">{{ trans.categoria.nombre|truncatechars:20 }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium">
-                            {% if trans.monto < 0 %}
-                                <span class="text-red-600">-${{ trans.monto|absolute|floatformat:2|intcomma }}</span>
+
+        <!-- Card 2: Transacciones -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transform transition-all duration-300 hover:scale-105 hover:shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-500 to-green-600"></div>
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-exchange-alt text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ total_transacciones|intcomma }}</h3>
+                    <p class="text-gray-600 dark:text-gray-400 font-medium">Transacciones</p>
+                </div>
+            </div>
+            <div class="flex items-center text-sm font-medium text-green-600 dark:text-green-400">
+                <i class="fas fa-arrow-up mr-1"></i>
+                <span>+{{ ultimas_transacciones.count }} últimas</span>
+            </div>
+        </div>
+
+        <!-- Card 3: Períodos -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transform transition-all duration-300 hover:scale-105 hover:shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-cyan-500 to-cyan-600"></div>
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-calendar-alt text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ total_periodos }}</h3>
+                    <p class="text-gray-600 dark:text-gray-400 font-medium">Períodos Registrados</p>
+                </div>
+            </div>
+            <div class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                <i class="fas fa-minus mr-1"></i>
+                <span>Estable</span>
+            </div>
+        </div>
+
+        <!-- Card 4: Base de Datos -->
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700 transform transition-all duration-300 hover:scale-105 hover:shadow-xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-amber-500 to-amber-600"></div>
+            <div class="flex items-center justify-between mb-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-amber-500 to-amber-600 rounded-lg flex items-center justify-center">
+                    <i class="fas fa-database text-white text-xl"></i>
+                </div>
+                <div class="text-right">
+                    <h3 class="text-3xl font-bold text-gray-800 dark:text-gray-100">{{ db_size }}</h3>
+                    <p class="text-gray-600 dark:text-gray-400 font-medium">Tamaño BD</p>
+                </div>
+            </div>
+            <div class="flex items-center text-sm font-medium text-gray-600 dark:text-gray-400">
+                <i class="fas fa-info-circle mr-1"></i>
+                <span>Sistema</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección principal con dos columnas -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Columna izquierda -->
+        <div class="space-y-6">
+            <!-- Resumen de saldos por naturaleza - Mejorado como gráfico visual -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-100 dark:border-gray-600 flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center">
+                        <i class="fas fa-chart-pie mr-2 text-blue-600"></i>Balance General
+                    </h2>
+                    <button class="p-2 rounded-lg bg-gray-100 dark:bg-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-500 transition-colors" onclick="refreshBalanceData()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div class="p-6 space-y-4">
+                    {% for grupo in saldos_naturaleza %}
+                    <div class="flex items-center justify-between p-4 rounded-lg border transition-all duration-200 hover:shadow-md {% if grupo.naturaleza == 'DEUDORA' %}bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800{% else %}bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800{% endif %}">
+                        <div>
+                            <h4 class="font-semibold text-gray-800 dark:text-gray-100 mb-1">{{ grupo.naturaleza|default:"Sin naturaleza" }}</h4>
+                            <p class="text-2xl font-bold {% if grupo.total_saldo < 0 %}text-red-600 dark:text-red-400{% else %}text-green-600 dark:text-green-400{% endif %}">
+                                ${{ grupo.total_saldo|floatformat:2|intcomma }}
+                            </p>
+                        </div>
+                        <div class="text-2xl">
+                            {% if grupo.total_saldo >= 0 %}
+                                <i class="fas fa-arrow-up text-green-500"></i>
                             {% else %}
-                                <span class="text-green-600">${{ trans.monto|absolute|floatformat:2|intcomma }}</span>
+                                <i class="fas fa-arrow-down text-red-500"></i>
                             {% endif %}
-                        </td>
-                    </tr>
+                        </div>
+                    </div>
                     {% empty %}
-                    <tr>
-                        <td colspan="5" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400">No hay transacciones recientes</td>
-                    </tr>
+                    <div class="flex flex-col items-center justify-center p-8 text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-chart-pie text-4xl mb-4 opacity-50"></i>
+                        <p class="text-center font-medium">No hay datos de balance disponibles</p>
+                    </div>
                     {% endfor %}
-                </tbody>
-            </table>
+                </div>
+            </div>
+
+            <!-- Cuentas con más actividad -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-100 dark:border-gray-600 flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center">
+                        <i class="fas fa-fire mr-2 text-orange-600"></i>Cuentas Más Activas
+                    </h2>
+                    <a href="{% url 'core:cuenta_list' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium transition-colors">Ver todas</a>
+                </div>
+                <div class="p-6 space-y-3">
+                    {% for cuenta in cuentas_movimientos %}
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div>
+                            <a href="{% url 'core:cuenta_detail' cuenta.id %}" class="font-semibold text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                {{ cuenta.nombre }}
+                            </a>
+                            <span class="text-sm text-gray-500 dark:text-gray-400 block">{{ cuenta.tipo.nombre }}</span>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-lg font-bold text-blue-600 dark:text-blue-400 block">{{ cuenta.num_movimientos }}</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">movimientos</span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="flex flex-col items-center justify-center p-8 text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-chart-line text-4xl mb-4 opacity-50"></i>
+                        <p class="text-center font-medium">No hay actividad registrada</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Columna derecha -->
+        <div class="space-y-6">
+            <!-- Últimas transacciones mejoradas -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-100 dark:border-gray-600 flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center">
+                        <i class="fas fa-history mr-2 text-green-600"></i>Actividad Reciente
+                    </h2>
+                    <a href="{% url 'core:transacciones_list' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium transition-colors">Ver todas</a>
+                </div>
+                <div class="p-6 space-y-4">
+                    {% for trans in ultimas_transacciones %}
+                    <div class="flex items-start space-x-3">
+                        <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm flex-shrink-0 mt-1 {% if trans.monto < 0 %}bg-red-500{% else %}bg-green-500{% endif %}">
+                            {% if trans.monto < 0 %}
+                                <i class="fas fa-arrow-down"></i>
+                            {% else %}
+                                <i class="fas fa-arrow-up"></i>
+                            {% endif %}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <div class="flex items-start justify-between mb-2">
+                                <h4 class="font-semibold text-gray-800 dark:text-gray-100 flex-1 mr-3">{{ trans.descripcion|truncatechars:40 }}</h4>
+                                <span class="font-bold flex-shrink-0 {% if trans.monto < 0 %}text-red-600 dark:text-red-400{% else %}text-green-600 dark:text-green-400{% endif %}">
+                                    {% if trans.monto < 0 %}
+                                        -${{ trans.monto_abs|floatformat:2|intcomma }}
+                                    {% else %}
+                                        ${{ trans.monto_abs|floatformat:2|intcomma }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                            <div class="flex items-center space-x-4 text-sm text-gray-500 dark:text-gray-400">
+                                <span class="font-medium">{{ trans.medio_pago.nombre|truncatechars:25 }}</span>
+                                <span class="text-xs">{{ trans.fecha|date:"d M, Y" }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="flex flex-col items-center justify-center p-8 text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-exchange-alt text-4xl mb-4 opacity-50"></i>
+                        <p class="text-center font-medium">No hay transacciones recientes</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Últimos períodos con estado -->
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 overflow-hidden">
+                <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b border-gray-100 dark:border-gray-600 flex items-center justify-between">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-100 flex items-center">
+                        <i class="fas fa-file-invoice mr-2 text-purple-600"></i>Estados de Cuenta
+                    </h2>
+                    <a href="{% url 'core:periodos_list' %}" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-sm font-medium transition-colors">Ver todos</a>
+                </div>
+                <div class="p-6 space-y-3">
+                    {% for periodo in ultimos_periodos %}
+                    <div class="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
+                        <div>
+                            <a href="{% url 'core:periodo_detail' periodo.id %}" class="font-semibold text-gray-800 dark:text-gray-100 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                                {{ periodo.cuenta.nombre }}
+                            </a>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">{{ periodo.fecha_fin_periodo|date:"M Y" }}</span>
+                        </div>
+                        <div class="flex items-center space-x-3">
+                            {% if periodo.cerrado %}
+                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200">Cerrado</span>
+                            {% else %}
+                                <span class="px-2 py-1 rounded-full text-xs font-medium bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">Abierto</span>
+                            {% endif %}
+                            <span class="font-semibold text-gray-800 dark:text-gray-100">
+                                ${{ periodo.monto_total|default:0|floatformat:2|intcomma }}
+                            </span>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="flex flex-col items-center justify-center p-8 text-gray-500 dark:text-gray-400">
+                        <i class="fas fa-file-alt text-4xl mb-4 opacity-50"></i>
+                        <p class="text-center font-medium">No hay períodos registrados</p>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
-    
-    <!-- Resumen de saldos por naturaleza -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-        <div class="bg-blue-500 dark:bg-blue-700 text-white px-4 py-3">
-            <h5 class="text-lg font-medium">
-                <i class="fas fa-balance-scale mr-2"></i>Resumen de saldos por naturaleza
-            </h5>
-        </div>
-        <div class="p-4">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {% for grupo in saldos_naturaleza %}
-                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 shadow">
-                    <h6 class="text-md font-medium text-gray-800 dark:text-gray-200">
-                        {{ grupo.tipo__naturaleza|default:"Sin naturaleza" }}
-                    </h6>
-                    <p class="text-2xl text-center font-bold mt-2
-                        {% if grupo.total_saldo < 0 %}text-red-600{% else %}text-green-600{% endif %}">
-                        ${{ grupo.total_saldo|floatformat:2|intcomma }}
-                    </p>
-                </div>
-                {% empty %}
-                <div class="col-span-3 text-center py-4 text-gray-500 dark:text-gray-400">
-                    No hay datos disponibles
-                </div>
-                {% endfor %}
-            </div>
+
+    <!-- Sección inferior - Accesos rápidos -->
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-100 dark:border-gray-700">
+        <h3 class="text-lg font-semibold text-gray-800 dark:text-gray-100 mb-4 flex items-center">
+            <i class="fas fa-bolt mr-2 text-yellow-600"></i>Accesos Rápidos
+        </h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a href="{% url 'core:transacciones_create' %}" class="flex flex-col items-center p-4 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-gray-200 dark:border-gray-600 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 hover:scale-105 group">
+                <i class="fas fa-plus-circle text-2xl text-blue-600 dark:text-blue-400 mb-2 group-hover:scale-110 transition-transform"></i>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Nueva Transacción</span>
+            </a>
+            <a href="{% url 'core:cuentas_saldos' %}" class="flex flex-col items-center p-4 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-green-50 dark:hover:bg-green-900/20 border border-gray-200 dark:border-gray-600 hover:border-green-300 dark:hover:border-green-700 transition-all duration-200 hover:scale-105 group">
+                <i class="fas fa-balance-scale text-2xl text-green-600 dark:text-green-400 mb-2 group-hover:scale-110 transition-transform"></i>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Ver Saldos</span>
+            </a>
+            <a href="{% url 'core:periodos_list' %}" class="flex flex-col items-center p-4 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-purple-50 dark:hover:bg-purple-900/20 border border-gray-200 dark:border-gray-600 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-200 hover:scale-105 group">
+                <i class="fas fa-calendar-check text-2xl text-purple-600 dark:text-purple-400 mb-2 group-hover:scale-110 transition-transform"></i>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Gestionar Períodos</span>
+            </a>
+            <a href="{% url 'core:categorias_list' %}" class="flex flex-col items-center p-4 rounded-lg bg-gray-50 dark:bg-gray-700 hover:bg-orange-50 dark:hover:bg-orange-900/20 border border-gray-200 dark:border-gray-600 hover:border-orange-300 dark:hover:border-orange-700 transition-all duration-200 hover:scale-105 group">
+                <i class="fas fa-tags text-2xl text-orange-600 dark:text-orange-400 mb-2 group-hover:scale-110 transition-transform"></i>
+                <span class="text-sm font-medium text-gray-700 dark:text-gray-300 text-center">Organizar Categorías</span>
+            </a>
         </div>
     </div>
 </div>
-{% endblock %} 
+
+<script>
+// Función para refrescar datos del balance
+function refreshBalanceData() {
+    // Aquí se podría implementar una llamada AJAX para refrescar datos
+    location.reload();
+}
+
+// Animaciones de carga para las cards
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.bg-white, .dark\\:bg-gray-800');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.6s ease-out';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}

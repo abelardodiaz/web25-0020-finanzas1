@@ -6,6 +6,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Django-based financial management system (WEB0020-FINANZAS1) for personal and business finances. The system supports dual database backends (MariaDB/SQLite) and provides comprehensive financial tracking capabilities.
 
+**Current Version**: v0.5.5 (August 2025)
+**Python**: 3.12+ with modern type hints
+**UI Framework**: Tailwind CSS with dark/light mode support
+
 ## Development Commands
 
 ### Environment Setup
@@ -55,8 +59,17 @@ python manage.py createsuperuser
 
 ### Testing
 ```bash
-# Run tests (if available)
+# Run all tests
 python manage.py test
+
+# Run tests for specific app
+python manage.py test core
+
+# Run specific test class
+python manage.py test core.tests.TestClassName
+
+# Run with verbose output
+python manage.py test --verbosity=2
 ```
 
 ## Architecture Overview
@@ -89,12 +102,16 @@ The system implements account nature-based transaction flow:
 - **Acreedora accounts**: Increases with credits, decreases with debits
 - **Automatic sign handling**: Expenses are negative, income positive
 - **Transfer handling**: Dual-entry system for inter-account transfers
+- **Transaction Grouping**: Uses `grupo_uuid` to link related transactions (transfers, service payments)
+- **Account Types**: DEB (Debit), CRE (Credit), SER (Services), ING (Income) with different business rules
 
-### UI Framework
-- **Frontend**: Tailwind CSS with day/night mode toggle
-- **Forms**: Django Crispy Forms with Bootstrap5 styling
-- **Templates**: Modular template inheritance with `base.html`
-- **Responsive design**: Mobile-first approach
+### UI Framework (v0.5.5)
+- **Frontend**: Tailwind CSS with consistent dark/light mode implementation
+- **Forms**: Django Widget Tweaks for custom styling (Bootstrap5 removed)
+- **Templates**: Modular template inheritance with enhanced `base.html`
+- **Design System**: Standardized components in `STYLE_GUIDE.md`
+- **Typography**: `text-lg` standard for forms, consistent spacing (`py-2 px-3`)
+- **Theme Toggle**: Persistent localStorage-based dark/light mode switching
 
 ### Features Overview
 - **Account Management**: Multi-currency support (MXN/USD), account grouping
@@ -111,25 +128,86 @@ The project uses `django-environ` for configuration management:
 - **Optional variables**: `DEBUG`, `ACTIVE_DB` (mariadb|sqlite)
 - **Database URL format**: `mysql://user:password@host:port/database`
 
+### Critical Dependencies
+```
+Django>=5.2
+django-environ
+mariadb
+mysqlclient
+django-filter
+django-widget-tweaks
+pandas
+openpyxl
+reportlab
+```
+
 ## Development Notes
 
 ### Custom Management Commands
 - `db_switch`: Changes active database by updating `.env` file
 - `db_copy`: Migrates data between MariaDB and SQLite using Django serializers
 
+### AJAX Endpoints
+- `/cuentas-servicio-json/`: Service accounts for dropdowns
+- `/categorias-json/`: Categories for dropdowns  
+- `/medios-pago-json/`: Payment methods for dropdowns
+- `/cuentas-autocomplete/`: Account autocomplete by group
+- `/cuenta-movimientos/`: Paginated account movements
+
 ### Template System
-- Uses Tailwind CSS for styling instead of Bootstrap
-- Implements responsive design with container max-widths
-- Supports Spanish localization with Mexico City timezone
+- **Complete Tailwind Migration**: All Bootstrap dependencies removed
+- **Consistent Styling**: Standard classes defined in `STYLE_GUIDE.md`
+- **Form Standards**: `text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500`
+- **Date Inputs**: Centralized styling in `static/css/styles.css` with native `color-scheme` support
+- **Responsive Design**: Mobile-first with container max-widths
+- **Localization**: Spanish with Mexico City timezone
 
 ### PDF Generation
 - Uses ReportLab for professional statement generation
 - Accessible via `/periodos/<id>/pdf/` endpoint
 - Includes formatted financial data with proper decimal handling
 
+## Code Quality Standards
+
+### Python 3.12 Type Hints
+All core modules use modern Python 3.12 type hints:
+```python
+from __future__ import annotations
+from typing import Any
+from django.http import HttpRequest, HttpResponse, JsonResponse
+
+def view_method(self, request: HttpRequest, *args: Any, **kwargs: Any) -> HttpResponse:
+    return super().view_method(request, *args, **kwargs)
+
+def clean(self) -> dict[str, Any]:
+    return super().clean()
+
+def save(self, commit: bool = True) -> ModelClass:
+    return super().save(commit=commit)
+```
+
+### Form Validation Patterns
+```python
+def clean(self) -> dict[str, Any]:
+    cleaned_data = super().clean()
+    # Custom validation logic
+    return cleaned_data
+
+def save(self, commit: bool = True) -> ModelClass:
+    obj = super().save(commit=False)
+    # Custom save logic
+    if commit:
+        obj.save()
+    return obj
+```
+
 ## File Structure Highlights
-- `core/models.py`: All business logic models and financial calculations
-- `core/views.py`: View classes including PDF generation and AJAX endpoints  
-- `core/forms.py`: Django forms with custom field filtering
+- `core/models.py`: Business logic models with financial calculations and managers
+- `core/views.py`: Modern view classes with full type hints, PDF generation, AJAX endpoints
+- `core/forms.py`: Django forms with Python 3.12 type hints and custom field filtering
+- `templates/base.html`: Enhanced navigation with dropdown menus and theme toggle
+- `static/css/styles.css`: Centralized styles for native elements (date inputs)
+- `STYLE_GUIDE.md`: Complete UI component reference with dark/light mode examples
+- `changelog_claude.md`: Detailed development history with technical metrics
 - `guias/manejo-DB.md`: Comprehensive database management guide
 - `core/management/commands/`: Custom Django commands for database operations
