@@ -120,7 +120,7 @@ class DashboardView(TemplateView):
         # Resumen de saldos por naturaleza (versión corregida)
         saldos_por_naturaleza = {}
         for cuenta in Cuenta.objects.all():
-            naturaleza = cuenta.tipo.naturaleza if cuenta.tipo else "Sin naturaleza"
+            naturaleza = cuenta.naturaleza if cuenta.naturaleza else "Sin naturaleza"
             saldo_total = cuenta.saldo_inicial + cuenta.saldo()
             
             if naturaleza not in saldos_por_naturaleza:
@@ -953,7 +953,7 @@ def cuentas_servicio_json(request):
         {
             "id": c.id, 
             "text": str(c),
-            "naturaleza": c.tipo.naturaleza  # Incluir naturaleza
+            "naturaleza": c.naturaleza  # Incluir naturaleza
         } for c in cuentas
     ]
     return JsonResponse(data, safe=False)
@@ -972,7 +972,7 @@ def medios_pago_json(request):
         {
             "id": c.id, 
             "text": str(c),
-            "naturaleza": c.tipo.naturaleza  # Incluir naturaleza
+            "naturaleza": c.naturaleza  # Incluir naturaleza
         } for c in cuentas
     ]
     return JsonResponse(data, safe=False)
@@ -1130,7 +1130,7 @@ def cuentas_autocomplete(request):
         'text': f"{c.nombre} ({c.tipo.nombre})",
         'nombre': c.nombre,
         'numero': c.numero,
-        'naturaleza': c.tipo.naturaleza,
+        'naturaleza': c.naturaleza,
         'grupo': c.tipo.grupo,
         'tipo': c.tipo.nombre,
         'saldo': float(c.saldo_actual) if c.saldo_actual else 0.0
@@ -1163,27 +1163,24 @@ class CuentaDetailView(DetailView):
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         
-        # Determinar si la cuenta es de cargo o abono según la naturaleza de su tipo
-        if cuenta.tipo and cuenta.tipo.naturaleza:
-            naturaleza = cuenta.tipo.naturaleza
-            es_cuenta_cargo = naturaleza in ['A', 'G']  # Activo o Gastos
-        else:
-            # Valor por defecto si no hay tipo o naturaleza definida
-            es_cuenta_cargo = True
-        
-        # Calcular saldo acumulado y determinar tipo de movimiento
-        saldo_acumulado = saldo_inicial
+        # Lógica corregida para determinar tipo de movimiento
         for movimiento in page_obj:
-            # Determinar si es cargo o abono
-            movimiento.es_cargo = (movimiento.monto < 0) if es_cuenta_cargo else (movimiento.monto > 0)
+            # Para todas las cuentas:
+            # - Montos positivos = aumentan el saldo
+            # - Montos negativos = disminuyen el saldo
+            
+            # Determinar si es cargo o abono según naturaleza
+            if cuenta.naturaleza == "DEUDORA":
+                movimiento.es_cargo = movimiento.monto > 0
+            else:  # Acreedora
+                movimiento.es_cargo = movimiento.monto < 0
             
             # Calcular saldo parcial
-            saldo_acumulado += movimiento.monto
-            movimiento.saldo_parcial = saldo_acumulado
-            movimiento.monto_abs = abs(movimiento.monto)
-            movimiento.saldo_parcial_abs = abs(movimiento.saldo_parcial)
+            saldo_inicial += movimiento.monto
+            movimiento.saldo_parcial = saldo_inicial
+            movimiento.display_monto = abs(movimiento.monto)
+            movimiento.display_saldo_parcial = abs(saldo_inicial)
         
         context['movimientos'] = page_obj
-        context['es_cuenta_cargo'] = es_cuenta_cargo
         return context
 

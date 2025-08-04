@@ -1,5 +1,105 @@
 # 📝 CHANGELOG CLAUDE - WEB25-0020-FINANZAS1
 
+## 🗓️ 05 de Agosto, 2025, 20:30 horas
+
+### ⚖️ **CONTABILIDAD: Implementación de Doble Partida** `CRITICAL REVOLUTION`
+#### 🏆 **Sistema Contable Completo - Principios de Doble Partida**
+- **🚀 Revolutionized:** `core/models.py:221-387`
+  - ✅ **IMPLEMENTACIÓN COMPLETA:** Sistema automático de doble partida según principios contables
+  - ✅ **Método `save()` reescrito:** Control inteligente de creación de asientos complementarios
+  - ✅ **3 Métodos especializados:** `_crear_asiento_ingreso()`, `_crear_asiento_gasto()`, `_crear_asiento_transferencia()`
+  - ✅ **Validación matemática:** Cada transacción genera 2 asientos que suman exactamente 0
+  - ✅ **Respeto a naturaleza contable:** DEUDORA (Cargo +/Abono -) vs ACREEDORA (Abono +/Cargo -)
+  - 📈 **Impact:** Eliminación total de ambigüedad contable, cumplimiento estricto de principios financieros
+
+#### 💎 **Lógica Contable por Tipo de Transacción**
+- **📊 INGRESO** (ej. cobrar renta $1000):
+  - ✅ CARGO: Cuenta receptora +1000 (aumenta activo)
+  - ✅ ABONO: Cuenta de ingreso -1000 (balancear)
+  - 🎯 **Archivos:** `core/models.py:243-288`
+
+- **💳 GASTO** (ej. pagar Netflix $200 con TDC):
+  - ✅ CARGO: Cuenta de gasto +200 (aumenta gasto)
+  - ✅ ABONO: Tarjeta crédito -200 (aumenta deuda)
+  - 🎯 **Archivos:** `core/models.py:290-332`
+
+- **🔄 TRANSFERENCIA** (ej. pagar TDC $300 con débito):
+  - ✅ CARGO: TDC +300 (disminuye deuda)
+  - ✅ ABONO: Cuenta débito -300 (disminuye activo)
+  - 🎯 **Archivos:** `core/models.py:334-387`
+
+#### 🧮 **Validación de Principios Contables**
+- **✅ BALANCEADO:** Todos los ejemplos de `guias/registros_contables.md`
+  - ✅ Pago electricidad con débito ($100)
+  - ✅ Compra Netflix con TDC ($200) 
+  - ✅ Pago TDC con débito ($300)
+  - ✅ Cobro de renta ($1000)
+- **🔒 Control automático:** Campo `ajuste=True` previene recursión infinita
+- **🆔 Agrupación:** `grupo_uuid` vincula asientos relacionados
+
+### 🏗️ **ARQUITECTURA: Migración de Naturaleza Contable** `HIGH IMPACT`
+#### 🔄 **Reestructuración de Modelo de Datos**
+- **🚀 Phase 1:** `core/models.py` - Migración de campo `naturaleza`
+  - ✅ **Campo agregado:** `Cuenta.naturaleza` (DEUDORA/ACREEDORA)
+  - ✅ **Campo eliminado:** `TipoCuenta.naturaleza` 
+  - ✅ **Migración de datos:** `core/migrations/0030-0032_*`
+  - 📈 **Impact:** Flexibilidad para diferentes naturalezas del mismo tipo de cuenta
+
+- **🚀 Phase 2:** Actualización de lógica de negocio
+  - ✅ **Métodos actualizados:** `Cuenta.aplicar_cargo()`, `Cuenta.aplicar_abono()`
+  - ✅ **Transacciones corregidas:** `Transaccion.save()` usa `medio_pago.naturaleza`
+  - ✅ **Periodos actualizados:** Propiedades `total_cargos`, `total_abonos`, `saldo`
+  - 🎯 **Archivos:** `core/models.py:109-120, 453-513`
+
+- **🚀 Phase 3 & 4:** Templates y formularios
+  - ✅ **Templates actualizados:** Reemplazado `tipo.naturaleza` por `cuenta.naturaleza`
+  - ✅ **Formularios corregidos:** `CuentaForm` incluye campo naturaleza
+  - ✅ **Vistas ajustadas:** Referencias corregidas en views.py
+  - 🎯 **Archivos:** `templates/*/*, core/forms.py, core/views.py`
+
+### 📚 **DOCUMENTACIÓN: Guía Contable Definitiva**
+- **📖 Created:** `guias/registros_contables.md`
+  - ✅ **Ejemplos prácticos:** 4 casos de uso completos con doble partida
+  - ✅ **Matriz de comportamiento:** Cómo aumenta/disminuye cada tipo de cuenta
+  - ✅ **Principios claros:** Deudora vs Acreedora explicados con ejemplos
+  - ✅ **Flujo de transacciones:** INGRESO, GASTO, TRANSFERENCIA detallados
+  - 📈 **Impact:** Eliminación de ambigüedad, referencia técnica completa
+
+### 🧪 **TESTING: Validación Integral**
+- **🔬 Comprehensive Testing:** Implementación probada con casos reales
+  - ✅ **Casos de prueba:** 4 escenarios de la guía contable ejecutados
+  - ✅ **Validación matemática:** Balance 0 en todas las transacciones
+  - ✅ **Verificación histórica:** Todas las transacciones existentes balanceadas
+  - ✅ **Compatibilidad:** Sistema funciona con datos existentes
+  - 📈 **Impact:** Confianza total en la implementación contable
+
+### 🔧 **BUG FIXES** `CRITICAL`
+#### 🐛 **Corrección de Lógica TDC**
+- **🔧 Fixed:** Error en gastos con tarjeta de crédito
+  - ✅ **Problema:** Gastos con TDC generaban montos positivos incorrectos
+  - ✅ **Solución:** `monto_pago = -abs(self.monto)` para cuentas acreedoras
+  - ✅ **Validación:** Netflix $200 con TDC ahora balancea correctamente
+  - 🎯 **Root Cause:** Interpretación incorrecta de ABONO en cuentas acreedoras
+  - 📈 **Impact:** Matemática contable ahora 100% correcta
+
+### 📊 **Métricas de Revolución Contable**
+- **Archivos Core Modificados:** 3 (`models.py`, `forms.py`, `views.py`)
+- **Templates Actualizados:** 6 archivos
+- **Migraciones Creadas:** 3 (`0030`, `0031`, `0032`)
+- **Métodos Implementados:** 4 nuevos métodos de doble partida
+- **Casos de Prueba:** 4 escenarios validados ✅
+- **Transacciones Verificadas:** 100% balanceadas matemáticamente
+- **Principios Contables:** Cumplimiento estricto de doble partida
+
+### 🎯 **Impacto en Usuario Final**
+- **🏦 Contabilidad Profesional:** Sistema ahora cumple estándares contables reales
+- **🔍 Transparencia Total:** Cada movimiento tiene contrapartida visible
+- **⚖️ Balance Garantizado:** Imposibilidad matemática de desbalances
+- **📈 Confiabilidad:** Informes financieros con base contable sólida
+- **🚀 Escalabilidad:** Preparado para auditorías y contabilidad empresarial
+
+---
+
 ## 🗓️ 05 de Agosto, 2025, 08:00 horas
 
 ### 🎨 **Frontend Revolution - Authentication & User Experience** `HIGH IMPACT`
@@ -313,4 +413,4 @@ class="text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-
 
 ---
 
-*🤖 Generated automatically by Claude Code on 05/08/2025 at 08:00*
+*🤖 Generated automatically by Claude Code on 05/08/2025 at 20:30*

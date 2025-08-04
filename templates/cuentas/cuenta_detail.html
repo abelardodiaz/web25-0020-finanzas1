@@ -24,8 +24,8 @@
                     <p class="text-gray-700 dark:text-gray-300"><strong>Tipo:</strong> {{ cuenta.tipo }}</p>
                     <p class="text-gray-700 dark:text-gray-300"><strong>Grupo:</strong> {{ cuenta.tipo.grupo }}</p>
                     <p class="text-gray-700 dark:text-gray-300"><strong>Naturaleza:</strong> 
-                        {% if cuenta.tipo and cuenta.tipo.naturaleza %}
-                            {{ cuenta.tipo.get_naturaleza_display }}
+                        {% if cuenta.naturaleza %}
+                            {{ cuenta.get_naturaleza_display }}
                         {% else %}
                             No definida
                         {% endif %}
@@ -78,24 +78,16 @@
                     <td class="px-4 py-3 text-gray-800 dark:text-gray-200">{{ movimiento.categoria }}</td>
                     <td class="px-4 py-3 text-center">
                         {% if movimiento.es_cargo %}
-                            <span class="px-2 py-1 bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200 rounded text-sm">Cargo</span>
+                            <span class="text-red-600">Cargo</span>
                         {% else %}
-                            <span class="px-2 py-1 bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 rounded text-sm">Abono</span>
+                            <span class="text-green-600">Abono</span>
                         {% endif %}
                     </td>
-                    <td class="px-4 py-3 text-right">
-                        {% if movimiento.es_cargo %}
-                            <span class="text-red-600 dark:text-red-400">-${{ movimiento.monto_abs|floatformat:2|intcomma }}</span>
-                        {% else %}
-                            <span class="text-green-600 dark:text-green-400">+${{ movimiento.monto_abs|floatformat:2|intcomma }}</span>
-                        {% endif %}
+                    <td class="px-4 py-3 text-right {% if movimiento.es_cargo %}text-red-600{% else %}text-green-600{% endif %}">
+                        {% if movimiento.es_cargo %}-{% else %}+{% endif %}${{ movimiento.display_monto|floatformat:2 }}
                     </td>
-                    <td class="px-4 py-3 text-right">
-                        {% if movimiento.saldo_parcial < 0 %}
-                            <span class="text-red-600 dark:text-red-400">-${{ movimiento.saldo_parcial_abs|floatformat:2|intcomma }}</span>
-                        {% else %}
-                            <span class="text-green-600 dark:text-green-400">${{ movimiento.saldo_parcial_abs|floatformat:2|intcomma }}</span>
-                        {% endif %}
+                    <td class="px-4 py-3 text-right {% if movimiento.saldo_parcial < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                        ${{ movimiento.display_saldo_parcial|floatformat:2 }}
                     </td>
                 </tr>
                 {% empty %}

@@ -19,7 +19,7 @@
                     <tr>
                         <th class="px-4 py-3 text-left text-lg font-medium whitespace-nowrap">Código</th>
                         <th class="px-4 py-3 text-left text-lg font-medium whitespace-nowrap">Nombre</th>
-                        <th class="px-4 py-3 text-left text-lg font-medium whitespace-nowrap">Naturaleza</th>
+                        <th class="px-4 py-3 text-left text-lg font-medium whitespace-nowrap">Grupo</th>
                         <th class="px-4 py-3 text-right text-lg font-medium whitespace-nowrap">Acciones</th>
                     </tr>
                 </thead>
@@ -33,7 +33,7 @@
                             {{ tipo.nombre }}
                         </td>
                         <td class="px-4 py-3 text-gray-800 dark:text-gray-200">
-                            {{ tipo.naturaleza }}
+                            {{ tipo.get_grupo_display }}
                         </td>
                         <td class="px-4 py-3">
                             <div class="flex justify-end space-x-2">

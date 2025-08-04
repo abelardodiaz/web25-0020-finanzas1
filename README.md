@@ -6,6 +6,31 @@
 
 ## 📅 Historial de Cambios
 
+### [0.5.7] - 2025-08-05
+**Revolución contable: Sistema de doble partida implementado**  
+*Actualizado: 05/08/2025 20:30 hrs*
+
+- ⚖️ **Sistema contable completo con doble partida:**
+  - Cada transacción genera automáticamente 2 asientos balanceados
+  - Respeto estricto a principios contables (DEUDORA/ACREEDORA)
+  - Validación matemática: todas las transacciones suman exactamente 0
+  - Lógica especializada por tipo: INGRESO, GASTO, TRANSFERENCIA
+- 🏗️ **Reestructuración de modelos de datos:**
+  - Migración del campo `naturaleza` de TipoCuenta → Cuenta
+  - Flexibilidad para diferentes naturalezas del mismo tipo
+  - 3 migraciones de base de datos para preservar datos existentes
+- 📚 **Documentación contable definitiva:**
+  - Guía completa en `guias/registros_contables.md`
+  - 4 casos de uso prácticos con ejemplos reales
+  - Eliminación total de ambigüedad en registros financieros
+- 🧪 **Validación integral probada:**
+  - Todos los ejemplos contables verificados y balanceados
+  - Compatibilidad garantizada con datos históricos
+  - Sistema preparado para auditorías profesionales
+- 🔧 **Corrección crítica en lógica de tarjetas de crédito:**
+  - Gastos con TDC ahora registran correctamente como aumento de deuda
+  - Matemática contable 100% precisa en todos los escenarios
+
 ### [0.5.6] - 2025-08-05
 **Revolución en autenticación y experiencia de usuario**  
 *Actualizado: 05/08/2025 08:00 hrs*

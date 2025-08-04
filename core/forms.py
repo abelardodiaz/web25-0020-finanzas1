@@ -20,7 +20,7 @@ class CuentaForm(forms.ModelForm):
         label="Grupo de cuenta"
     )
     naturaleza = forms.ChoiceField(
-        choices=TipoCuenta.NATURALEZA,
+        choices=Cuenta.NATURALEZA,
         required=True,
         label="Naturaleza contable"
     )
@@ -33,21 +33,25 @@ class CuentaForm(forms.ModelForm):
         super().__init__(*args, **kwargs)
         
         # Cambiar esta condición para evitar el error en cuentas nuevas
-        if self.instance and self.instance.pk and self.instance.tipo_id:
-            # Solo si la cuenta ya existe y tiene un tipo asociado
-            self.fields['grupo'].initial = self.instance.tipo.grupo
-            self.fields['naturaleza'].initial = self.instance.tipo.naturaleza
+        if self.instance and self.instance.pk:
+            # Si la cuenta ya existe, usar sus valores
+            if self.instance.tipo_id:
+                self.fields['grupo'].initial = self.instance.tipo.grupo
+            if hasattr(self.instance, 'naturaleza'):
+                self.fields['naturaleza'].initial = self.instance.naturaleza
             
     def save(self, commit: bool = True) -> Cuenta:
         cuenta = super().save(commit=False)
         grupo = self.cleaned_data['grupo']
         naturaleza = self.cleaned_data['naturaleza']
         
-        # Actualizar grupo y naturaleza del tipo de cuenta
+        # Actualizar solo el grupo del tipo de cuenta
         if cuenta.tipo:
             cuenta.tipo.grupo = grupo
-            cuenta.tipo.naturaleza = naturaleza
             cuenta.tipo.save()
+        
+        # La naturaleza ahora se guarda directamente en la cuenta
+        cuenta.naturaleza = naturaleza
         
         if commit:
             cuenta.save()
@@ -277,9 +281,9 @@ class IngresoForm(forms.ModelForm):
 class TipoCuentaForm(forms.ModelForm):
     class Meta:
         model = TipoCuenta
-        fields = ['codigo', 'nombre', 'naturaleza']  # Asegurar que todos los campos estén incluidos
+        fields = ['codigo', 'nombre', 'grupo']  # Eliminar naturaleza
         widgets = {
             'codigo': forms.TextInput(attrs={'class': 'text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}),
             'nombre': forms.TextInput(attrs={'class': 'text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}),
-            'naturaleza': forms.Select(attrs={'class': 'text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}),
+            'grupo': forms.Select(attrs={'class': 'text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}),
         }

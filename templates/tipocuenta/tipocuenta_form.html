@@ -40,16 +40,16 @@
                 {% endfor %}
             </div>
             
-            <!-- Campo Naturaleza -->
+            <!-- Campo Grupo -->
             <div class="md:col-span-2">
                 <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {{ form.naturaleza.label }}
+                    {{ form.grupo.label }}
                 </label>
-                {{ form.naturaleza|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
-                {% if form.naturaleza.help_text %}
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ form.naturaleza.help_text }}</p>
+                {{ form.grupo|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                {% if form.grupo.help_text %}
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ form.grupo.help_text }}</p>
                 {% endif %}
-                {% for error in form.naturaleza.errors %}
+                {% for error in form.grupo.errors %}
                 <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ error }}</p>
                 {% endfor %}
             </div>

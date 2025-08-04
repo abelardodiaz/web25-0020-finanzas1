@@ -37,19 +37,12 @@ class TipoCuenta(models.Model):
     ]
     grupo   = models.CharField(max_length=3, choices=GRUPOS, default="DEB",)
 
-    NATURALEZA = [
-        ("DEUDORA", "Deudora"),
-        ("ACREEDORA", "Acreedora"),
-    ]
-    naturaleza = models.CharField(max_length=10, choices=NATURALEZA, default="DEUDORA")
-
-
     class Meta:
         verbose_name = "tipo de cuenta"
         verbose_name_plural = "tipos de cuenta"
 
     def __str__(self):
-        return f"{self.nombre} ({self.grupo})"
+        return self.nombre  # Return only the name without grupo code
 
 class CuentaManager(models.Manager):
     def medios_pago(self):
@@ -81,6 +74,18 @@ class Cuenta(models.Model):
     no_contrato       = models.CharField(max_length=40,  blank=True)
     # REMOVED: dia_corte field
 
+    # Naturaleza contable de la cuenta
+    NATURALEZA = [
+        ("DEUDORA", "Deudora"),
+        ("ACREEDORA", "Acreedora"),
+    ]
+    naturaleza = models.CharField(
+        max_length=10, 
+        choices=NATURALEZA, 
+        default="DEUDORA",
+        help_text="Naturaleza contable de la cuenta"
+    )
+
     saldo_inicial = models.DecimalField(
         max_digits=10, 
         decimal_places=2,
@@ -106,13 +111,13 @@ class Cuenta(models.Model):
         Devuelve el monto con el signo correcto según naturaleza.
         Cargo ➜ + en deudoras / - en acreedoras
         """
-        return  monto if self.tipo.naturaleza == "DEUDORA" else -monto
+        return monto if self.naturaleza == "DEUDORA" else -monto
 
     def aplicar_abono(self, monto):
         """
         Abono ➜ - en deudoras / + en acreedoras
         """
-        return -monto if self.tipo.naturaleza == "DEUDORA" else monto    #Helpers para saber si un movimiento es cargo o abono
+        return -monto if self.naturaleza == "DEUDORA" else monto    #Helpers para saber si un movimiento es cargo o abono
         
 
 class CategoriaTipo(models.TextChoices):
@@ -214,30 +219,173 @@ class Transaccion(models.Model):
 
 
     def save(self, *args, **kwargs):
-        # Solo aplicar lógica de signo si no es ajuste
-        if not self.ajuste:
-            # Obtener naturaleza de la cuenta de pago
-            naturaleza = self.medio_pago.tipo.naturaleza if self.medio_pago and self.medio_pago.tipo else None
-            
-            if self.tipo == TransaccionTipo.INGRESO:
-                # Lógica para INGRESOS
-                if naturaleza == "DEUDORA":
-                    # Activos: entra dinero → CARGO (positivo)
-                    self.monto = abs(self.monto)
-                elif naturaleza == "ACREEDORA":
-                    # Pasivos: entra dinero (pago de deuda) → CARGO (negativo)
-                    self.monto = -abs(self.monto)
-            
-            elif self.tipo == TransaccionTipo.GASTO:
-                # Lógica para GASTOS
-                if naturaleza == "DEUDORA":
-                    # Activos: gastos disminuyen (abono) -> monto negativo
-                    self.monto = -abs(self.monto)
-                elif naturaleza == "ACREEDORA":
-                    # Pasivos: gastos aumentan (abono) -> monto positivo
-                    self.monto = abs(self.monto)
-        
+        # Guardar la transacción principal primero
+        is_new = self.pk is None
         super().save(*args, **kwargs)
+        
+        # Solo crear asiento contable complementario si no es ajuste y es nueva
+        if not self.ajuste and is_new:
+            self._crear_asiento_complementario()
+    
+    def _crear_asiento_complementario(self):
+        """
+        Crea el asiento contable complementario siguiendo principios de doble partida
+        según la guía de registros contables.
+        """
+        with transaction.atomic():
+            if self.tipo == TransaccionTipo.INGRESO:
+                self._crear_asiento_ingreso()
+            elif self.tipo == TransaccionTipo.GASTO:
+                self._crear_asiento_gasto()
+            elif self.tipo == TransaccionTipo.TRANSFERENCIA:
+                self._crear_asiento_transferencia()
+    
+    def _crear_asiento_ingreso(self):
+        """
+        INGRESO: Ejemplo: cobro renta $1000
+        - CARGO: Cuenta de débito +1000 (aumenta activo)
+        - ABONO: Renta de casa -1000 (aumenta ingreso)
+        """
+        # El asiento principal ya está guardado en self (cuenta de destino del dinero)
+        # Necesitamos crear el asiento de la cuenta de origen del ingreso
+        
+        if not self.cuenta_servicio:
+            raise ValueError("Para ingresos se requiere cuenta_servicio (cuenta de ingreso)")
+        
+        # Determinar signos según naturaleza
+        if self.medio_pago.naturaleza == "DEUDORA":
+            # Cuenta receptora deudora: CARGO (positivo)
+            monto_receptor = abs(self.monto)
+        else:
+            # Cuenta receptora acreedora: ABONO (positivo) 
+            monto_receptor = abs(self.monto)
+        
+        if self.cuenta_servicio.naturaleza == "ACREEDORA":
+            # Cuenta de ingreso acreedora: ABONO (negativo para balancear)
+            monto_origen = -abs(self.monto)
+        else:
+            # Cuenta de ingreso deudora: CARGO (negativo para balancear)
+            monto_origen = -abs(self.monto)
+        
+        # Actualizar el monto de la transacción principal
+        self.monto = monto_receptor
+        Transaccion.objects.filter(pk=self.pk).update(monto=monto_receptor)
+        
+        # Crear asiento complementario
+        Transaccion.objects.create(
+            monto=monto_origen,
+            tipo=self.tipo,
+            fecha=self.fecha,
+            descripcion=f"Contrapartida: {self.descripcion}",
+            cuenta_servicio=None,
+            categoria=self.categoria,
+            medio_pago=self.cuenta_servicio,
+            grupo_uuid=self.grupo_uuid,
+            ajuste=True,  # Evitar recursión
+            moneda=self.moneda,
+            periodo=self.periodo,
+            conciliado=self.conciliado
+        )
+    
+    def _crear_asiento_gasto(self):
+        """
+        GASTO: Ejemplo: pago electricidad $100 con débito
+        - CARGO: Gasto servicios +100 (aumenta gasto)
+        - ABONO: Cuenta débito -100 (disminuye activo)
+        """
+        if not self.cuenta_servicio:
+            raise ValueError("Para gastos se requiere cuenta_servicio (cuenta de gasto)")
+        
+        # Determinar signos según naturaleza
+        if self.cuenta_servicio.naturaleza == "DEUDORA":
+            # Cuenta de gasto deudora: CARGO (positivo)
+            monto_gasto = abs(self.monto)
+        else:
+            # Cuenta de gasto acreedora: ABONO (positivo)
+            monto_gasto = abs(self.monto)
+        
+        if self.medio_pago.naturaleza == "DEUDORA":
+            # Cuenta de pago deudora (ej. cuenta bancaria): ABONO (negativo para balancear)
+            monto_pago = -abs(self.monto)
+        else:
+            # Cuenta de pago acreedora (ej. TDC): ABONO (negativo para balancear - aumenta deuda)
+            # Según guía: gastar con TDC es ABONO a la tarjeta
+            monto_pago = -abs(self.monto)
+        
+        # Crear asiento del gasto
+        Transaccion.objects.create(
+            monto=monto_gasto,
+            tipo=self.tipo,
+            fecha=self.fecha,
+            descripcion=f"Gasto: {self.descripcion}",
+            cuenta_servicio=None,
+            categoria=self.categoria,
+            medio_pago=self.cuenta_servicio,
+            grupo_uuid=self.grupo_uuid,
+            ajuste=True,
+            moneda=self.moneda,
+            periodo=self.periodo,
+            conciliado=self.conciliado
+        )
+        
+        # Actualizar el monto de la transacción principal (medio de pago)
+        self.monto = monto_pago
+        Transaccion.objects.filter(pk=self.pk).update(monto=monto_pago)
+    
+    def _crear_asiento_transferencia(self):
+        """
+        TRANSFERENCIA: Ejemplo: pago TDC $300 con débito
+        - CARGO: TDC +300 (disminuye deuda de la tarjeta)
+        - ABONO: Cuenta débito -300 (disminuye dinero en cuenta)
+        
+        Nota: En transferencias, medio_pago es origen, cuenta_servicio es destino
+        """
+        if not self.cuenta_servicio:
+            raise ValueError("Para transferencias se requiere cuenta_servicio (cuenta destino)")
+        
+        cuenta_origen = self.medio_pago
+        cuenta_destino = self.cuenta_servicio
+        
+        # Según guía: pago TDC desde cuenta débito
+        # CARGO: TDC (disminuye deuda) = monto positivo en asiento contable
+        # ABONO: Cuenta débito (disminuye activo) = monto negativo en asiento contable
+        
+        # Para cuenta ORIGEN (de donde sale el dinero)
+        if cuenta_origen.naturaleza == "DEUDORA":
+            # Cuenta deudora: disminuye → ABONO (negativo)
+            monto_origen = -abs(self.monto)
+        else:
+            # Cuenta acreedora: ¿aumenta o disminuye deuda?
+            # Si es origen, disminuye deuda → CARGO (positivo) - pero esto es raro
+            monto_origen = abs(self.monto)
+        
+        # Para cuenta DESTINO (hacia donde va el dinero/pago)  
+        if cuenta_destino.naturaleza == "DEUDORA":
+            # Cuenta deudora: aumenta → CARGO (positivo)
+            monto_destino = abs(self.monto)
+        else:
+            # Cuenta acreedora: disminuye deuda → CARGO (positivo)
+            monto_destino = abs(self.monto)
+        
+        # Actualizar transacción principal (cuenta origen)
+        self.monto = monto_origen
+        Transaccion.objects.filter(pk=self.pk).update(monto=monto_origen)
+        
+        # Crear asiento de cuenta destino
+        Transaccion.objects.create(
+            monto=monto_destino,
+            tipo=self.tipo,
+            fecha=self.fecha,
+            descripcion=f"Transferencia desde {cuenta_origen.nombre}",
+            cuenta_servicio=None,
+            categoria=self.categoria,
+            medio_pago=cuenta_destino,
+            grupo_uuid=self.grupo_uuid,
+            ajuste=True,
+            moneda=self.moneda,
+            periodo=self.periodo,
+            conciliado=self.conciliado
+        )
        
 
 
@@ -447,7 +595,7 @@ class Periodo(models.Model):
     # --- Propiedades dinámicas -----------------------------------------
     @property
     def total_cargos(self):
-        if self.cuenta.tipo.naturaleza == "ACREEDORA":
+        if self.cuenta.naturaleza == "ACREEDORA":
             # Para tarjetas (pasivo): cargos = pagos registrados en esta cuenta (montos < 0)
             base_neg = self.transacciones.filter(medio_pago=self.cuenta, monto__lt=0)
             return -(base_neg.aggregate(Sum("monto"))["monto__sum"] or 0)
@@ -458,7 +606,7 @@ class Periodo(models.Model):
 
     @property
     def total_abonos(self):
-        if self.cuenta.tipo.naturaleza == "ACREEDORA":
+        if self.cuenta.naturaleza == "ACREEDORA":
             # Para tarjetas: abonos = compras registradas en esta cuenta (montos > 0)
             base_pos = self.transacciones.filter(medio_pago=self.cuenta, monto__gt=0)
             return base_pos.aggregate(Sum("monto"))["monto__sum"] or 0
@@ -471,7 +619,7 @@ class Periodo(models.Model):
     def saldo(self):
         # El saldo final debe ser: saldo_inicial + (total_abonos - total_cargos) para acreedoras
         # o saldo_inicial + (total_cargos - total_abonos) para deudoras
-        if self.cuenta.tipo.naturaleza == "ACREEDORA":
+        if self.cuenta.naturaleza == "ACREEDORA":
             return self.saldo_inicial + (self.total_abonos - self.total_cargos)
         else:
             return self.saldo_inicial + (self.total_cargos - self.total_abonos)
@@ -502,7 +650,7 @@ class Periodo(models.Model):
     @property
     def saldo_final(self):
         """Saldo al cierre del periodo."""
-        if self.cuenta.tipo.naturaleza == "ACREEDORA":
+        if self.cuenta.naturaleza == "ACREEDORA":
             return self.saldo_inicial + (self.total_abonos - self.total_cargos)
         else:
             return self.saldo_inicial + (self.total_cargos - self.total_abonos)

@@ -93,22 +93,22 @@
                             {{ t.categoria }}
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-lg text-right font-medium">
-                            {% if t.medio_pago.tipo.naturaleza == "DEUDORA" and t.monto > 0 %}
+                            {% if t.medio_pago.naturaleza == "DEUDORA" and t.monto > 0 %}
                                 <span class="text-red-600 dark:text-red-400">
                                     ${{ t.monto|floatformat:2 }}
                                 </span>
-                            {% elif t.medio_pago.tipo.naturaleza == "ACREEDORA" and t.monto < 0 %}
+                            {% elif t.medio_pago.naturaleza == "ACREEDORA" and t.monto < 0 %}
                                 <span class="text-red-600 dark:text-red-400">
                                     ${{ t.monto|absolute|floatformat:2 }}
                                 </span>
                             {% endif %}
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-lg text-right font-medium">
-                            {% if t.medio_pago.tipo.naturaleza == "DEUDORA" and t.monto < 0 %}
+                            {% if t.medio_pago.naturaleza == "DEUDORA" and t.monto < 0 %}
                                 <span class="text-green-600 dark:text-green-400">
                                     ${{ t.monto|absolute|floatformat:2 }}
                                 </span>
-                            {% elif t.medio_pago.tipo.naturaleza == "ACREEDORA" and t.monto > 0 %}
+                            {% elif t.medio_pago.naturaleza == "ACREEDORA" and t.monto > 0 %}
                                 <span class="text-green-600 dark:text-green-400">
                                     ${{ t.monto|floatformat:2 }}
                                 </span>
