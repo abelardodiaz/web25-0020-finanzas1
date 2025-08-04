@@ -1,0 +1,33 @@
+from django.db import migrations, models
+import uuid
+
+def fix_duplicate_uuids(apps, schema_editor):
+    Transaccion = apps.get_model('core', 'Transaccion')
+    # Group by grupo_uuid and for each group with more than one transaction, assign new UUIDs
+    from collections import defaultdict
+    groups = defaultdict(list)
+    for trans in Transaccion.objects.all():
+        groups[trans.grupo_uuid].append(trans)
+    
+    for grupo_uuid, trans_list in groups.items():
+        if len(trans_list) > 1:
+            # This group has duplicates, assign new UUIDs
+            for trans in trans_list:
+                trans.grupo_uuid = uuid.uuid4()
+                trans.save()
+
+class Migration(migrations.Migration):
+    dependencies = [
+        # ... previous migration ...
+    ]
+
+    operations = [
+        # First, fix the duplicates
+        migrations.RunPython(fix_duplicate_uuids),
+        # Then, add the unique constraint
+        migrations.AlterField(
+            model_name='transaccion',
+            name='grupo_uuid',
+            field=models.UUIDField(default=uuid.uuid4, editable=False, unique=True),
+        ),
+    ] 

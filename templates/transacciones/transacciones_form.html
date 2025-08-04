@@ -1,56 +1,108 @@
 <!-- file: templates/trasacciones/tr_nueva.html -->
 {% extends "base.html" %}
-{% block title %}Nuevo Movimiento{% endblock %}
+{% load widget_tweaks %}
+{% block title %}{% if object %}Editar{% else %}Nuevo{% endif %} Movimiento – Finanzas{% endblock %}
 {% block content %}
-<h1>Nuevo Movimiento</h1>
-<form method="post" novalidate id="transaccion-form">
-  {% csrf_token %}
-  <p>
-    {{ form.monto.label_tag }} {{ form.monto }}
-  </p>
-  <p>
-    {{ form.tipo.label_tag }} {{ form.tipo }}
-  </p>
-  <p>
-    {{ form.fecha.label_tag }} {{ form.fecha }}
-  </p>
-  <p>
-    {{ form.descripcion.label_tag }} {{ form.descripcion }}
-  </p>
-  <p id="row-servicio">
-    <label id="lbl-servicio">{{ form.cuenta_servicio.label }}</label>
-    {{ form.cuenta_servicio }}
-    <button type="button" class="btn btn-outline-secondary btn-sm" id="refresh-cuentas" title="Actualizar cuentas de servicio">↻</button>
-  </p>
-  <p>
-    {{ form.categoria.label_tag }} {{ form.categoria }}
-    <button type="button" class="btn btn-outline-secondary btn-sm" id="refresh-categorias" title="Actualizar categorías">↻</button>
-  </p>
-  <div class="form-group" id="row-mediopago">
-    <label id="lbl-mediopago" for="id_medio_pago">{{ form.medio_pago.label }}</label>
-    <div class="d-flex">
-      {{ form.medio_pago }}
-      <button type="button" class="btn btn-outline-secondary btn-sm ms-2" id="refresh-medios" title="Actualizar medios de pago">
-        <i class="bi bi-arrow-repeat"></i>
-      </button>
+<div class="container mx-auto px-4 py-6">
+    <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6">
+        {% if object %}Editar{% else %}Nuevo{% endif %} Movimiento
+    </h1>
+    
+    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow p-6">
+        <form method="post" novalidate id="transaccion-form">
+            {% csrf_token %}
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ form.monto.label }}
+                    </label>
+                    {{ form.monto|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ form.tipo.label }}
+                    </label>
+                    {{ form.tipo|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ form.fecha.label }}
+                    </label>
+                    {{ form.fecha|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ form.descripcion.label }}
+                    </label>
+                    {{ form.descripcion|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                </div>
+                
+                <div id="row-servicio">
+                    <label id="lbl-servicio" class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ form.cuenta_servicio.label }}
+                    </label>
+                    <div class="flex items-center space-x-2">
+                        {{ form.cuenta_servicio|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                        <button type="button" class="px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded text-sm" id="refresh-cuentas" title="Actualizar cuentas de servicio">↻</button>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ form.categoria.label }}
+                    </label>
+                    <div class="flex items-center space-x-2">
+                        {{ form.categoria|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                        <button type="button" class="px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded text-sm" id="refresh-categorias" title="Actualizar categorías">↻</button>
+                    </div>
+                </div>
+                
+                <div id="row-mediopago">
+                    <label id="lbl-mediopago" for="id_medio_pago" class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        {{ form.medio_pago.label }}
+                    </label>
+                    <div class="flex items-center space-x-2">
+                        {{ form.medio_pago|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                        <button type="button" class="px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded text-sm" id="refresh-medios" title="Actualizar medios de pago">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 mb-4">
+                <div class="flex items-start space-x-2">
+                    {{ form.ajuste|add_class:"mt-1" }}
+                    <div>
+                        <label for="id_ajuste" class="text-lg font-medium text-gray-700 dark:text-gray-300">{{ form.ajuste.label }}</label>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Marcar solo si deseas registrar un único movimiento (ajuste manual).</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center text-lg">
+                    <i class="fas fa-save mr-2"></i>Guardar
+                </button>
+                <a href="{% url 'core:transacciones_list' %}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md flex items-center text-lg">
+                    <i class="fas fa-times mr-2"></i>Cancelar
+                </a>
+            </div>
+        </form>
     </div>
-  </div>
-
-  <p>
-    {{ form.ajuste }} {{ form.ajuste.label_tag }}
-    <small class="text-muted">Marcar solo si deseas registrar un único movimiento (ajuste manual).</small>
-  </p>
-  <button class="btn btn-primary">Guardar</button>
-  <a href="{% url 'core:transacciones_list' %}" class="btn btn-secondary">Cancelar</a>
-</form>
-
-<!-- Aviso / previsualización de partida doble -->
-<div id="preview-doble" class="alert alert-info d-none">
-  <strong>Se crearán dos movimientos:</strong>
-  <ul class="mb-0">
-    <li id="prev-cargo"></li>
-    <li id="prev-abono"></li>
-  </ul>
+    
+    <!-- Aviso / previsualización de partida doble -->
+    <div id="preview-doble" class="mt-4 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200 p-4 rounded-md hidden">
+        <strong class="font-semibold">Se crearán dos movimientos:</strong>
+        <ul class="mt-2 list-disc list-inside">
+            <li id="prev-cargo"></li>
+            <li id="prev-abono"></li>
+        </ul>
+    </div>
 </div>
 
 <script>
@@ -110,7 +162,7 @@ document.addEventListener('DOMContentLoaded', function() {
                           selServicio.value !== selPago.value;
     
     if (chkAjuste.checked || !camposValidos) {
-      boxPrev.classList.add('d-none');
+      boxPrev.classList.add('hidden');
       return;
     }
 
@@ -145,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function() {
     liCargo.textContent = `${txtPago} en ${pagoOpt.text}: $${monto.toFixed(2)}`;
     liAbono.textContent = `${txtServ} en ${servOpt.text}: $${monto.toFixed(2)}`;
     
-    boxPrev.classList.remove('d-none');
+    boxPrev.classList.remove('hidden');
   }
 
   [selServicio, selPago, inpMonto, chkAjuste].forEach(el => {

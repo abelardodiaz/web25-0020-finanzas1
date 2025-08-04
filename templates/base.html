@@ -1,7 +1,7 @@
 <!-- file: templates/base.html -->
 {% load static %}
 <!DOCTYPE html>
-<html lang="es" class="light-theme">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -52,13 +52,13 @@
                     </a>
                     
                     <!-- Menú desplegable de Cuentas -->
-                    <div class="relative group">
-                        <button class="px-3 py-2 rounded-md text-sm font-medium flex items-center {% if 'cuentas' in request.path %}bg-gray-900 dark:bg-gray-700{% else %}hover:bg-gray-700 dark:hover:bg-gray-800{% endif %}">
+                    <div class="relative" id="accounts-dropdown">
+                        <button id="accounts-button" class="px-3 py-2 rounded-md text-sm font-medium flex items-center {% if 'cuentas' in request.path %}bg-gray-900 dark:bg-gray-700{% else %}hover:bg-gray-700 dark:hover:bg-gray-800{% endif %}">
                             <i class="fas fa-wallet mr-1"></i> Cuentas
                             <i class="fas fa-chevron-down ml-1 text-xs"></i>
                         </button>
                         
-                        <div class="absolute hidden group-hover:block bg-white dark:bg-gray-800 shadow-lg rounded-md mt-1 w-48 z-10">
+                        <div id="accounts-menu" class="absolute hidden bg-white dark:bg-gray-800 shadow-lg rounded-md mt-1 w-48 z-10 transition-all duration-300 ease-in-out transform opacity-0 translate-y-1 group-hover:opacity-100 group-hover:translate-y-0 group-hover:block">
                             <a href="{% url 'core:cuentas_saldos' %}" class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700">
                                 <i class="fas fa-coins mr-2"></i> Saldos
                             </a>
@@ -184,27 +184,37 @@
 </div>
 
     <!-- Botón para alternar temas -->
-    <button id="theme-toggle" class="fixed bottom-4 right-4 p-3 rounded-full bg-gray-200 dark:bg-gray-700">
-        🌙/☀️
+    <button id="theme-toggle" class="fixed bottom-4 right-4 p-3 rounded-full bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 shadow-lg hover:shadow-xl transition-all duration-200">
+        <i id="theme-icon" class="fas fa-moon"></i>
     </button>
 
     <!-- Script unificado y optimizado -->
 <script>
         // Manejo de temas
         const themeToggle = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        
+        function updateThemeIcon(isDark) {
+            if (isDark) {
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+        
         themeToggle.addEventListener('click', () => {
-            const isDark = document.documentElement.classList.contains('dark-theme');
-            document.documentElement.classList.toggle('dark-theme', !isDark);
-            document.documentElement.classList.toggle('light-theme', isDark);
+            const isDark = document.documentElement.classList.contains('dark');
+            document.documentElement.classList.toggle('dark', !isDark);
             localStorage.setItem('theme', isDark ? 'light' : 'dark');
+            updateThemeIcon(!isDark);
         });
 
         // Cargar tema guardado
         const savedTheme = localStorage.getItem('theme') || 'light';
-        document.documentElement.classList.add(savedTheme + '-theme');
-        document.documentElement.classList.remove(
-            savedTheme === 'dark' ? 'light-theme' : 'dark-theme'
-        );
+        if (savedTheme === 'dark') {
+            document.documentElement.classList.add('dark');
+        }
+        updateThemeIcon(savedTheme === 'dark');
 
         // Menú móvil
         document.addEventListener('DOMContentLoaded', () => {
@@ -238,6 +248,84 @@
                 }
     });
 });
+
+// Dropdown menu with delay
+function setupDropdown(buttonId, menuId) {
+    const button = document.getElementById(buttonId);
+    const menu = document.getElementById(menuId);
+    let hideTimeout;
+    let showTimeout;
+
+    if (!button || !menu) return;
+
+    const showMenu = () => {
+        clearTimeout(hideTimeout);
+        // Clear any pending hide
+        clearTimeout(showTimeout);
+        showTimeout = setTimeout(() => {
+            menu.classList.remove('hidden');
+        }, 50); // Small delay to show to make it feel natural
+    };
+
+    const hideMenu = () => {
+        clearTimeout(showTimeout);
+        hideTimeout = setTimeout(() => {
+            menu.classList.add('hidden');
+        }, 300); // 300ms delay before hiding
+    };
+
+    button.addEventListener('mouseenter', showMenu);
+    button.addEventListener('mouseleave', hideMenu);
+    menu.addEventListener('mouseenter', showMenu);
+    menu.addEventListener('mouseleave', hideMenu);
+}
+
+// Initialize the accounts dropdown
+document.addEventListener('DOMContentLoaded', () => {
+    setupDropdown('accounts-button', 'accounts-menu');
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Dropdown menu with delay
+    const accountsButton = document.getElementById('accounts-button');
+    const accountsMenu = document.getElementById('accounts-menu');
+    let menuTimeout;
+    
+    if (accountsButton && accountsMenu) {
+        accountsButton.addEventListener('mouseenter', () => {
+            clearTimeout(menuTimeout);
+            accountsMenu.classList.remove('hidden');
+            accountsMenu.classList.add('block');
+            setTimeout(() => {
+                accountsMenu.classList.remove('opacity-0', 'translate-y-1');
+            }, 10);
+        });
+        
+        accountsButton.addEventListener('mouseleave', () => {
+            menuTimeout = setTimeout(() => {
+                accountsMenu.classList.add('opacity-0', 'translate-y-1');
+                setTimeout(() => {
+                    accountsMenu.classList.add('hidden');
+                    accountsMenu.classList.remove('block');
+                }, 300);
+            }, 300);
+        });
+        
+        accountsMenu.addEventListener('mouseenter', () => {
+            clearTimeout(menuTimeout);
+            accountsMenu.classList.remove('opacity-0', 'translate-y-1');
+        });
+        
+        accountsMenu.addEventListener('mouseleave', () => {
+            accountsMenu.classList.add('opacity-0', 'translate-y-1');
+            setTimeout(() => {
+                accountsMenu.classList.add('hidden');
+                accountsMenu.classList.remove('block');
+            }, 300);
+        });
+    }
+});
+
 </script>
 
 {% block extra_js %}{% endblock %}

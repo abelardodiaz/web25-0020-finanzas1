@@ -71,7 +71,7 @@ class Cuenta(models.Model):
                                           related_name="cuentas")
     moneda            = models.CharField(max_length=3, choices=Moneda.choices,
                                           default=Moneda.MXN)
-    activo            = models.BooleanField(default=True)
+    # REMOVED: activo field
 
     # 🔸 campos que aparecen en «SALDOS - Cuentas.csv»
     referencia        = models.CharField(max_length=50, blank=True)
@@ -79,11 +79,7 @@ class Cuenta(models.Model):
     no_cliente        = models.CharField(max_length=30,  blank=True)
     fecha_apertura    = models.DateField(null=True, blank=True)
     no_contrato       = models.CharField(max_length=40,  blank=True)
-    dia_corte          = models.PositiveSmallIntegerField(
-        null=True,
-        blank=True,
-        help_text="Día del mes en que cierra el periodo (1-31)"  # fecha de corte base
-    )
+    # REMOVED: dia_corte field
 
     saldo_inicial = models.DecimalField(
         max_digits=10, 
@@ -133,7 +129,7 @@ class Categoria(models.Model):
         default=CategoriaTipo.PERSONAL,
     )
     padre     = models.ForeignKey(
-        "self",
+        'self',
         null=True,
         blank=True,
         on_delete=models.RESTRICT,

@@ -1,10 +1,15 @@
-# <!-- file: core/forms.py -->
-from django import forms
-from .models import (Cuenta, Categoria, Transaccion,
-                      generar_movs_recibo,
-                    Periodo, TransaccionTipo, TipoCuenta)
-from decimal import Decimal
+from __future__ import annotations
+
 from datetime import date
+from decimal import Decimal
+from typing import Any
+
+from django import forms
+
+from .models import (
+    Categoria, Cuenta, Periodo, TipoCuenta, Transaccion, TransaccionTipo,
+    generar_movs_recibo
+)
 
 
 class CuentaForm(forms.ModelForm):
@@ -24,7 +29,7 @@ class CuentaForm(forms.ModelForm):
         model = Cuenta
         fields = ["nombre", "tipo", "grupo", "naturaleza"]
         
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         
         # Cambiar esta condición para evitar el error en cuentas nuevas
@@ -33,7 +38,7 @@ class CuentaForm(forms.ModelForm):
             self.fields['grupo'].initial = self.instance.tipo.grupo
             self.fields['naturaleza'].initial = self.instance.tipo.naturaleza
             
-    def save(self, commit=True):
+    def save(self, commit: bool = True) -> Cuenta:
         cuenta = super().save(commit=False)
         grupo = self.cleaned_data['grupo']
         naturaleza = self.cleaned_data['naturaleza']
@@ -67,7 +72,7 @@ class TransaccionForm(forms.ModelForm):
             "fecha": forms.DateInput(attrs={"type": "date"}, format='%Y-%m-%d'),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         # Etiquetas más descriptivas
         self.fields["medio_pago"].label = "Cuenta de pago"
@@ -93,7 +98,7 @@ class TransaccionForm(forms.ModelForm):
         if str(tipo_value) != str(TransaccionTipo.TRANSFERENCIA):
             self.fields['cuenta_servicio'].queryset = Cuenta.objects.filter(tipo__grupo="SER").order_by("nombre")
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned = super().clean()
         tipo = cleaned.get("tipo")
         if tipo == TransaccionTipo.TRANSFERENCIA:
@@ -105,11 +110,11 @@ class TransaccionForm(forms.ModelForm):
                 raise forms.ValidationError("Las cuentas origen y destino deben ser distintas.")
         return cleaned
 
-def clean_monto(self):
-    monto = self.cleaned_data["monto"]
-    if monto == 0:
-        raise forms.ValidationError("El monto no puede ser cero.")
-    return monto
+    def clean_monto(self) -> Decimal:
+        monto = self.cleaned_data["monto"]
+        if monto == 0:
+            raise forms.ValidationError("El monto no puede ser cero.")
+        return monto
 
 class TransferenciaForm(forms.Form):
     cuenta_origen   = forms.ModelChoiceField(queryset=Cuenta.objects.all())
@@ -121,7 +126,7 @@ class TransferenciaForm(forms.Form):
     fecha           = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
     descripcion     = forms.CharField(required=False, widget=forms.Textarea(attrs={"rows": 2}))
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned = super().clean()
         origen  = cleaned.get("cuenta_origen")
         destino = cleaned.get("cuenta_destino")
@@ -152,7 +157,7 @@ class PeriodoForm(forms.ModelForm):
             'fecha_pronto_pago': forms.DateInput(attrs={'type': 'date'}),
         }
     
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         self.cuenta = kwargs.pop('cuenta', None)
         super().__init__(*args, **kwargs)
         
@@ -185,7 +190,7 @@ class PeriodoForm(forms.ModelForm):
                 )
                 self.fields[field_name].input_formats = ['%Y-%m-%d']
 
-    def clean(self):
+    def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
         cuenta = cleaned_data.get('cuenta', self.cuenta)
         
@@ -248,7 +253,7 @@ class IngresoForm(forms.ModelForm):
         widgets = {"fecha": forms.DateInput(attrs={"type": "date"})}
 
     # --------- PUNTO CLAVE: movemos la lógica aquí ----------
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         try:
             tipo_serv = TipoCuenta.objects.get(codigo="SERV")
@@ -259,7 +264,7 @@ class IngresoForm(forms.ModelForm):
             # Aún no se ha cargado el fixture; deja la lista vacía
             self.fields["cuenta_destino"].queryset = Cuenta.objects.none()
 
-    def save(self, commit=True):
+    def save(self, commit: bool = True) -> Transaccion:
         obj = super().save(commit=False)
         obj.tipo            = TransaccionTipo.INGRESO
         obj.medio_pago      = self.cleaned_data["cuenta_destino"]
@@ -268,3 +273,13 @@ class IngresoForm(forms.ModelForm):
         if commit:
             obj.save()
         return obj
+
+class TipoCuentaForm(forms.ModelForm):
+    class Meta:
+        model = TipoCuenta
+        fields = ['codigo', 'nombre', 'naturaleza']  # Asegurar que todos los campos estén incluidos
+        widgets = {
+            'codigo': forms.TextInput(attrs={'class': 'text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}),
+            'nombre': forms.TextInput(attrs={'class': 'text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}),
+            'naturaleza': forms.Select(attrs={'class': 'text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'}),
+        }

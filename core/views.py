@@ -26,7 +26,7 @@ from .models import Transaccion, Transferencia, Categoria
 import csv, io, pandas as pd
 
 from django.views.generic import TemplateView
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.core.paginator import Paginator
 from django.db.models import Sum
 from .forms import EstadoCuentaForm
@@ -72,6 +72,7 @@ import os
 
 from django.views.generic.edit import UpdateView
 from .models import TipoCuenta
+from .forms import TipoCuentaForm
 
 class DashboardView(TemplateView):
     template_name = 'core/dashboard.html'
@@ -214,7 +215,7 @@ class CuentaCreateView(SuccessMessageMixin, CreateView):
 class CuentaUpdateView(SuccessMessageMixin, UpdateView):
     model = Cuenta
     form_class = CuentaForm
-    template_name = 'cuentas/cuentas_form.html'
+    template_name = 'cuentas/cuenta_form.html'
     success_url = reverse_lazy('core:cuentas_list')
     success_message = "Cuenta «%(nombre)s» actualizada correctamente."
 
@@ -505,18 +506,6 @@ class EstadoCuentaView(TemplateView):
                 mov.es_cargo = mov.monto < 0
                 mov.monto_abs = abs(mov.monto)
 
-            ctx.update({
-                "cuenta": cuenta,
-                "saldo_inicial": saldo_inicial,
-                "saldo_final": saldo_final,
-                "total_cargos": total_cargos,
-                "total_abonos": total_abonos,
-                "delta_periodo": delta_periodo,
-                "movs_page": page_obj,
-                "totales_categoria": tot_cat,
-                "is_paginated": page_obj.has_other_pages(),
-            })
-                
             # 3) Saldo final
             delta_periodo = movs_qs.aggregate(total=Sum("monto"))["total"] or 0
             saldo_final   = saldo_inicial + delta_periodo
@@ -533,10 +522,17 @@ class EstadoCuentaView(TemplateView):
             page_number = self.request.GET.get("page")
             page_obj    = paginator.get_page(page_number)
 
+            # Anotar cada transacción en la página actual
+            for mov in page_obj:
+                mov.es_cargo = mov.monto < 0
+                mov.monto_abs = abs(mov.monto)
+
             ctx.update({
                 "cuenta": cuenta,
                 "saldo_inicial": saldo_inicial,
                 "saldo_final": saldo_final,
+                "total_cargos": total_cargos,
+                "total_abonos": total_abonos,
                 "delta_periodo": delta_periodo,
                 "movs_page": page_obj,
                 "totales_categoria": tot_cat,
@@ -929,18 +925,17 @@ class TipoCuentaListView(ListView):
     ordering            = ["nombre"]
 
 class TipoCuentaCreateView(CreateView):
-    model             = TipoCuenta
-    template_name     = "tipocuenta/tipocuenta_form.html"
-    fields            = ["codigo", "nombre"]
-    success_url       = reverse_lazy("core:tipocuenta_list")
-    success_message   = "Tipo de cuenta creado."
-    
+    model = TipoCuenta
+    form_class = TipoCuentaForm  # Asegurar que se usa el formulario completo
+    template_name = 'tipocuenta/tipocuenta_form.html'
+    success_url = reverse_lazy('core:tipocuenta_list')
+
 
 class TipoCuentaUpdateView(UpdateView):
     model = TipoCuenta
-    fields = ['codigo', 'nombre', 'naturaleza']  # Ajusta los campos según tu modelo
-    template_name = 'tipocuenta/tipocuenta_form.html'  # Ajusta la plantilla
-    success_url = reverse_lazy('core:tipocuenta_list')  # URL de redirección
+    form_class = TipoCuentaForm  # Asegurar que se usa el formulario completo
+    template_name = 'tipocuenta/tipocuenta_form.html'
+    success_url = reverse_lazy('core:tipocuenta_list')
 
 
 class TipoCuentaDeleteView(DeleteView):

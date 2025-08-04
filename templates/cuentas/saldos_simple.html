@@ -8,31 +8,31 @@
     </h1>
     
     {% for grupo, cuentas in grupos.items %}
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
-        <div class="bg-gray-100 dark:bg-gray-700 px-4 py-3 border-b border-gray-200 dark:border-gray-600">
+    <div class="card overflow-hidden mb-6">
+        <div class="bg-card-header px-4 py-3 border-b border-border">
             <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
                 {{ grupo }}
             </h2>
         </div>
-        <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                <thead class="bg-gray-50 dark:bg-gray-700">
+        <div class="overflow-x-auto flex justify-center">
+            <table class="w-full lg:w-auto table-auto divide-y divide-border">
+                <thead class="bg-card">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cuenta</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Tipo</th>
-                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Saldo Actual</th>
+                        <th class="px-4 py-3 text-left text-lg font-medium whitespace-nowrap">Cuenta</th>
+                        <th class="px-4 py-3 text-left text-lg font-medium whitespace-nowrap">Tipo</th>
+                        <th class="px-4 py-3 text-right text-lg font-medium whitespace-nowrap">Saldo Actual</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tbody class="divide-y divide-border">
                     {% for cuenta in cuentas %}
-                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
-                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-800 dark:text-gray-200">
+                    <tr class="hover:bg-card/50">
+                        <td class="px-4 py-3 text-gray-800 dark:text-gray-200">
                             {{ cuenta.nombre }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-200">
+                        <td class="px-4 py-3 text-gray-800 dark:text-gray-200">
                             {{ cuenta.tipo.nombre }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-right font-medium">
+                        <td class="px-4 py-3 text-right">
                             <span class="{% if cuenta.saldo > 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
                                 ${{ cuenta.saldo|floatformat:2|intcomma }}
                             </span>
@@ -41,12 +41,12 @@
                     {% endfor %}
                 </tbody>
                 {% if cuentas.0.saldo_grupo %}
-                <tfoot class="bg-gray-50 dark:bg-gray-700 font-semibold">
+                <tfoot class="bg-card-header font-semibold">
                     <tr>
-                        <td colspan="2" class="px-6 py-3 text-sm text-right text-gray-800 dark:text-gray-200">
+                        <td colspan="2" class="px-4 py-3 text-right text-gray-800 dark:text-gray-200">
                             Total {{ grupo }}:
                         </td>
-                        <td class="px-6 py-3 text-right text-sm font-medium">
+                        <td class="px-4 py-3 text-right">
                             <span class="{% if cuentas.0.saldo_grupo > 0 %}text-green-600 dark:text-green-400{% else %}text-red-600 dark:text-red-400{% endif %}">
                                 ${{ cuentas.0.saldo_grupo|floatformat:2|intcomma }}
                             </span>
@@ -60,7 +60,7 @@
     {% endfor %}
     
     <!-- Resumen general -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mt-8">
+    <div class="card p-6 mt-8">
         <h2 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4">
             <i class="fas fa-chart-pie mr-2"></i>Resumen General
         </h2>

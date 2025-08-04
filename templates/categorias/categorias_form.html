@@ -1,15 +1,37 @@
 {% extends "base.html" %}
+{% load widget_tweaks %}
 {% block title %}
-  {% if object %}Editar{% else %}Nueva{% endif %} Cuenta – Finanzas
+  {% if object %}Editar{% else %}Nueva{% endif %} Categoría – Finanzas
 {% endblock %}
 {% block content %}
-<h3>{% if object %}Editar{% else %}Nueva{% endif %} Categor&iacute;a</h3>
-<form method="post" novalidate>
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-primary">
-    {% if object %}Actualizar{% else %}Crear{% endif %}
-  </button>
-  <a href="{% url 'core:categorias_list' %}" class="btn btn-secondary">Cancelar</a>
-</form>
+<div class="container mx-auto px-4 py-6">
+    <h3 class="text-2xl font-bold mb-4">{% if object %}Editar{% else %}Nueva{% endif %} Categoría</h3>
+    <form method="post" novalidate class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow p-4 max-w-2xl">
+        {% csrf_token %}
+        <div class="grid grid-cols-1 gap-4">
+            {% for field in form %}
+            <div>
+                <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {{ field.label }}
+                </label>
+                {{ field|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                {% if field.help_text %}
+                <p class="text-sm text-text-secondary mt-1">{{ field.help_text }}</p>
+                {% endif %}
+                {% for error in field.errors %}
+                <p class="text-red-500 text-sm mt-1">{{ error }}</p>
+                {% endfor %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="mt-6 flex space-x-3">
+            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center text-lg">
+                <i class="fas fa-save mr-2"></i>{% if object %}Actualizar{% else %}Crear{% endif %}
+            </button>
+            <a href="{% url 'core:categorias_list' %}" class="px-4 py-2 bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-md flex items-center text-lg">
+                <i class="fas fa-times mr-2"></i>Cancelar
+            </a>
+        </div>
+    </form>
+</div>
 {% endblock %}

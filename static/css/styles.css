@@ -1,33 +1,104 @@
-/* Tema claro (default) */
-.light-theme {
-    --color-bg: #ffffff;
-    --color-text: #333333;
-    --color-primary: #3498db;
-    --color-accent: #f1c40f;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Paleta de colores para modo claro */
+:root {
+    --color-primary: #3b82f6;  /* blue-500 */
+    --color-secondary: #10b981; /* green-500 */
+    --color-accent: #8b5cf6;   /* violet-500 */
+    --color-background: #f9fafb; /* gray-50 */
+    --color-card: #ffffff;     /* white */
+    --color-text: #1f2937;     /* gray-800 */
+    --color-text-secondary: #4b5563; /* gray-600 */
+    --color-border: #e5e7eb;   /* gray-200 */
 }
 
-/* Tema oscuro */
-.dark-theme {
-    --color-bg: #1a202c;
-    --color-text: #e2e8f0;
-    --color-primary: #63b3ed;
-    --color-accent: #f6ad55;
+/* Paleta de colores para modo oscuro */
+.dark {
+    --color-primary: #60a5fa;  /* blue-400 */
+    --color-secondary: #34d399; /* green-400 */
+    --color-accent: #a78bfa;   /* violet-400 */
+    --color-background: #111827; /* gray-900 */
+    --color-card: #1f2937;     /* gray-800 */
+    --color-text: #f3f4f6;     /* gray-100 */
+    --color-text-secondary: #d1d5db; /* gray-300 */
+    --color-border: #374151;   /* gray-700 */
 }
 
-/* Estilos globales */
+/* Estilos base */
 body {
-    background-color: var(--color-bg);
+    @apply bg-background text-text font-sans antialiased;
+    background-color: var(--color-background);
     color: var(--color-text);
-    transition: background-color 0.3s, color 0.3s;
 }
 
 /* Componentes comunes */
-.btn {
-    @apply px-4 py-2 rounded font-semibold transition;
+.btn-primary, .btn-secondary, .btn-danger, .btn-success {
+    @apply px-4 py-2 rounded-md font-medium transition-colors duration-200;
 }
+
 .btn-primary {
-    @apply bg-primary hover:bg-primary-600 text-white;
+    background-color: var(--color-primary);
+    color: white;
 }
-.card {
-    @apply rounded-lg shadow p-6 bg-white dark:bg-gray-800;
+
+.btn-primary:hover {
+    background-color: color-mix(in srgb, var(--color-primary) 90%, black);
+}
+
+.btn-secondary {
+    background-color: var(--color-secondary);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background-color: color-mix(in srgb, var(--color-secondary) 90%, black);
+}
+
+.btn-danger {
+    background-color: #ef4444;
+    color: white;
+}
+
+.btn-danger:hover {
+    background-color: #dc2626;
+}
+
+.btn-success {
+    background-color: #10b981;
+    color: white;
+}
+
+.btn-success:hover {
+    background-color: #059669;
+}
+
+.btn-primary-sm, .btn-danger-sm {
+    @apply px-3 py-1 rounded text-sm font-medium;
+}
+
+.btn-primary-sm {
+    @apply bg-primary text-white;
+}
+
+.btn-danger-sm {
+    @apply bg-red-500 text-white;
+}
+
+.btn-pagination {
+    @apply px-3 py-1 rounded border border-border;
+} 
+
+/* Dark mode styles for date inputs */
+.dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0.8);
+}
+.dark input[type="date"] {
+    color-scheme: dark;
+}
+
+/* Estilos para calendarios en modo claro */
+input[type="date"] {
+    color-scheme: light;
 } 

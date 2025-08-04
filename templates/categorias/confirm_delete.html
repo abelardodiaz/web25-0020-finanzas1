@@ -1,11 +1,17 @@
 {% extends "base.html" %}
-{% block title %}Eliminar Cuenta – Finanzas{% endblock %}
+{% block title %}Eliminar Categoría – Finanzas{% endblock %}
 {% block content %}
-<h1>Eliminar Cuenta</h1>
-<p>¿Seguro que deseas eliminar la cuenta <strong>{{ object.nombre }}</strong>?</p>
-<form method="post">
-  {% csrf_token %}
-  <button type="submit" class="btn btn-danger">Sí, eliminar</button>
-  <a href="{% url 'core:categorias_list' %}" class="btn btn-secondary">Cancelar</a>
-</form>
+<div class="container mx-auto px-4 py-6">
+    <h1 class="text-2xl font-bold mb-4">Eliminar Categoría</h1>
+    <div class="card max-w-2xl">
+        <p class="text-lg mb-4">¿Seguro que deseas eliminar la categoría <strong>{{ object.nombre }}</strong>?</p>
+        <form method="post">
+            {% csrf_token %}
+            <div class="flex space-x-3">
+                <button type="submit" class="btn-danger">Sí, eliminar</button>
+                <a href="{% url 'core:categorias_list' %}" class="btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

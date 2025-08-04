@@ -1,54 +1,97 @@
 {% extends "base.html" %}
-{% block title %}categorias – Finanzas{% endblock %}
+{% block title %}Categorías – Finanzas{% endblock %}
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-3">
-  <h3>Categor&iacute;as de Transacciones</h3>
-  <a href="{% url 'core:categorias_create' %}" class="btn btn-success">+ Nueva Categor&iacute;a</a>
+<div class="container mx-auto px-4 py-6">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6">
+        <h3 class="text-2xl font-bold">Categorías de Transacciones</h3>
+        <a href="{% url 'core:categorias_create' %}" 
+           class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md flex items-center text-lg">
+            <i class="fas fa-plus-circle mr-2"></i>Nueva Categoría
+        </a>
+    </div>
+
+    <div class="card overflow-hidden">
+        <div class="overflow-x-auto flex justify-center">
+            <table class="w-full lg:w-auto table-auto divide-y divide-border">
+                <thead class="bg-card">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-lg font-medium whitespace-nowrap">Nombre</th>
+                        <th class="px-4 py-3 text-left text-lg font-medium whitespace-nowrap">Tipo</th>
+                        <th class="px-4 py-3 text-left text-lg font-medium whitespace-nowrap">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-border">
+                    {% for cuenta in categorias %}
+                    <tr class="hover:bg-card/50">
+                        <td class="px-4 py-3">{{ cuenta.nombre }}</td>
+                        <td class="px-4 py-3">{{ cuenta.tipo }}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex justify-end space-x-2">
+                                <!-- Botón Editar -->
+                                <a href="{% url 'core:categorias_edit' cuenta.pk %}" 
+                                   class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300 text-lg" 
+                                   title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                
+                                <!-- Botón Eliminar -->
+                                <a href="{% url 'core:categorias_delete' cuenta.pk %}" 
+                                   class="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300 text-lg" 
+                                   title="Eliminar">
+                                    <i class="fas fa-trash"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3" class="px-6 py-4 text-center text-text-secondary">No hay categorías.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    {% if is_paginated %}
+    <div class="mt-6 flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+        <form method="get" class="flex items-center">
+            <label for="paginate_by" class="text-lg mr-2">Mostrar:</label>
+            <select name="paginate_by" id="paginate_by" class="text-lg rounded border-gray-300 py-1 px-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" onchange="this.form.submit()">
+                <option value="10" {% if paginate_by == 10 %}selected{% endif %}>10</option>
+                <option value="50" {% if paginate_by == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if paginate_by == 100 %}selected{% endif %}>100</option>
+                <option value="0" {% if paginate_by == 0 %}selected{% endif %}>Todas</option>
+            </select>
+        </form>
+        <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+            {% if page_obj.has_previous %}
+            <a href="?page=1" class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <span class="sr-only">Primera</span>
+                <i class="fas fa-angle-double-left"></i>
+            </a>
+            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <span class="sr-only">Anterior</span>
+                <i class="fas fa-chevron-left"></i>
+            </a>
+            {% endif %}
+            
+            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-lg font-medium text-gray-700 dark:text-gray-300">
+                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+            </span>
+            
+            {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <span class="sr-only">Siguiente</span>
+                <i class="fas fa-chevron-right"></i>
+            </a>
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                <span class="sr-only">Última</span>
+                <i class="fas fa-angle-double-right"></i>
+            </a>
+            {% endif %}
+        </nav>
+    </div>
+    {% endif %}
 </div>
-
-<table class="table table-striped">
-  <thead>
-    <tr>
-      <th>Nombre</th><th>Tipo</th><th>Fecha Corte</th><th>Fecha Pago</th><th>Acciones</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for cuenta in categorias %}
-    <tr>
-      <td>{{ cuenta.nombre }}</td>
-      <td>{{ cuenta.tipo }}</td>
-      <td>{{ cuenta.fecha_corte }}</td>
-      <td>{{ cuenta.fecha_pago }}</td>
-      <td>
-        <a href="{% url 'core:categorias_edit' cuenta.pk %}" class="btn btn-sm btn-primary">Editar</a>
-        <a href="{% url 'core:categorias_delete' cuenta.pk %}" class="btn btn-sm btn-danger">Borrar</a>
-      </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="5" class="text-center">No hay categorias.</td></tr>
-    {% endfor %}
-  </tbody>
-</table>
-
-{% if is_paginated %}
-<nav>
-  <ul class="pagination">
-    {% if page_obj.has_previous %}
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page_obj.previous_page_number }}">«</a>
-    </li>
-    {% endif %}
-    {% for num in paginator.page_range %}
-      <li class="page-item {% if num == page_obj.number %}active{% endif %}">
-        <a class="page-link" href="?page={{ num }}">{{ num }}</a>
-      </li>
-    {% endfor %}
-    {% if page_obj.has_next %}
-    <li class="page-item">
-      <a class="page-link" href="?page={{ page_obj.next_page_number }}">»</a>
-    </li>
-    {% endif %}
-  </ul>
-</nav>
-{% endif %}
 {% endblock %}

@@ -1,0 +1,74 @@
+# Prompt para IA: Corrección de Paginación en Lista de Transacciones
+
+## Contexto
+Estamos trabajando en el archivo: `templates/transacciones/index.html`
+
+### Bloque de código relevante
+```html:transacciones/index.html
+<!-- Selector duplicado (ARRIBA) -->
+<form method="get" class="flex items-center">
+    <label for="paginate_by" class="text-lg mr-2">Mostrar:</label>
+    <select name="paginate_by" class="text-lg rounded border-gray-300 py-1 px-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" onchange="this.form.submit()">
+        <option value="10">10</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="0">Todas</option>
+    </select>
+</form>
+
+<!-- ... -->
+
+<!-- Selector correcto (PIE DE PÁGINA) -->
+<div class="mt-6 flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+    <form method="get" class="flex items-center">
+        <label for="paginate_by" class="text-lg mr-2">Mostrar:</label>
+        <select name="paginate_by" class="text-lg rounded border-gray-300 py-1 px-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" onchange="this.form.submit()">
+            <option value="10" {% if paginate_by == 10 %}selected{% endif %}>10</option>
+            <option value="50" {% if paginate_by == 50 %}selected{% endif %}>50</option>
+            <option value="100" {% if paginate_by == 100 %}selected{% endif %}>100</option>
+            <option value="0" {% if paginate_by == 0 %}selected{% endif %}>Todas</option>
+        </select>
+    </form>
+    <!-- ... -->
+</div>
+```
+
+## Problema
+1. Existen dos selectores "Mostrar" idénticos
+2. Solo necesitamos conservar el selector del pie de página
+3. El selector superior debe eliminarse
+4. El selector debe reflejar la selección actual
+
+## Solución deseada
+1. Eliminar el selector superior (el que está fuera del contenedor de paginación)
+2. Mantener solo el selector dentro del contenedor `mt-6 flex...`
+3. Añadir atributo `selected` a la opción activa
+4. Asegurar que el selector funcione correctamente
+
+## Pasos específicos
+```html:transacciones/index.html
+<code_block_to_apply_changes_from>
+<!-- ELIMINAR ESTE BLOQUE -->
+<form method="get" class="flex items-center">
+    ...
+</form>
+
+<!-- MANTENER Y MEJORAR ESTE BLOQUE -->
+<div class="mt-6 flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+    <form method="get" class="flex items-center">
+        <label for="paginate_by" class="text-lg mr-2">Mostrar:</label>
+        <select name="paginate_by" class="text-lg rounded border-gray-300 py-1 px-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" onchange="this.form.submit()">
+            <option value="10" {% if paginate_by == 10 %}selected{% endif %}>10</option>
+            <option value="50" {% if paginate_by == 50 %}selected{% endif %}>50</option>
+            <option value="100" {% if paginate_by == 100 %}selected{% endif %}>100</option>
+            <option value="0" {% if paginate_by == 0 %}selected{% endif %}>Todas</option>
+        </select>
+    </form>
+    <!-- ... resto de la paginación ... -->
+</div>
+</code_block_to_apply_changes_from>
+
+## Verificación
+- Solo debe existir un selector "Mostrar" en el pie de página
+- La opción seleccionada debe reflejar el valor actual de `paginate_by`
+- Al cambiar la selección debe recargarse la página con el nuevo valor

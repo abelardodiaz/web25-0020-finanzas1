@@ -4,6 +4,22 @@
 ## 📊 Sistema de Gestión Financiera
 
 
+## 📅 Historial de Cambios
+
+### [0.5.5] - 2025-08-04
+**Modernización completa y unificación de estilos**
+
+- 🐍 Migración a Python 3.12 con type hints en todo el código
+- 🎨 Unificación de estilos UI con Tailwind CSS en todas las plantillas
+- ✨ Implementación consistente de dark/light mode en formularios
+- 🧹 Eliminación de código redundante y optimización de templates
+- 📚 Actualización de la guía de estilos con componentes reutilizables
+- 🚀 Mejoras en formularios: campos más grandes, validación mejorada
+- 🗑️ Eliminación de campos innecesarios en modelos y templates
+- 📊 Centralización de estilos para elementos nativos (calendarios)
+
+
+
 ### [0.5.0] - 2025-08-02
 **Mejoras y Nuevas Funcionalidades:**
 - Migración completa a Tailwind CSS para todas las plantillas
@@ -240,4 +256,3 @@ Este proyecto es una herramienta integral para administrar finanzas personales y
 - Clasificación de gastos para análisis presupuestal
 - Automatización de pagos recurrentes
 - Control de tarjetas de crédito (cortes y pagos)
-

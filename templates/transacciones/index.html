@@ -9,9 +9,11 @@
         <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-4 md:mb-0">
             Transacciones
         </h1>
-        <a href="{% url 'core:transacciones_create' %}" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md flex items-center text-lg">
-            <i class="fas fa-plus-circle mr-2"></i>Nueva Transacción
-        </a>
+        <div class="flex items-center space-x-4">
+            <a href="{% url 'core:transacciones_create' %}" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md flex items-center text-lg">
+                <i class="fas fa-plus-circle mr-2"></i>Nueva Transacción
+            </a>
+        </div>
     </div>
 
     <!-- Filtros - fondo más suave -->
@@ -19,10 +21,10 @@
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             {% for field in filter.form %}
             <div>
-                <label class="block text-base font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
                     {{ field.label }}
                 </label>
-                {{ field|add_class:"text-base" }}
+                {{ field|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
             </div>
             {% endfor %}
         </div>
@@ -39,23 +41,22 @@
     <!-- Tabla de transacciones - fondos más suaves -->
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow overflow-hidden"> <!-- Cambiado bg-white a bg-gray-50 -->
         <div class="overflow-x-auto">
-            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-base">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-lg">
                 <thead class="bg-gray-100 dark:bg-gray-700"> <!-- Cambiado bg-gray-50 a bg-gray-100 -->
                     <tr>
-                        <th class="px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
-                        <th class="px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Descripción</th>
-                        <th class="px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">Cuenta pago</th>
-                        <th class="px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden md:table-cell">Servicio</th>
-                        <th class="px-3 py-2 text-left text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden lg:table-cell">Categoría</th>
-                        <th class="px-3 py-2 text-right text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Cargo</th>
-                        <th class="px-3 py-2 text-right text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Abono</th>
-                        <th class="px-3 py-2 text-right text-sm font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Acciones</th>
+                        <th class="px-4 py-3 text-left text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
+                        <th class="px-4 py-3 text-left text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Descripción</th>
+                        <th class="px-4 py-3 text-left text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden sm:table-cell">Cuenta pago</th>
+                        <th class="px-4 py-3 text-left text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider hidden lg:table-cell">Categoría</th>
+                        <th class="px-4 py-3 text-right text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Cargo</th>
+                        <th class="px-4 py-3 text-right text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Abono</th>
+                        <th class="px-4 py-3 text-right text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Acciones</th>
                     </tr>
                 </thead>
                 <tbody class="bg-gray-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"> <!-- Cambiado bg-white a bg-gray-50 -->
                     {% for grupo in grupos %}
                     <tr class="bg-gray-100 dark:bg-gray-700"> <!-- Cambiado bg-gray-50 a bg-gray-100 -->
-                        <td colspan="8" class="px-3 py-2 text-base"> <!-- Ajustado colspan de 9 a 8 -->
+                        <td colspan="7" class="px-3 py-2 text-base"> <!-- Ajustado colspan de 8 a 7 -->
                             <div class="flex items-center">
                                 <span class="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 text-sm px-2 py-1 rounded mr-2" title="{{ grupo.uuid }}"> <!-- Cambiado bg-gray-200 a bg-gray-300 -->
                                     <i class="fas fa-link mr-1"></i> Grupo
@@ -76,25 +77,22 @@
                     
                     {% for t in grupo.transacciones %}
                     <tr class="hover:bg-gray-100 dark:hover:bg-gray-700"> <!-- Cambiado hover:bg-gray-50 a hover:bg-gray-100 -->
-                        <td class="px-3 py-2 whitespace-nowrap text-base text-gray-700 dark:text-gray-200"> <!-- Cambiado text-gray-800 a text-gray-700 -->
+                        <td class="px-4 py-3 whitespace-nowrap text-lg text-gray-700 dark:text-gray-200"> <!-- Cambiado text-gray-800 a text-gray-700 -->
                             <span class="cursor-help border-b border-dashed border-gray-400" 
                                   title="{{ t.fecha|date:'d F Y' }}">
                                 {{ t.fecha|short_date_es }}
                             </span>
                         </td>
-                        <td class="px-3 py-2 text-base text-gray-700 dark:text-gray-200"> <!-- Cambiado text-gray-800 a text-gray-700 -->
+                        <td class="px-4 py-3 text-lg text-gray-700 dark:text-gray-200"> <!-- Cambiado text-gray-800 a text-gray-700 -->
                             {{ t.descripcion }}
                         </td>
-                        <td class="px-3 py-2 whitespace-nowrap text-base text-gray-700 dark:text-gray-200 hidden sm:table-cell">
+                        <td class="px-4 py-3 whitespace-nowrap text-lg text-gray-700 dark:text-gray-200 hidden sm:table-cell">
                             {{ t.medio_pago.nombre }}
                         </td>
-                        <td class="px-3 py-2 whitespace-nowrap text-base text-gray-700 dark:text-gray-200 hidden md:table-cell">
-                            {{ t.cuenta_servicio.nombre|default:"—" }}
-                        </td>
-                        <td class="px-3 py-2 whitespace-nowrap text-base text-gray-700 dark:text-gray-200 hidden lg:table-cell">
+                        <td class="px-4 py-3 whitespace-nowrap text-lg text-gray-700 dark:text-gray-200 hidden lg:table-cell">
                             {{ t.categoria }}
                         </td>
-                        <td class="px-3 py-2 whitespace-nowrap text-base text-right font-medium">
+                        <td class="px-4 py-3 whitespace-nowrap text-lg text-right font-medium">
                             {% if t.medio_pago.tipo.naturaleza == "DEUDORA" and t.monto > 0 %}
                                 <span class="text-red-600 dark:text-red-400">
                                     ${{ t.monto|floatformat:2 }}
@@ -105,7 +103,7 @@
                                 </span>
                             {% endif %}
                         </td>
-                        <td class="px-3 py-2 whitespace-nowrap text-base text-right font-medium">
+                        <td class="px-4 py-3 whitespace-nowrap text-lg text-right font-medium">
                             {% if t.medio_pago.tipo.naturaleza == "DEUDORA" and t.monto < 0 %}
                                 <span class="text-green-600 dark:text-green-400">
                                     ${{ t.monto|absolute|floatformat:2 }}
@@ -116,7 +114,7 @@
                                 </span>
                             {% endif %}
                         </td>
-                        <td class="px-3 py-2 whitespace-nowrap text-base text-right font-medium">
+                        <td class="px-4 py-3 whitespace-nowrap text-lg text-right font-medium">
                             <div class="flex justify-end space-x-2">
                                 <a href="{% url 'core:transacciones_edit' t.id %}" class="text-yellow-600 hover:text-yellow-900 dark:text-yellow-400 dark:hover:text-yellow-300 text-lg" title="Editar">
                                     <i class="fas fa-edit"></i>
@@ -130,7 +128,7 @@
                     {% endfor %}
                     {% empty %}
                     <tr>
-                        <td colspan="8" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400"> <!-- Ajustado colspan de 9 a 8 -->
+                        <td colspan="7" class="px-6 py-4 text-center text-gray-500 dark:text-gray-400"> <!-- Ajustado colspan de 8 a 7 -->
                             No se encontraron transacciones
                         </td>
                     </tr>
@@ -140,31 +138,32 @@
         </div>
     </div>
 
-    <!-- Paginación -->
+    <!-- Paginación (solo al final) -->
     {% if is_paginated %}
-    <div class="mt-6 flex justify-center">
+    <div class="mt-6 flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
+        <!-- Removed the "Mostrar" dropdown form -->
         <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
             {% if page_obj.has_previous %}
-            <a href="?page=1" class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"> <!-- Cambiados fondos y textos -->
+            <a href="?page=1" class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <span class="sr-only">Primera</span>
                 <i class="fas fa-angle-double-left"></i>
             </a>
-            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"> <!-- Cambiados fondos y textos -->
+            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <span class="sr-only">Anterior</span>
                 <i class="fas fa-chevron-left"></i>
             </a>
             {% endif %}
             
-            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300"> <!-- Cambiados fondos y textos -->
+            <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-lg font-medium text-gray-700 dark:text-gray-300">
                 Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
             </span>
             
             {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"> <!-- Cambiados fondos y textos -->
+            <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <span class="sr-only">Siguiente</span>
                 <i class="fas fa-chevron-right"></i>
             </a>
-            <a href="?page={{ page_obj.paginator.num_pages }}" class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"> <!-- Cambiados fondos y textos -->
+            <a href="?page={{ page_obj.paginator.num_pages }}" class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <span class="sr-only">Última</span>
                 <i class="fas fa-angle-double-right"></i>
             </a>
@@ -173,4 +172,15 @@
     </div>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Setear valor actual del select
+    document.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentItems = urlParams.get('paginate_by') || '10';
+        document.getElementById('items-per-page').value = currentItems;
+    });
+</script>
 {% endblock %}
