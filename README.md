@@ -32,12 +32,15 @@
 - Fechas abreviadas (01/Ago) con tooltip para fecha completa
 - Eliminación de columna "Transacción principal" innecesaria
 
-### [0.4.1] - 2025-07-31
+### [0.4.7] - 2025-07-31
+- soporte para hacer swich entre la bd sqllite y la base de datos mariadb
+
+### [0.4.6] - 2025-07-31
 - Implementación inicial de sistema de autenticación
 - Correcciones en generación de estados de cuenta
 - Mejoras en el cálculo de saldos
 
-## [0.4.0] - 2025-07-29 - 19:50 hrs
+## [0.4.5] - 2025-07-29 - 19:50 hrs
 
 ### ✨ Nuevas Funcionalidades
 
