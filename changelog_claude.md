@@ -1,5 +1,54 @@
 # 📝 CHANGELOG CLAUDE - WEB25-0020-FINANZAS1
 
+## 🗓️ 05 de Agosto, 2025, 21:00 horas
+
+### 🎨 **UI/UX Semantic Color Revolution** `HIGH IMPACT`
+#### ✨ **Corrección de Lógica Visual Contable**
+- **🚀 Enhanced:** `templates/transacciones/index.html`
+  - ✅ **Simplificación visual:** Eliminados colores y signos de las columnas Cargo/Abono
+  - ✅ **Presentación neutra:** Solo montos sin formato especial para mejor claridad
+  - ✅ **Experiencia limpia:** Focus en los datos sin distracciones visuales
+  - 📈 **Impact:** Vista más profesional y menos confusa para usuarios
+
+- **🚀 Enhanced:** `templates/cuentas/cuenta_detail.html`
+  - ✅ **Columnas separadas:** Independientes para "Cargos" y "Abonos" (eliminada columna "Tipo")
+  - ✅ **Lógica contable correcta:** Verde para aumentos, Rojo para disminuciones
+  - ✅ **Signos semánticamente correctos:** +/- según naturaleza de cuenta
+  - ✅ **DEUDORAS:** Cargo=Verde(+), Abono=Rojo(-)
+  - ✅ **ACREEDORAS:** Cargo=Rojo(-), Abono=Verde(+)
+  - 📈 **Impact:** Visualización contable precisa según principios de doble partida
+
+- **🚀 Enhanced:** `templates/periodos/detalle.html`
+  - ✅ **Corrección crítica TDC:** Para tarjetas de crédito (cuentas acreedoras)
+  - ✅ **Cargos:** Montos positivos (pagos que reducen deuda)
+  - ✅ **Abonos:** Montos negativos (compras que aumentan deuda)
+  - ✅ **Lógica bancaria:** Compras con TDC aparecen como ABONOS (correcto contablemente)
+  - 🎯 **Root Cause:** Tarjeta de crédito es cuenta acreedora, las compras aumentan la deuda vía abonos
+  - 📈 **Impact:** Estados de cuenta TDC ahora reflejan correctamente la realidad bancaria
+
+#### 🧠 **Fundamento Contable Implementado**
+- **📊 Principio aplicado:** Según `guias/registros_contables.md`
+  - ✅ **Cuentas DEUDORAS** (Bancos, Efectivo): Aumentan con Cargos, Disminuyen con Abonos
+  - ✅ **Cuentas ACREEDORAS** (TDC, Pasivos): Aumentan con Abonos, Disminuyen con Cargos
+  - ✅ **Colores semánticos:** Verde = Aumento, Rojo = Disminución (independiente de cargo/abono)
+  - ✅ **Signos matemáticos:** Reflejan el impacto real en el saldo de la cuenta
+
+### 📊 **Métricas de Corrección Visual**
+- **Templates Actualizados:** 3 archivos críticos de visualización
+- **Lógica Contable:** 100% alineada con principios de doble partida
+- **Experiencia TDC:** Corregida para reflejar estados de cuenta bancarios reales
+- **Separación de Columnas:** Cargos y Abonos independientes en detalle de cuenta
+- **Simplicidad Visual:** Eliminada complejidad innecesaria en vista de transacciones
+
+### 🎯 **Impacto en Usuario Final**
+- **🏦 Realismo Bancario:** Estados TDC idénticos a los bancarios reales
+- **📊 Claridad Contable:** Colores que realmente significan aumento/disminución
+- **🎨 Experiencia Limpia:** Menos ruido visual, más focus en datos importantes
+- **⚖️ Coherencia Matemática:** Signos que reflejan impacto real en saldos
+- **📱 Profesionalismo:** Presentación que respeta estándares contables
+
+---
+
 ## 🗓️ 05 de Agosto, 2025, 20:30 horas
 
 ### ⚖️ **CONTABILIDAD: Implementación de Doble Partida** `CRITICAL REVOLUTION`

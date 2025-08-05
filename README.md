@@ -6,6 +6,25 @@
 
 ## 📅 Historial de Cambios
 
+### [0.5.8] - 05 de Agosto, 2025
+
+### ✨ Visualización Financiera Mejorada
+- 🎨 **Estados de cuenta más claros:** Las columnas de cargos y abonos ahora se muestran por separado para mayor claridad
+- 📊 **Colores intuitivos:** Verde para aumentos y rojo para disminuciones según el tipo de cuenta
+- 🏦 **Tarjetas de crédito realistas:** Los estados ahora reflejan exactamente cómo aparecen en los bancos reales
+- ✨ **Vista simplificada:** Eliminación de elementos visuales confusos para enfocarse en los datos importantes
+
+### 🔧 Correcciones Importantes
+- ✅ **Lógica de tarjetas de crédito:** Corregida la visualización para que las compras aparezcan correctamente como abonos
+- ✅ **Principios contables:** Implementación completa del sistema de doble partida según estándares profesionales
+- ✅ **Balance automático:** Cada transacción genera automáticamente sus contrapartidas balanceadas
+
+### 📈 Beneficios para el Usuario
+- Mayor facilidad para entender los movimientos financieros
+- Estados de cuenta idénticos a los que recibes del banco
+- Informes más profesionales y precisos
+- Sistema preparado para auditorías contables
+
 ### [0.5.7] - 2025-08-05
 **Revolución contable: Sistema de doble partida implementado**  
 *Actualizado: 05/08/2025 20:30 hrs*

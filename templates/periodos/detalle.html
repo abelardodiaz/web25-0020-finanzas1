@@ -64,10 +64,12 @@
                     <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{{ m.fecha|date:"d/m/Y" }}</td>
                     <td class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300">{{ m.descripcion }}</td>
                     <td class="px-4 py-2 text-sm text-right text-gray-700 dark:text-gray-300">
-                        {% if m.monto < 0 %}{{ m.monto|floatformat:2|cut:"-" }}{% endif %}
+                        {% comment %}Para TDC (acreedora): Cargos reducen deuda (pagos), monto positivo{% endcomment %}
+                        {% if m.monto > 0 %}{{ m.monto|floatformat:2 }}{% endif %}
                     </td>
                     <td class="px-4 py-2 text-sm text-right text-gray-700 dark:text-gray-300">
-                        {% if m.monto > 0 %}{{ m.monto|floatformat:2 }}{% endif %}
+                        {% comment %}Para TDC (acreedora): Abonos aumentan deuda (compras), monto negativo{% endcomment %}
+                        {% if m.monto < 0 %}{{ m.monto|floatformat:2|cut:"-" }}{% endif %}
                     </td>
                 </tr>
                 {% empty %}

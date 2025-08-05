@@ -35,9 +35,9 @@
                 <div>
                     <p class="text-gray-700 dark:text-gray-300"><strong>Saldo Actual:</strong> 
                         {% if cuenta.saldo < 0 %}
-                            <span class="text-red-600 dark:text-red-400">-${{ cuenta.saldo|absolute|floatformat:2|intcomma }}</span>
+                            <span class="text-gray-600 dark:text-gray-400">-${{ cuenta.saldo|absolute|floatformat:2|intcomma }}</span>
                         {% else %}
-                            <span class="text-green-600 dark:text-green-400">${{ cuenta.saldo|floatformat:2|intcomma }}</span>
+                            <span class="text-gray-800 dark:text-gray-200">${{ cuenta.saldo|floatformat:2|intcomma }}</span>
                         {% endif %}
                     </p>
                     <p class="text-gray-700 dark:text-gray-300"><strong>Fecha Apertura:</strong> {{ cuenta.fecha_apertura|date:"d/m/Y" }}</p>
@@ -59,15 +59,16 @@
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Fecha</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Descripción</th>
                     <th class="px-4 py-3 text-left text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Categoría</th>
-                    <th class="px-4 py-3 text-center text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Tipo</th>
-                    <th class="px-4 py-3 text-right text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Monto</th>
+                    <th class="px-4 py-3 text-right text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Cargos</th>
+                    <th class="px-4 py-3 text-right text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Abonos</th>
                     <th class="px-4 py-3 text-right text-sm font-medium text-gray-500 dark:text-gray-400 uppercase">Saldo Parcial</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-border">
                 <tr class="bg-blue-50 dark:bg-blue-900/30">
-                    <td colspan="4" class="px-4 py-3 italic text-gray-700 dark:text-gray-300">Saldo Inicial</td>
-                    <td class="px-4 py-3 text-right">${{ saldo_inicial|floatformat:2|intcomma }}</td>
+                    <td colspan="3" class="px-4 py-3 italic text-gray-700 dark:text-gray-300">Saldo Inicial</td>
+                    <td class="px-4 py-3 text-right"></td>
+                    <td class="px-4 py-3 text-right"></td>
                     <td class="px-4 py-3 text-right">${{ saldo_inicial|floatformat:2|intcomma }}</td>
                 </tr>
                 
@@ -76,17 +77,25 @@
                     <td class="px-4 py-3 text-gray-800 dark:text-gray-200">{{ movimiento.fecha|date:"d/m/Y" }}</td>
                     <td class="px-4 py-3 text-gray-800 dark:text-gray-200">{{ movimiento.descripcion }}</td>
                     <td class="px-4 py-3 text-gray-800 dark:text-gray-200">{{ movimiento.categoria }}</td>
-                    <td class="px-4 py-3 text-center">
+                    <td class="px-4 py-3 text-right">
                         {% if movimiento.es_cargo %}
-                            <span class="text-red-600">Cargo</span>
-                        {% else %}
-                            <span class="text-green-600">Abono</span>
+                            {% if cuenta.naturaleza == "DEUDORA" %}
+                                <span class="text-green-600 dark:text-green-400">+${{ movimiento.display_monto|floatformat:2 }}</span>
+                            {% else %}
+                                <span class="text-red-600 dark:text-red-400">-${{ movimiento.display_monto|floatformat:2 }}</span>
+                            {% endif %}
                         {% endif %}
                     </td>
-                    <td class="px-4 py-3 text-right {% if movimiento.es_cargo %}text-red-600{% else %}text-green-600{% endif %}">
-                        {% if movimiento.es_cargo %}-{% else %}+{% endif %}${{ movimiento.display_monto|floatformat:2 }}
+                    <td class="px-4 py-3 text-right">
+                        {% if not movimiento.es_cargo %}
+                            {% if cuenta.naturaleza == "DEUDORA" %}
+                                <span class="text-red-600 dark:text-red-400">-${{ movimiento.display_monto|floatformat:2 }}</span>
+                            {% else %}
+                                <span class="text-green-600 dark:text-green-400">+${{ movimiento.display_monto|floatformat:2 }}</span>
+                            {% endif %}
+                        {% endif %}
                     </td>
-                    <td class="px-4 py-3 text-right {% if movimiento.saldo_parcial < 0 %}text-red-600{% else %}text-green-600{% endif %}">
+                    <td class="px-4 py-3 text-right {% if movimiento.saldo_parcial < 0 %}text-gray-600 dark:text-gray-400{% else %}text-gray-800 dark:text-gray-200{% endif %}">
                         ${{ movimiento.display_saldo_parcial|floatformat:2 }}
                     </td>
                 </tr>
@@ -96,20 +105,15 @@
                 </tr>
                 {% endfor %}
                 
-                <tr class="bg-green-50 dark:bg-green-900/30">
-                    <td colspan="4" class="px-4 py-3 italic text-gray-700 dark:text-gray-300">Saldo Final</td>
+                <tr class="bg-gray-100 dark:bg-gray-700/30">
+                    <td colspan="3" class="px-4 py-3 italic text-gray-700 dark:text-gray-300">Saldo Final</td>
+                    <td class="px-4 py-3 text-right"></td>
+                    <td class="px-4 py-3 text-right"></td>
                     <td class="px-4 py-3 text-right">
                         {% if cuenta.saldo < 0 %}
-                            <span class="text-red-600 dark:text-red-400">-${{ cuenta.saldo|absolute|floatformat:2|intcomma }}</span>
+                            <span class="text-gray-600 dark:text-gray-400">-${{ cuenta.saldo|absolute|floatformat:2|intcomma }}</span>
                         {% else %}
-                            <span class="text-green-600 dark:text-green-400">${{ cuenta.saldo|absolute|floatformat:2|intcomma }}</span>
-                        {% endif %}
-                    </td>
-                    <td class="px-4 py-3 text-right">
-                        {% if cuenta.saldo < 0 %}
-                            <span class="text-red-600 dark:text-red-400">-${{ cuenta.saldo|absolute|floatformat:2|intcomma }}</span>
-                        {% else %}
-                            <span class="text-green-600 dark:text-green-400">${{ cuenta.saldo|absolute|floatformat:2|intcomma }}</span>
+                            <span class="text-gray-800 dark:text-gray-200">${{ cuenta.saldo|absolute|floatformat:2|intcomma }}</span>
                         {% endif %}
                     </td>
                 </tr>
