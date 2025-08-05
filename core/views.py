@@ -21,7 +21,7 @@ from django.db import transaction
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from .forms import TransferenciaForm, IngresoForm, forms
-from .models import Transaccion, Transferencia, Categoria
+from .models import Transaccion, Categoria
 
 import csv, io, pandas as pd
 
@@ -100,14 +100,14 @@ class DashboardView(TemplateView):
         except Exception as e:
             context['db_size'] = "N/A"
         
-        # Cuentas con más movimientos (top 5)
+        # Cuentas con más movimientos (top 5) - actualizado para v0.6.0
         context['cuentas_movimientos'] = Cuenta.objects.annotate(
-            num_movimientos=Count('transacciones_pago')
+            num_movimientos=Count('transacciones_origen') + Count('transacciones_destino')
         ).order_by('-num_movimientos')[:5]
         
-        # Últimas transacciones (corregido)
+        # Últimas transacciones (corregido para v0.6.0)
         context['ultimas_transacciones'] = Transaccion.objects.select_related(
-            'categoria', 'medio_pago'  # Campos válidos
+            'categoria', 'cuenta_origen', 'cuenta_destino'  # Campos v0.6.0
         ).order_by('-fecha')[:10]
         
         # Precalcular valores absolutos
@@ -257,96 +257,42 @@ class CategoriaDeleteView(SuccessMessageMixin, DeleteView):
 class TransaccionListView(FilterView):
     model               = Transaccion
     filterset_class     = TransaccionFilter
-    template_name       = "transacciones/index.html"
+    template_name       = "transacciones/index.html"  # Template principal
     context_object_name = "transacciones"
     paginate_by         = 50
-    ordering            = ["-fecha"]  # redundante: ya viene del Meta
+    ordering            = ["-fecha"]
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Agrupar transacciones por grupo_uuid
-        grupos = {}
+        # v0.6.0: Sin agrupación compleja - cada transacción es independiente
+        # Simplemente pasamos las transacciones tal como están
+        context['transacciones_v060'] = context['transacciones']
+        
+        # Para compatibilidad con templates legacy, crear grupos simples
+        grupos = []
         for t in context['transacciones']:
-            grupo = grupos.setdefault(t.grupo_uuid, {
-                'uuid': t.grupo_uuid,
-                'transacciones': [],
-                'ajuste': t.ajuste,
+            grupos.append({
+                'uuid': t.id,  # Usar ID como identificador único
+                'transacciones': [t],  # Una transacción por grupo
+                'ajuste': False,  # No hay ajustes en v0.6.0
                 'transferencia': t.tipo == TransaccionTipo.TRANSFERENCIA
             })
-            grupo['transacciones'].append(t)
         
-        context['grupos'] = grupos.values()
+        context['grupos'] = grupos
         return context
 
+# === VISTA SIMPLIFICADA v0.6.0 ===
 class TransaccionCreateView(SuccessMessageMixin, CreateView):
-    model         = Transaccion
-    form_class    = TransaccionForm
+    model = Transaccion
+    form_class = TransaccionForm
     template_name = "transacciones/transacciones_form.html"
-    success_url   = reverse_lazy("core:transacciones_list")
-    success_message = "Transacción registrada exitosamente."
+    success_url = reverse_lazy("core:transacciones_list")
+    success_message = "✅ Transacción registrada exitosamente"
 
     def form_valid(self, form):
-        with transaction.atomic():
-            tipo = form.cleaned_data["tipo"]
-            if tipo == TransaccionTipo.TRANSFERENCIA:
-                origen   = form.cleaned_data["medio_pago"]
-                destino  = form.cleaned_data["cuenta_servicio"]
-                monto    = abs(form.cleaned_data["monto"])
-                fecha    = form.cleaned_data["fecha"]
-                desc     = form.cleaned_data["descripcion"] or f"Transferencia {origen} → {destino}"
-
-                # Categoría especial
-                categoria, _ = Categoria.objects.get_or_create(nombre="Transferencia interna", defaults={"tipo": "INTERNA"})
-
-                grupo = uuid4()
-                t1 = Transaccion.objects.create(
-                    monto=-monto,
-                    tipo=TransaccionTipo.GASTO,
-                    fecha=fecha,
-                    descripcion=desc,
-                    medio_pago=origen,
-                    categoria=categoria,
-                    grupo_uuid=grupo,
-                )
-                t2 = Transaccion.objects.create(
-                    monto=monto,
-                    tipo=TransaccionTipo.INGRESO,
-                    fecha=fecha,
-                    descripcion=desc,
-                    medio_pago=destino,
-                    categoria=categoria,
-                    grupo_uuid=grupo,
-                )
-                # Establecer self.object para evitar el error
-                self.object = t1
-                messages.success(self.request, "Transferencia registrada correctamente.")
-                return HttpResponseRedirect(self.get_success_url())  # Cambiado
-
-            # 1) movimiento principal estándar
-            self.object = form.save()
-
-            # 2) ¿hay doble partida para servicio?
-            cs  = self.object.cuenta_servicio
-            mp  = self.object.medio_pago
-            if (not self.object.ajuste) and cs and cs != mp:
-                # CORRECCIÓN: Usar el valor absoluto del monto
-                monto_abs = abs(self.object.monto)
-                
-                Transaccion.objects.create(
-                    monto        = monto_abs,  # Usar valor absoluto
-                    tipo         = (TransaccionTipo.INGRESO
-                                        if self.object.tipo == TransaccionTipo.GASTO
-                                        else TransaccionTipo.GASTO),
-                    fecha        = self.object.fecha,
-                    descripcion  = f"Pago {self.object.descripcion}",
-                    cuenta_servicio = cs,
-                    medio_pago      = cs,
-                    categoria    = self.object.categoria,
-                    moneda       = self.object.moneda,
-                    grupo_uuid   = self.object.grupo_uuid,
-                )
-        messages.success(self.request, self.success_message)
+        """Vista simplificada v0.6.0 - sin lógica compleja de doble partida"""
+        # El modelo ya maneja la lógica de tipos automáticamente en save()
         return super().form_valid(form)
 
 
@@ -477,18 +423,18 @@ class EstadoCuentaView(TemplateView):
             desde  = form.cleaned_data["desde"]
             hasta  = form.cleaned_data["hasta"]
 
-            # 1) Saldo inicial (antes de 'desde')
+            # 1) Saldo inicial (antes de 'desde') - v0.6.0
             saldo_inicial = (
                 Transaccion.objects
-                .filter(medio_pago=cuenta, fecha__lt=desde)
+                .filter(Q(cuenta_origen=cuenta) | Q(cuenta_destino=cuenta), fecha__lt=desde)
                 .aggregate(total=Sum("monto"))["total"] or 0
             )
 
-            # 2) Movimientos dentro del periodo
+            # 2) Movimientos dentro del periodo - v0.6.0
             movs_qs = (
                 Transaccion.objects
-                .filter(medio_pago=cuenta, fecha__range=(desde, hasta))
-                .select_related("categoria")
+                .filter(Q(cuenta_origen=cuenta) | Q(cuenta_destino=cuenta), fecha__range=(desde, hasta))
+                .select_related("categoria", "cuenta_origen", "cuenta_destino")
                 .order_by("-fecha", "-id")
             )
 
@@ -702,7 +648,8 @@ class PeriodoCreateView(CreateView):
 
         # 2) Solo si tenemos al menos fecha de fin determinar, asignamos
         if fin:
-            filtros = Q(medio_pago=periodo.cuenta) | Q(cuenta_servicio=periodo.cuenta)
+            # v0.6.0: Actualizar filtros para nuevos campos
+            filtros = Q(cuenta_origen=periodo.cuenta) | Q(cuenta_destino=periodo.cuenta)
             if inicio:
                 filtros &= Q(fecha__gte=inicio)
                 filtros &= ~Q(fecha__lt=inicio) # Excluir explícitamente fechas < inicio
@@ -747,8 +694,9 @@ class PeriodoDetailView(DetailView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
         periodo = self.object
+        # v0.6.0: Usar cuenta_origen y cuenta_destino en lugar de medio_pago
         movs = Transaccion.objects.filter(
-            medio_pago=periodo.cuenta,
+            Q(cuenta_origen=periodo.cuenta) | Q(cuenta_destino=periodo.cuenta),
             fecha__range=(periodo.fecha_inicio or periodo.fecha_corte, periodo.fecha_fin_periodo or periodo.fecha_corte)
         ).order_by("fecha")
         ctx["movs"] = movs
@@ -799,8 +747,8 @@ class PeriodoUpdateView(UpdateView):
         inicio = periodo.fecha_corte
         fin = periodo.fecha_fin_periodo
         
-        # Construir filtro base
-        filtros = Q(medio_pago=periodo.cuenta) | Q(cuenta_servicio=periodo.cuenta)
+        # Construir filtro base - v0.6.0
+        filtros = Q(cuenta_origen=periodo.cuenta) | Q(cuenta_destino=periodo.cuenta)
         
         # Manejar casos donde inicio o fin son nulos
         if inicio and fin:
@@ -842,7 +790,8 @@ class PeriodoRefreshView(View):
         inicio = periodo.fecha_corte
         fin = periodo.fecha_fin_periodo or (periodo.fecha_corte + timedelta(days=30))
 
-        filtros = Q(medio_pago=periodo.cuenta) | Q(cuenta_servicio=periodo.cuenta)
+        # v0.6.0: Actualizar filtros para nuevos campos
+        filtros = Q(cuenta_origen=periodo.cuenta) | Q(cuenta_destino=periodo.cuenta)
         if inicio and fin:
             filtros &= Q(fecha__range=(inicio, fin))
 
@@ -981,8 +930,9 @@ def medios_pago_json(request):
 class PeriodoPDFView(LoginRequiredMixin, View):
     def get(self, request, pk):
         periodo = get_object_or_404(Periodo, pk=pk)
+        # v0.6.0: Actualizar filtro para nuevos campos
         movs = Transaccion.objects.filter(
-            medio_pago=periodo.cuenta,
+            Q(cuenta_origen=periodo.cuenta) | Q(cuenta_destino=periodo.cuenta),
             fecha__range=(periodo.fecha_inicio or periodo.fecha_corte, periodo.fecha_fin_periodo or periodo.fecha_corte)
         ).order_by("fecha")
         
@@ -1094,8 +1044,9 @@ def cuenta_movimientos(request):
     cuenta = get_object_or_404(Cuenta, id=cuenta_id)
     
     # Obtener movimientos relacionados con la cuenta
+    # v0.6.0: Usar nuevos campos para movimientos de cuenta
     movimientos = Transaccion.objects.filter(
-        Q(medio_pago=cuenta) | Q(cuenta_servicio=cuenta)
+        Q(cuenta_origen=cuenta) | Q(cuenta_destino=cuenta)
     ).order_by('-fecha')
     
     paginator = Paginator(movimientos, 50)  # 50 por página
@@ -1157,8 +1108,11 @@ class CuentaDetailView(DetailView):
         saldo_inicial = getattr(cuenta, 'saldo_inicial', 0)
         context['saldo_inicial'] = saldo_inicial
         
-        # Obtener movimientos paginados
-        movimientos = cuenta.transacciones_pago.all().order_by('-fecha')
+        # Obtener movimientos paginados - v0.6.0 
+        movimientos_origen = cuenta.transacciones_origen.all()
+        movimientos_destino = cuenta.transacciones_destino.all()
+        # Combinar ambos querysets y ordenar por fecha
+        movimientos = movimientos_origen.union(movimientos_destino).order_by('-fecha')
         paginator = Paginator(movimientos, self.paginate_by)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)

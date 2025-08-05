@@ -101,10 +101,22 @@ class Cuenta(models.Model):
     def __str__(self):
         return f"{self.nombre} ({self.tipo.nombre})"
 
-    # Saldo “al vuelo”
+    # Saldo "al vuelo" - actualizado para v0.6.0
     def saldo(self):
-        return self.transacciones_pago.aggregate(
+        # Sumar transacciones donde esta cuenta es origen (salidas)
+        salidas = self.transacciones_origen.aggregate(
             total=models.Sum("monto"))["total"] or Decimal("0.00")
+        
+        # Sumar transacciones donde esta cuenta es destino (entradas) 
+        entradas = self.transacciones_destino.aggregate(
+            total=models.Sum("monto"))["total"] or Decimal("0.00")
+        
+        # Para cuentas deudoras: saldo inicial + entradas - salidas
+        # Para cuentas acreedoras: saldo inicial + salidas - entradas (deuda)
+        if self.naturaleza == "DEUDORA":
+            return self.saldo_inicial + entradas - salidas
+        else:  # ACREEDORA
+            return self.saldo_inicial + salidas - entradas
 
     def aplicar_cargo(self, monto):
         """
@@ -150,270 +162,173 @@ class Categoria(models.Model):
         return f"{base} ({self.get_tipo_display()})"
 
 
+# === MODELO ANTERIOR (RESPALDO) - ELIMINAR EN v0.7.0 ===
+class TransaccionLegacy(models.Model):
+    """Modelo anterior - mantener temporalmente para migración"""
+    monto = models.DecimalField(max_digits=12, decimal_places=2)
+    tipo = models.CharField(max_length=13, blank=True)
+    fecha = models.DateField()
+    descripcion = models.CharField(max_length=255, blank=True)
+    cuenta_servicio = models.ForeignKey(Cuenta, null=True, blank=True, on_delete=models.RESTRICT, related_name="legacy_servicios")
+    categoria = models.ForeignKey(Categoria, on_delete=models.RESTRICT, related_name="legacy_transacciones")
+    medio_pago = models.ForeignKey(Cuenta, on_delete=models.RESTRICT, related_name="legacy_pagos")
+    grupo_uuid = models.UUIDField(default=uuid4, editable=False)
+    ajuste = models.BooleanField(default=False)
+    moneda = models.CharField(max_length=3, choices=Moneda.choices, default=Moneda.MXN)
+    periodo = models.ForeignKey("Periodo", null=True, blank=True, on_delete=models.SET_NULL, related_name="legacy_transacciones")
+    conciliado = models.BooleanField(default=False)
+
+    class Meta:
+        db_table = 'core_transaccion_legacy'
+
+
+# === NUEVO MODELO SIMPLIFICADO ===
 class TransaccionTipo(models.TextChoices):
-    INGRESO       = "INGRESO", _("Ingreso")
-    GASTO         = "GASTO", _("Gasto")
-    TRANSFERENCIA = "TRANSFERENCIA", _("Transferencia interna")
+    INGRESO = "INGRESO", _("Ingreso")
+    GASTO = "GASTO", _("Gasto")
+    TRANSFERENCIA = "TRANSFERENCIA", _("Transferencia")
 
 
 class Transaccion(models.Model):
-    monto               = models.DecimalField(max_digits=12, decimal_places=2)
-    tipo                = models.CharField(
-        max_length=13,
-        choices=TransaccionTipo.choices,
-        default=TransaccionTipo.GASTO,
+    """Modelo simplificado v0.6.0 - Un registro por transacción"""
+    monto = models.DecimalField(
+        max_digits=12, 
+        decimal_places=2,
+        help_text="Monto de la transacción (siempre positivo)"
     )
-    fecha               = models.DateField()
-    descripcion         = models.CharField(max_length=255, blank=True)
-    cuenta_servicio     = models.ForeignKey(
+    fecha = models.DateField()
+    descripcion = models.CharField(max_length=255)
+    
+    # Cuentas involucradas
+    cuenta_origen = models.ForeignKey(
+        Cuenta,
+        null=True,  # Temporal para migración
+        blank=True,
+        on_delete=models.RESTRICT,
+        related_name="transacciones_origen",
+        help_text="Cuenta de donde sale el dinero"
+    )
+    cuenta_destino = models.ForeignKey(
         Cuenta,
         null=True,
         blank=True,
         on_delete=models.RESTRICT,
-        related_name="transacciones_servicio",
-        help_text="Proveedor o servicio (Telcel, CFE…) si aplica",
+        related_name="transacciones_destino",
+        help_text="Cuenta hacia donde va el dinero (solo transferencias)"
     )
-    categoria           = models.ForeignKey(
+    
+    categoria = models.ForeignKey(
         Categoria,
+        null=True,
+        blank=True,
         on_delete=models.RESTRICT,
         related_name="transacciones",
+        help_text="Categoría del gasto/ingreso"
     )
-    medio_pago          = models.ForeignKey(
-        Cuenta,
-        on_delete=models.RESTRICT,
-        related_name="transacciones_pago",
+    
+    # Tipo inferido automáticamente
+    tipo = models.CharField(
+        max_length=13,
+        choices=TransaccionTipo.choices,
+        editable=False,  # Se calcula automáticamente
     )
-
-    # === Nuevos campos para partida doble ===
-    grupo_uuid = models.UUIDField(default=uuid4, editable=False)
-    ajuste = models.BooleanField(
-        default=False,
-        help_text="Marca este movimiento como ajuste para evitar la creación automática del segundo asiento."
-    )
-
-    moneda              = models.CharField(
+    
+    moneda = models.CharField(
         max_length=3,
         choices=Moneda.choices,
         default=Moneda.MXN,
     )
-    periodo      = models.ForeignKey(
+    
+    periodo = models.ForeignKey(
         "Periodo",
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name="transacciones",
     )
-    conciliado          = models.BooleanField(default=False)
+    
+    conciliado = models.BooleanField(default=False)
 
     class Meta:
         indexes = [
             models.Index(fields=["fecha"]),
-            models.Index(fields=["categoria",]),
-            models.Index(fields=["medio_pago"]),
+            models.Index(fields=["categoria"]),
+            models.Index(fields=["cuenta_origen"]),
+            models.Index(fields=["tipo"]),
         ]
         ordering = ["-fecha"]
 
-    def __str__(self):
-        signo = "-" if self.tipo == TransaccionTipo.GASTO else "+"
-        return f"{self.fecha}: {signo}${self.monto} {self.categoria}"
-
+    def clean(self):
+        """Validaciones del modelo"""
+        if self.cuenta_destino and self.categoria:
+            raise models.ValidationError("Una transacción no puede tener cuenta_destino Y categoría")
+        
+        if not self.cuenta_destino and not self.categoria:
+            raise models.ValidationError("Debe especificar cuenta_destino O categoría")
+            
+        if self.cuenta_origen == self.cuenta_destino:
+            raise models.ValidationError("Las cuentas origen y destino deben ser diferentes")
 
     def save(self, *args, **kwargs):
-        # Guardar la transacción principal primero
-        is_new = self.pk is None
+        """Inferir tipo automáticamente antes de guardar"""
+        if self.cuenta_destino:
+            # Es transferencia entre cuentas
+            self.tipo = TransaccionTipo.TRANSFERENCIA
+        elif self.categoria:
+            # Determinar si es gasto o ingreso por la categoría
+            if self.categoria.tipo in ['PERSONAL', 'NEGOCIO']:
+                # La mayoría de gastos personales/negocio son gastos
+                # TODO: Mejorar lógica según categorías específicas
+                self.tipo = TransaccionTipo.GASTO
+            else:
+                self.tipo = TransaccionTipo.INGRESO
+        
+        # Asegurar monto positivo
+        self.monto = abs(self.monto)
+        
         super().save(*args, **kwargs)
-        
-        # Solo crear asiento contable complementario si no es ajuste y es nueva
-        if not self.ajuste and is_new:
-            self._crear_asiento_complementario()
-    
-    def _crear_asiento_complementario(self):
-        """
-        Crea el asiento contable complementario siguiendo principios de doble partida
-        según la guía de registros contables.
-        """
-        with transaction.atomic():
-            if self.tipo == TransaccionTipo.INGRESO:
-                self._crear_asiento_ingreso()
-            elif self.tipo == TransaccionTipo.GASTO:
-                self._crear_asiento_gasto()
-            elif self.tipo == TransaccionTipo.TRANSFERENCIA:
-                self._crear_asiento_transferencia()
-    
-    def _crear_asiento_ingreso(self):
-        """
-        INGRESO: Ejemplo: cobro renta $1000
-        - CARGO: Cuenta de débito +1000 (aumenta activo)
-        - ABONO: Renta de casa -1000 (aumenta ingreso)
-        """
-        # El asiento principal ya está guardado en self (cuenta de destino del dinero)
-        # Necesitamos crear el asiento de la cuenta de origen del ingreso
-        
-        if not self.cuenta_servicio:
-            raise ValueError("Para ingresos se requiere cuenta_servicio (cuenta de ingreso)")
-        
-        # Determinar signos según naturaleza
-        if self.medio_pago.naturaleza == "DEUDORA":
-            # Cuenta receptora deudora: CARGO (positivo)
-            monto_receptor = abs(self.monto)
+
+    def __str__(self):
+        if self.tipo == TransaccionTipo.TRANSFERENCIA:
+            return f"{self.fecha}: ${self.monto} {self.cuenta_origen.nombre} → {self.cuenta_destino.nombre}"
         else:
-            # Cuenta receptora acreedora: ABONO (positivo) 
-            monto_receptor = abs(self.monto)
-        
-        if self.cuenta_servicio.naturaleza == "ACREEDORA":
-            # Cuenta de ingreso acreedora: ABONO (negativo para balancear)
-            monto_origen = -abs(self.monto)
-        else:
-            # Cuenta de ingreso deudora: CARGO (negativo para balancear)
-            monto_origen = -abs(self.monto)
-        
-        # Actualizar el monto de la transacción principal
-        self.monto = monto_receptor
-        Transaccion.objects.filter(pk=self.pk).update(monto=monto_receptor)
-        
-        # Crear asiento complementario
-        Transaccion.objects.create(
-            monto=monto_origen,
-            tipo=self.tipo,
-            fecha=self.fecha,
-            descripcion=f"Contrapartida: {self.descripcion}",
-            cuenta_servicio=None,
-            categoria=self.categoria,
-            medio_pago=self.cuenta_servicio,
-            grupo_uuid=self.grupo_uuid,
-            ajuste=True,  # Evitar recursión
-            moneda=self.moneda,
-            periodo=self.periodo,
-            conciliado=self.conciliado
-        )
-    
-    def _crear_asiento_gasto(self):
-        """
-        GASTO: Ejemplo: pago electricidad $100 con débito
-        - CARGO: Gasto servicios +100 (aumenta gasto)
-        - ABONO: Cuenta débito -100 (disminuye activo)
-        """
-        if not self.cuenta_servicio:
-            raise ValueError("Para gastos se requiere cuenta_servicio (cuenta de gasto)")
-        
-        # Determinar signos según naturaleza
-        if self.cuenta_servicio.naturaleza == "DEUDORA":
-            # Cuenta de gasto deudora: CARGO (positivo)
-            monto_gasto = abs(self.monto)
-        else:
-            # Cuenta de gasto acreedora: ABONO (positivo)
-            monto_gasto = abs(self.monto)
-        
-        if self.medio_pago.naturaleza == "DEUDORA":
-            # Cuenta de pago deudora (ej. cuenta bancaria): ABONO (negativo para balancear)
-            monto_pago = -abs(self.monto)
-        else:
-            # Cuenta de pago acreedora (ej. TDC): ABONO (negativo para balancear - aumenta deuda)
-            # Según guía: gastar con TDC es ABONO a la tarjeta
-            monto_pago = -abs(self.monto)
-        
-        # Crear asiento del gasto
-        Transaccion.objects.create(
-            monto=monto_gasto,
-            tipo=self.tipo,
-            fecha=self.fecha,
-            descripcion=f"Gasto: {self.descripcion}",
-            cuenta_servicio=None,
-            categoria=self.categoria,
-            medio_pago=self.cuenta_servicio,
-            grupo_uuid=self.grupo_uuid,
-            ajuste=True,
-            moneda=self.moneda,
-            periodo=self.periodo,
-            conciliado=self.conciliado
-        )
-        
-        # Actualizar el monto de la transacción principal (medio de pago)
-        self.monto = monto_pago
-        Transaccion.objects.filter(pk=self.pk).update(monto=monto_pago)
-    
-    def _crear_asiento_transferencia(self):
-        """
-        TRANSFERENCIA: Ejemplo: pago TDC $300 con débito
-        - CARGO: TDC +300 (disminuye deuda de la tarjeta)
-        - ABONO: Cuenta débito -300 (disminuye dinero en cuenta)
-        
-        Nota: En transferencias, medio_pago es origen, cuenta_servicio es destino
-        """
-        if not self.cuenta_servicio:
-            raise ValueError("Para transferencias se requiere cuenta_servicio (cuenta destino)")
-        
-        cuenta_origen = self.medio_pago
-        cuenta_destino = self.cuenta_servicio
-        
-        # Según guía: pago TDC desde cuenta débito
-        # CARGO: TDC (disminuye deuda) = monto positivo en asiento contable
-        # ABONO: Cuenta débito (disminuye activo) = monto negativo en asiento contable
-        
-        # Para cuenta ORIGEN (de donde sale el dinero)
-        if cuenta_origen.naturaleza == "DEUDORA":
-            # Cuenta deudora: disminuye → ABONO (negativo)
-            monto_origen = -abs(self.monto)
-        else:
-            # Cuenta acreedora: ¿aumenta o disminuye deuda?
-            # Si es origen, disminuye deuda → CARGO (positivo) - pero esto es raro
-            monto_origen = abs(self.monto)
-        
-        # Para cuenta DESTINO (hacia donde va el dinero/pago)  
-        if cuenta_destino.naturaleza == "DEUDORA":
-            # Cuenta deudora: aumenta → CARGO (positivo)
-            monto_destino = abs(self.monto)
-        else:
-            # Cuenta acreedora: disminuye deuda → CARGO (positivo)
-            monto_destino = abs(self.monto)
-        
-        # Actualizar transacción principal (cuenta origen)
-        self.monto = monto_origen
-        Transaccion.objects.filter(pk=self.pk).update(monto=monto_origen)
-        
-        # Crear asiento de cuenta destino
-        Transaccion.objects.create(
-            monto=monto_destino,
-            tipo=self.tipo,
-            fecha=self.fecha,
-            descripcion=f"Transferencia desde {cuenta_origen.nombre}",
-            cuenta_servicio=None,
-            categoria=self.categoria,
-            medio_pago=cuenta_destino,
-            grupo_uuid=self.grupo_uuid,
-            ajuste=True,
-            moneda=self.moneda,
-            periodo=self.periodo,
-            conciliado=self.conciliado
-        )
+            signo = "+" if self.tipo == TransaccionTipo.INGRESO else "-"
+            destino = self.categoria.nombre if self.categoria else "Sin categoría"
+            return f"{self.fecha}: {signo}${self.monto} {destino}"
+
+    @property
+    def es_transferencia(self):
+        return self.tipo == TransaccionTipo.TRANSFERENCIA
+
+    @property  
+    def es_gasto(self):
+        return self.tipo == TransaccionTipo.GASTO
+
+    @property
+    def es_ingreso(self):
+        return self.tipo == TransaccionTipo.INGRESO
        
 
 
 
 class Transferencia(models.Model):
-    origen  = models.OneToOneField(
-        Transaccion,
+    """Modelo temporal - mantener para compatibilidad con migraciones existentes"""
+    origen = models.OneToOneField(
+        'Transaccion',
         on_delete=models.CASCADE,
         related_name="transferencia_saliente",
-        limit_choices_to={"tipo": TransaccionTipo.TRANSFERENCIA},
     )
     destino = models.OneToOneField(
-        Transaccion,
+        'Transaccion', 
         on_delete=models.CASCADE,
         related_name="transferencia_entrante",
-        limit_choices_to={"tipo": TransaccionTipo.TRANSFERENCIA},
     )
 
     class Meta:
-        constraints = [
-            models.CheckConstraint(
-                check=~models.Q(origen=models.F("destino")),
-                name="origen_destino_distintos",
-            )
-        ]
+        db_table = 'core_transferencia'  # Mantener tabla existente
 
     def __str__(self):
-        return f"{self.origen.medio_pago} ➜ {self.destino.medio_pago} (${self.origen.monto})"
+        return f"Transferencia legacy"
 
 
 class Recurrencia(models.Model):
@@ -595,25 +510,27 @@ class Periodo(models.Model):
     # --- Propiedades dinámicas -----------------------------------------
     @property
     def total_cargos(self):
+        # v0.6.0: Actualizar para usar cuenta_origen y cuenta_destino
         if self.cuenta.naturaleza == "ACREEDORA":
-            # Para tarjetas (pasivo): cargos = pagos registrados en esta cuenta (montos < 0)
-            base_neg = self.transacciones.filter(medio_pago=self.cuenta, monto__lt=0)
-            return -(base_neg.aggregate(Sum("monto"))["monto__sum"] or 0)
+            # Para tarjetas (pasivo): cargos = pagos hacia esta cuenta (disminuye deuda)
+            base_pagos = self.transacciones.filter(cuenta_destino=self.cuenta)
+            return base_pagos.aggregate(Sum("monto"))["monto__sum"] or 0
         else:
-            # Para cuentas deudoras (activo): cargos = salidas de dinero de la cuenta (montos > 0 en esta cuenta)
-            base_pos = self.transacciones.filter(medio_pago=self.cuenta, monto__gt=0)
-            return base_pos.aggregate(Sum("monto"))["monto__sum"] or 0
+            # Para cuentas deudoras (activo): cargos = dinero que sale de esta cuenta
+            base_salidas = self.transacciones.filter(cuenta_origen=self.cuenta)
+            return base_salidas.aggregate(Sum("monto"))["monto__sum"] or 0
 
     @property
     def total_abonos(self):
+        # v0.6.0: Actualizar para usar cuenta_origen y cuenta_destino
         if self.cuenta.naturaleza == "ACREEDORA":
-            # Para tarjetas: abonos = compras registradas en esta cuenta (montos > 0)
-            base_pos = self.transacciones.filter(medio_pago=self.cuenta, monto__gt=0)
-            return base_pos.aggregate(Sum("monto"))["monto__sum"] or 0
+            # Para tarjetas: abonos = dinero que sale de esta cuenta (aumenta deuda)
+            base_compras = self.transacciones.filter(cuenta_origen=self.cuenta)
+            return base_compras.aggregate(Sum("monto"))["monto__sum"] or 0
         else:
-            # Para cuentas deudoras: abonos = retiros registrados en esta cuenta (montos < 0)
-            base_neg = self.transacciones.filter(medio_pago=self.cuenta, monto__lt=0)
-            return -(base_neg.aggregate(Sum("monto"))["monto__sum"] or 0)
+            # Para cuentas deudoras: abonos = dinero que entra a esta cuenta
+            base_entradas = self.transacciones.filter(cuenta_destino=self.cuenta)
+            return base_entradas.aggregate(Sum("monto"))["monto__sum"] or 0
 
     @property
     def saldo(self):
@@ -640,10 +557,11 @@ class Periodo(models.Model):
         if self.periodo_anterior_id:
             return self.periodo_anterior.saldo_final
 
-        # 4) Primer periodo → calcula histórico
+        # 4) Primer periodo → calcula histórico v0.6.0
+        from django.db.models import Q
         return (
             Transaccion.objects
-            .filter(medio_pago=self.cuenta, fecha__lt=self.fecha_corte)
+            .filter(Q(cuenta_origen=self.cuenta) | Q(cuenta_destino=self.cuenta), fecha__lt=self.fecha_corte)
             .aggregate(total=Sum("monto"))["total"] or 0
         )
 

@@ -64,61 +64,80 @@ class CategoriaForm(forms.ModelForm):
         fields = ['nombre', 'tipo']
 
 
+# === FORMULARIO SIMPLIFICADO v0.6.0 ===
 class TransaccionForm(forms.ModelForm):
+    """Formulario simplificado para transacciones - solo 4 campos esenciales"""
+    
+    # Campo para elegir entre cuenta destino o categoría
+    destino_tipo = forms.ChoiceField(
+        choices=[
+            ('cuenta', 'Transferir a otra cuenta'),
+            ('categoria', 'Gasto/Ingreso por categoría')
+        ],
+        widget=forms.RadioSelect,
+        label="¿Hacia dónde va el dinero?"
+    )
+    
     class Meta:
-        model  = Transaccion
-        fields = [
-            "monto", "tipo", "fecha", "descripcion",
-            "cuenta_servicio", "categoria", "medio_pago",
-            "ajuste",
-        ]
+        model = Transaccion
+        fields = ["monto", "fecha", "descripcion", "cuenta_origen", "cuenta_destino", "categoria"]
         widgets = {
             "fecha": forms.DateInput(attrs={"type": "date"}, format='%Y-%m-%d'),
+            "descripcion": forms.TextInput(attrs={"placeholder": "Ej: Pago de electricidad, Transferencia a ahorro..."}),
         }
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
-        # Etiquetas más descriptivas
-        self.fields["medio_pago"].label = "Cuenta de pago"
-        self.fields["cuenta_servicio"].label = "Servicio / Proveedor"
-        self.fields["ajuste"].label = "Es ajuste (un solo movimiento)"
-        # Mostrar sólo cuentas de pago (DEB, CRE, EFE) para medio_pago
-        self.fields["medio_pago"].queryset = (
-            Cuenta.objects.medios_pago().order_by("nombre") 
-        )
-
-        # -- Ajustes dinámicos para transferencias --
-        tipo_value = self.data.get('tipo') if self.data else self.initial.get('tipo')
-        if str(tipo_value) == str(TransaccionTipo.TRANSFERENCIA):
-            self.fields["medio_pago"].label = "Cuenta origen"
-            self.fields["cuenta_servicio"].label = "Cuenta destino"
-            self.fields['cuenta_servicio'].queryset = Cuenta.objects.medios_pago().order_by("nombre")
-
-        # Fuerza formato ISO para el campo fecha (requerido por input[type=date])
+        
+        # Etiquetas más claras
+        self.fields["cuenta_origen"].label = "¿De qué cuenta sale el dinero?"
+        self.fields["cuenta_destino"].label = "¿A qué cuenta va el dinero?"
+        self.fields["categoria"].label = "¿Qué tipo de gasto/ingreso es?"
+        
+        # Solo cuentas de pago para cuenta_origen
+        self.fields["cuenta_origen"].queryset = Cuenta.objects.medios_pago().order_by("nombre")
+        self.fields["cuenta_destino"].queryset = Cuenta.objects.medios_pago().order_by("nombre")
+        
+        # Hacer campos condicionales
+        self.fields["cuenta_destino"].required = False
+        self.fields["categoria"].required = False
+        
+        # Si es edición, determinar el tipo de destino
         if self.instance and self.instance.pk:
+            if self.instance.cuenta_destino:
+                self.initial['destino_tipo'] = 'cuenta'
+            else:
+                self.initial['destino_tipo'] = 'categoria'
             self.initial['fecha'] = self.instance.fecha.isoformat()
-
-        # Si no es transferencia, mantener filtro de servicio + SID
-        if str(tipo_value) != str(TransaccionTipo.TRANSFERENCIA):
-            self.fields['cuenta_servicio'].queryset = Cuenta.objects.filter(tipo__grupo="SER").order_by("nombre")
 
     def clean(self) -> dict[str, Any]:
         cleaned = super().clean()
-        tipo = cleaned.get("tipo")
-        if tipo == TransaccionTipo.TRANSFERENCIA:
-            origen = cleaned.get("medio_pago")
-            destino = cleaned.get("cuenta_servicio")
-            if not origen or not destino:
-                raise forms.ValidationError("Debe seleccionar cuenta origen y destino para una transferencia.")
-            if origen == destino:
-                raise forms.ValidationError("Las cuentas origen y destino deben ser distintas.")
+        destino_tipo = cleaned.get("destino_tipo")
+        cuenta_destino = cleaned.get("cuenta_destino")
+        categoria = cleaned.get("categoria")
+        cuenta_origen = cleaned.get("cuenta_origen")
+
+        # Validar que se seleccione un destino apropiado
+        if destino_tipo == 'cuenta':
+            if not cuenta_destino:
+                raise forms.ValidationError("Debe seleccionar la cuenta destino para una transferencia")
+            if cuenta_origen == cuenta_destino:
+                raise forms.ValidationError("Las cuentas origen y destino deben ser diferentes")
+            # Limpiar categoría si se eligió cuenta
+            cleaned['categoria'] = None
+        elif destino_tipo == 'categoria':
+            if not categoria:
+                raise forms.ValidationError("Debe seleccionar una categoría para el gasto/ingreso")
+            # Limpiar cuenta_destino si se eligió categoría
+            cleaned['cuenta_destino'] = None
+
         return cleaned
 
     def clean_monto(self) -> Decimal:
-        monto = self.cleaned_data["monto"]
-        if monto == 0:
-            raise forms.ValidationError("El monto no puede ser cero.")
-        return monto
+        monto = self.cleaned_data.get("monto")
+        if monto is None or monto <= 0:
+            raise forms.ValidationError("El monto debe ser mayor a cero")
+        return abs(monto)  # Asegurar que siempre sea positivo
 
 class TransferenciaForm(forms.Form):
     cuenta_origen   = forms.ModelChoiceField(queryset=Cuenta.objects.all())

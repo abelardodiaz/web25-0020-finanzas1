@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is a Django-based financial management system (WEB0020-FINANZAS1) for personal and business finances. The system supports dual database backends (MariaDB/SQLite) and provides comprehensive financial tracking capabilities.
 
-**Current Version**: v0.5.5 (August 2025)
+**Current Version**: v0.6.0 (August 2025) - Revolucion de Simplicidad
 **Python**: 3.12+ with modern type hints
 **UI Framework**: Tailwind CSS with dark/light mode support
 
@@ -211,3 +211,12 @@ def save(self, commit: bool = True) -> ModelClass:
 - `changelog_claude.md`: Detailed development history with technical metrics
 - `guias/manejo-DB.md`: Comprehensive database management guide
 - `core/management/commands/`: Custom Django commands for database operations
+```
+
+## Environment Best Practices
+
+- **Python Version**: 
+  - Usa python3 en todos los casos y activa el entorno virtual para poder ejecutar comandos python o el shell de django, etc
+
+## Development Server Notes
+- usa en puerto random entre 8200 y 8300 para ejecutar django server 
