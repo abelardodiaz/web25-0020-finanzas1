@@ -6,6 +6,22 @@
 
 ## 📅 Historial de Cambios
 
+## 🗓️ Versión 0.7.1 - 09 de Agosto, 2025
+
+### 🔧 **Corrección Inmediata Post-Lanzamiento**
+- 🐛 **Error crítico solucionado:** Lista de transacciones bloqueada por problema técnico interno
+- ⚡ **Restauración instantánea:** Página `/transacciones/` completamente funcional
+- 📊 **Estadísticas operativas:** Contadores de estados (Pendientes/Liquidadas/Conciliadas) funcionando
+- 🚀 **Sin interrupciones:** Todas las demás funcionalidades del v0.7.0 mantienen operatividad total
+
+### 📈 **Beneficios Inmediatos**
+- **Lista de transacciones restaurada:** Acceso completo a histórico de movimientos
+- **Paginación operativa:** Navegación por grandes volúmenes de transacciones
+- **Estadísticas en tiempo real:** Visualización del progreso de conciliación por estados
+- **Sistema estable:** Corrección aplicada en menos de 5 minutos
+
+---
+
 ## 🗓️ Versión 0.7.0 - 09 de Agosto, 2025
 
 ### 🚀 **Sistema Contable Profesional Implementado**

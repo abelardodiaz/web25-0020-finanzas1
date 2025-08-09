@@ -289,16 +289,17 @@ class TransaccionListView(FilterView):
         
         context['grupos'] = grupos
         
-        # Agregar estadísticas de estados
-        transacciones = context['transacciones']
+        # Agregar estadísticas de estados usando el queryset completo (no paginado)
+        queryset_completo = self.get_queryset()
         context['stats_estados'] = {
-            'pendientes': transacciones.filter(estado=TransaccionEstado.PENDIENTE).count(),
-            'liquidadas': transacciones.filter(estado=TransaccionEstado.LIQUIDADA).count(), 
-            'conciliadas': transacciones.filter(estado=TransaccionEstado.CONCILIADA).count(),
-            'verificadas': transacciones.filter(estado=TransaccionEstado.VERIFICADA).count(),
+            'pendientes': queryset_completo.filter(estado=TransaccionEstado.PENDIENTE).count(),
+            'liquidadas': queryset_completo.filter(estado=TransaccionEstado.LIQUIDADA).count(), 
+            'conciliadas': queryset_completo.filter(estado=TransaccionEstado.CONCILIADA).count(),
+            'verificadas': queryset_completo.filter(estado=TransaccionEstado.VERIFICADA).count(),
         }
         
-        # Transacciones que requieren atención
+        # Transacciones que requieren atención (solo de la página actual)
+        transacciones = context['transacciones']
         context['requieren_atencion'] = [
             t for t in transacciones if t.requiere_atencion
         ]
