@@ -7,7 +7,12 @@ from .views import (
     TransferenciaCreateView, EstadoCuentaView, PeriodoCreateView, PeriodoListView, PeriodoDetailView,
     PeriodoUpdateView, PeriodoDeleteView, TransaccionDeleteView, PeriodoRefreshView,
     IngresoCreateView, TipoCuentaCreateView, TipoCuentaListView, PeriodoPDFView, CuentaSaldosView, cuentas_autocomplete, cuenta_movimientos,
-    UserProfileView, CuentaDetailView, TipoCuentaUpdateView, TipoCuentaDeleteView
+    UserProfileView, CuentaDetailView, TipoCuentaUpdateView, TipoCuentaDeleteView,
+    # Nuevas vistas de conciliación
+    cambiar_estado_transaccion, conciliacion_view, conciliar_masivo, TransaccionEstadoUpdateView,
+    # Vistas de matching automático
+    importacion_bancaria_view, importacion_detalle_view, aplicar_match_manual, 
+    revertir_match, buscar_transacciones_candidatas, ejecutar_matching_masivo
 )
 import core.views as core_views
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -95,4 +100,18 @@ urlpatterns = [
     path('periodos/detalle/<int:pk>/', PeriodoDetailView.as_view(), name='periodo_detail'),
     path('tipo-cuenta/<int:pk>/', TipoCuentaUpdateView.as_view(), name='tipocuenta_update'),
     path('tipo-cuenta/eliminar/<int:pk>/', TipoCuentaDeleteView.as_view(), name='tipocuenta_delete'),
+    
+    # URLs de conciliación bancaria
+    path('conciliacion/', conciliacion_view, name='conciliacion'),
+    path('transaccion/<int:transaccion_id>/estado/', cambiar_estado_transaccion, name='cambiar_estado_transaccion'),
+    path('conciliacion/masivo/', conciliar_masivo, name='conciliar_masivo'),
+    path('transaccion/<int:pk>/actualizar-estado/', TransaccionEstadoUpdateView.as_view(), name='transaccion_estado_update'),
+    
+    # URLs de matching automático e importación
+    path('importacion/', importacion_bancaria_view, name='importacion_bancaria'),
+    path('importacion/<int:importacion_id>/', importacion_detalle_view, name='importacion_detalle'),
+    path('importacion/<int:importacion_id>/matching-masivo/', ejecutar_matching_masivo, name='matching_masivo'),
+    path('api/match/manual/', aplicar_match_manual, name='aplicar_match_manual'),
+    path('api/match/revertir/', revertir_match, name='revertir_match'),
+    path('api/transacciones/candidatas/', buscar_transacciones_candidatas, name='buscar_candidatas'),
 ]

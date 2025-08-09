@@ -71,8 +71,16 @@ from django.conf import settings
 import os
 
 from django.views.generic.edit import UpdateView
-from .models import TipoCuenta
+from .models import TipoCuenta, TransaccionEstado
 from .forms import TipoCuentaForm
+from django.http import JsonResponse
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+import json
+import csv
+from datetime import timedelta, datetime
+from .models import ImportacionBancaria, MovimientoBancario
 
 class DashboardView(TemplateView):
     template_name = 'core/dashboard.html'
@@ -280,6 +288,21 @@ class TransaccionListView(FilterView):
             })
         
         context['grupos'] = grupos
+        
+        # Agregar estadísticas de estados
+        transacciones = context['transacciones']
+        context['stats_estados'] = {
+            'pendientes': transacciones.filter(estado=TransaccionEstado.PENDIENTE).count(),
+            'liquidadas': transacciones.filter(estado=TransaccionEstado.LIQUIDADA).count(), 
+            'conciliadas': transacciones.filter(estado=TransaccionEstado.CONCILIADA).count(),
+            'verificadas': transacciones.filter(estado=TransaccionEstado.VERIFICADA).count(),
+        }
+        
+        # Transacciones que requieren atención
+        context['requieren_atencion'] = [
+            t for t in transacciones if t.requiere_atencion
+        ]
+        
         return context
 
 # === VISTA SIMPLIFICADA v0.6.0 ===
@@ -1137,4 +1160,471 @@ class CuentaDetailView(DetailView):
         
         context['movimientos'] = page_obj
         return context
+
+
+# === VISTAS PARA GESTIÓN DE ESTADOS Y CONCILIACIÓN ======================
+
+@login_required
+@require_POST
+@csrf_exempt
+def cambiar_estado_transaccion(request, transaccion_id):
+    """Vista AJAX para cambiar el estado de una transacción"""
+    try:
+        transaccion = get_object_or_404(Transaccion, id=transaccion_id)
+        data = json.loads(request.body)
+        nuevo_estado = data.get('estado')
+        referencia_bancaria = data.get('referencia_bancaria', '')
+        saldo_posterior = data.get('saldo_posterior')
+        
+        # Validar estado
+        estados_validos = [choice[0] for choice in TransaccionEstado.choices]
+        if nuevo_estado not in estados_validos:
+            return JsonResponse({
+                'success': False, 
+                'error': 'Estado no válido'
+            }, status=400)
+        
+        # Aplicar cambio de estado
+        estado_anterior = transaccion.estado
+        
+        if nuevo_estado == TransaccionEstado.LIQUIDADA:
+            transaccion.marcar_liquidada(referencia_bancaria, saldo_posterior)
+        elif nuevo_estado == TransaccionEstado.CONCILIADA:
+            transaccion.marcar_conciliada(usuario=request.user)
+        elif nuevo_estado == TransaccionEstado.VERIFICADA:
+            transaccion.marcar_verificada(usuario=request.user)
+        elif nuevo_estado == TransaccionEstado.PENDIENTE:
+            transaccion.revertir_estado()
+        
+        return JsonResponse({
+            'success': True,
+            'nuevo_estado': transaccion.get_estado_display(),
+            'estado_anterior': estado_anterior,
+            'fecha_conciliacion': transaccion.fecha_conciliacion.isoformat() if transaccion.fecha_conciliacion else None
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@login_required
+def conciliacion_view(request):
+    """Vista principal para conciliación bancaria"""
+    # Obtener transacciones no conciliadas agrupadas por cuenta
+    transacciones_no_conciliadas = Transaccion.objects.filter(
+        estado__in=[TransaccionEstado.PENDIENTE, TransaccionEstado.LIQUIDADA],
+        cuenta_origen__isnull=False
+    ).select_related(
+        'cuenta_origen', 'categoria'
+    ).order_by('cuenta_origen__nombre', '-fecha')
+    
+    # Agrupar por cuenta
+    por_cuenta = {}
+    for trans in transacciones_no_conciliadas:
+        cuenta_key = trans.cuenta_origen.nombre
+        if cuenta_key not in por_cuenta:
+            por_cuenta[cuenta_key] = {
+                'cuenta': trans.cuenta_origen,
+                'transacciones': [],
+                'total_pendiente': 0
+            }
+        por_cuenta[cuenta_key]['transacciones'].append(trans)
+        por_cuenta[cuenta_key]['total_pendiente'] += trans.monto
+    
+    # Estadísticas generales
+    stats = {
+        'total_pendientes': transacciones_no_conciliadas.filter(
+            estado=TransaccionEstado.PENDIENTE
+        ).count(),
+        'total_liquidadas': transacciones_no_conciliadas.filter(
+            estado=TransaccionEstado.LIQUIDADA
+        ).count(),
+        'requieren_atencion': len([
+            t for t in transacciones_no_conciliadas if t.requiere_atencion
+        ])
+    }
+    
+    return render(request, 'conciliacion/index.html', {
+        'por_cuenta': por_cuenta,
+        'stats': stats,
+        'estados_choices': TransaccionEstado.choices
+    })
+
+
+@login_required
+def conciliar_masivo(request):
+    """Vista para conciliar múltiples transacciones"""
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            transaccion_ids = data.get('transacciones', [])
+            
+            conciliadas = 0
+            errores = []
+            
+            for trans_id in transaccion_ids:
+                try:
+                    transaccion = Transaccion.objects.get(id=trans_id)
+                    if transaccion.puede_conciliarse:
+                        transaccion.marcar_conciliada(usuario=request.user)
+                        conciliadas += 1
+                    else:
+                        errores.append(f"Transacción {trans_id} no puede conciliarse")
+                except Transaccion.DoesNotExist:
+                    errores.append(f"Transacción {trans_id} no encontrada")
+                except Exception as e:
+                    errores.append(f"Error en transacción {trans_id}: {str(e)}")
+            
+            return JsonResponse({
+                'success': True,
+                'conciliadas': conciliadas,
+                'errores': errores
+            })
+            
+        except Exception as e:
+            return JsonResponse({
+                'success': False,
+                'error': str(e)
+            }, status=500)
+    
+    return JsonResponse({'success': False, 'error': 'Método no permitido'}, status=405)
+
+
+class TransaccionEstadoUpdateView(LoginRequiredMixin, View):
+    """Vista para actualizar el estado de una transacción individualmente"""
+    
+    def post(self, request, pk):
+        transaccion = get_object_or_404(Transaccion, pk=pk)
+        nuevo_estado = request.POST.get('estado')
+        
+        try:
+            if nuevo_estado == TransaccionEstado.LIQUIDADA:
+                referencia = request.POST.get('referencia_bancaria', '')
+                saldo = request.POST.get('saldo_posterior')
+                transaccion.marcar_liquidada(referencia, saldo)
+                messages.success(request, 'Transacción marcada como liquidada')
+                
+            elif nuevo_estado == TransaccionEstado.CONCILIADA:
+                transaccion.marcar_conciliada(usuario=request.user)
+                messages.success(request, 'Transacción conciliada exitosamente')
+                
+            elif nuevo_estado == TransaccionEstado.VERIFICADA:
+                transaccion.marcar_verificada(usuario=request.user)
+                messages.success(request, 'Transacción verificada')
+                
+            else:
+                messages.error(request, 'Estado no válido')
+                
+        except Exception as e:
+            messages.error(request, f'Error al cambiar estado: {str(e)}')
+        
+        return redirect('core:transacciones_list')
+
+
+# === VISTAS PARA MATCHING AUTOMÁTICO E IMPORTACIÓN BANCARIA =============
+
+@login_required
+def importacion_bancaria_view(request):
+    """Vista principal para importación de estados de cuenta"""
+    if request.method == 'POST':
+        return procesar_importacion_bancaria(request)
+    
+    # Mostrar historial de importaciones
+    importaciones = ImportacionBancaria.objects.filter(
+        usuario=request.user
+    ).select_related('cuenta')[:20]
+    
+    # Cuentas disponibles para importación
+    cuentas_disponibles = Cuenta.objects.filter(
+        tipo__grupo__in=['DEB', 'CRE']
+    ).order_by('nombre')
+    
+    return render(request, 'conciliacion/importacion.html', {
+        'importaciones': importaciones,
+        'cuentas_disponibles': cuentas_disponibles,
+    })
+
+
+@login_required
+def procesar_importacion_bancaria(request):
+    """Procesa la importación de archivo bancario CSV"""
+    try:
+        cuenta_id = request.POST.get('cuenta')
+        archivo = request.FILES.get('archivo_csv')
+        
+        if not cuenta_id or not archivo:
+            messages.error(request, 'Debe seleccionar una cuenta y un archivo')
+            return redirect('core:importacion_bancaria')
+        
+        cuenta = get_object_or_404(Cuenta, id=cuenta_id)
+        
+        # Crear registro de importación
+        importacion = ImportacionBancaria.objects.create(
+            cuenta=cuenta,
+            archivo_nombre=archivo.name,
+            periodo_inicio=date.today() - timedelta(days=30),  # Default: último mes
+            periodo_fin=date.today(),
+            usuario=request.user
+        )
+        
+        # Procesar archivo CSV
+        try:
+            archivo_text = archivo.read().decode('utf-8')
+            reader = csv.DictReader(archivo_text.splitlines())
+            
+            movimientos_creados = 0
+            matches_automaticos = 0
+            
+            for row in reader:
+                # Mapear campos del CSV (ajustar según formato bancario)
+                try:
+                    fecha_str = row.get('fecha', row.get('Fecha', ''))
+                    descripcion = row.get('descripcion', row.get('Descripcion', ''))
+                    monto_str = row.get('monto', row.get('Monto', '0'))
+                    referencia = row.get('referencia', row.get('Referencia', ''))
+                    saldo_str = row.get('saldo', row.get('Saldo', ''))
+                    
+                    # Convertir fecha (formato: DD/MM/YYYY o YYYY-MM-DD)
+                    if '/' in fecha_str:
+                        fecha = datetime.strptime(fecha_str, '%d/%m/%Y').date()
+                    else:
+                        fecha = datetime.strptime(fecha_str, '%Y-%m-%d').date()
+                    
+                    # Convertir montos (manejar formato con comas y signos)
+                    monto = Decimal(monto_str.replace(',', '').replace('$', ''))
+                    saldo = Decimal(saldo_str.replace(',', '').replace('$', '')) if saldo_str else None
+                    
+                    # Crear movimiento bancario
+                    movimiento = MovimientoBancario.objects.create(
+                        importacion=importacion,
+                        fecha=fecha,
+                        descripcion=descripcion,
+                        referencia=referencia,
+                        monto=monto,
+                        saldo_posterior=saldo
+                    )
+                    
+                    movimientos_creados += 1
+                    
+                    # Intentar matching automático
+                    match_exitoso, mensaje = movimiento.aplicar_match_automatico()
+                    if match_exitoso:
+                        matches_automaticos += 1
+                        
+                except (ValueError, KeyError) as e:
+                    logger.warning(f"Error procesando fila del CSV: {e}")
+                    continue
+            
+            # Actualizar estadísticas de importación
+            importacion.total_registros = movimientos_creados
+            importacion.registros_procesados = movimientos_creados
+            importacion.registros_conciliados = matches_automaticos
+            importacion.save()
+            
+            messages.success(
+                request, 
+                f"Importación completada: {movimientos_creados} movimientos, "
+                f"{matches_automaticos} conciliaciones automáticas"
+            )
+            
+        except Exception as e:
+            importacion.delete()  # Limpiar importación fallida
+            messages.error(request, f"Error procesando archivo: {str(e)}")
+            return redirect('core:importacion_bancaria')
+        
+        return redirect('core:importacion_detalle', importacion_id=importacion.id)
+        
+    except Exception as e:
+        messages.error(request, f"Error en importación: {str(e)}")
+        return redirect('core:importacion_bancaria')
+
+
+@login_required
+def importacion_detalle_view(request, importacion_id):
+    """Vista de detalle de una importación específica"""
+    importacion = get_object_or_404(ImportacionBancaria, id=importacion_id)
+    
+    # Movimientos de la importación con estado de conciliación
+    movimientos = importacion.movimientos.select_related(
+        'transaccion_conciliada'
+    ).order_by('-fecha')
+    
+    # Estadísticas
+    stats = {
+        'total': movimientos.count(),
+        'conciliados': movimientos.filter(conciliado=True).count(),
+        'pendientes': movimientos.filter(conciliado=False).count(),
+        'exactos': movimientos.filter(confianza_match='EXACTA').count(),
+        'altos': movimientos.filter(confianza_match='ALTA').count(),
+        'medios': movimientos.filter(confianza_match='MEDIA').count(),
+    }
+    
+    return render(request, 'conciliacion/importacion_detalle.html', {
+        'importacion': importacion,
+        'movimientos': movimientos,
+        'stats': stats,
+    })
+
+
+@login_required
+@require_POST
+def aplicar_match_manual(request):
+    """Aplica match manual entre movimiento bancario y transacción"""
+    try:
+        data = json.loads(request.body)
+        movimiento_id = data.get('movimiento_id')
+        transaccion_id = data.get('transaccion_id')
+        
+        movimiento = get_object_or_404(MovimientoBancario, id=movimiento_id)
+        transaccion = get_object_or_404(Transaccion, id=transaccion_id)
+        
+        # Validar que la transacción pueda conciliarse
+        if not transaccion.puede_conciliarse:
+            return JsonResponse({
+                'success': False,
+                'error': 'La transacción no puede conciliarse en su estado actual'
+            })
+        
+        # Aplicar match manual
+        with transaction.atomic():
+            # Marcar transacción como liquidada
+            transaccion.marcar_liquidada(
+                referencia_bancaria=movimiento.referencia,
+                saldo_posterior=movimiento.saldo_posterior
+            )
+            
+            # Vincular movimiento con transacción
+            movimiento.transaccion_conciliada = transaccion
+            movimiento.confianza_match = 'MANUAL'
+            movimiento.conciliado = True
+            movimiento.fecha_conciliacion = timezone.now()
+            movimiento.save()
+            
+            # Actualizar estadísticas de importación
+            importacion = movimiento.importacion
+            importacion.registros_conciliados = importacion.movimientos.filter(
+                conciliado=True
+            ).count()
+            importacion.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Match manual aplicado exitosamente'
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@login_required
+@require_POST
+def revertir_match(request):
+    """Revierte un match entre movimiento bancario y transacción"""
+    try:
+        data = json.loads(request.body)
+        movimiento_id = data.get('movimiento_id')
+        
+        movimiento = get_object_or_404(MovimientoBancario, id=movimiento_id)
+        
+        if not movimiento.conciliado:
+            return JsonResponse({
+                'success': False,
+                'error': 'El movimiento no está conciliado'
+            })
+        
+        with transaction.atomic():
+            # Revertir estado de transacción
+            if movimiento.transaccion_conciliada:
+                movimiento.transaccion_conciliada.revertir_estado()
+            
+            # Limpiar match
+            movimiento.transaccion_conciliada = None
+            movimiento.confianza_match = 'MANUAL'
+            movimiento.conciliado = False
+            movimiento.fecha_conciliacion = None
+            movimiento.save()
+            
+            # Actualizar estadísticas
+            importacion = movimiento.importacion
+            importacion.registros_conciliados = importacion.movimientos.filter(
+                conciliado=True
+            ).count()
+            importacion.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Match revertido exitosamente'
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'error': str(e)
+        }, status=500)
+
+
+@login_required
+def buscar_transacciones_candidatas(request):
+    """API para buscar transacciones candidatas para matching manual"""
+    movimiento_id = request.GET.get('movimiento_id')
+    
+    if not movimiento_id:
+        return JsonResponse({'error': 'ID de movimiento requerido'}, status=400)
+    
+    movimiento = get_object_or_404(MovimientoBancario, id=movimiento_id)
+    candidatos = movimiento.buscar_coincidencias()
+    
+    # Formatear para JSON
+    data = []
+    for candidato in candidatos:
+        transaccion = candidato['transaccion']
+        data.append({
+            'id': transaccion.id,
+            'fecha': transaccion.fecha.isoformat(),
+            'descripcion': transaccion.descripcion,
+            'monto': str(transaccion.monto),
+            'categoria': transaccion.categoria.nombre if transaccion.categoria else '',
+            'estado': transaccion.get_estado_display(),
+            'confianza': candidato['confianza'],
+            'score': candidato['score'],
+            'criterios': candidato['criterios']
+        })
+    
+    return JsonResponse({'candidatos': data})
+
+
+@login_required
+def ejecutar_matching_masivo(request, importacion_id):
+    """Ejecuta matching automático para toda una importación"""
+    importacion = get_object_or_404(ImportacionBancaria, id=importacion_id)
+    
+    movimientos_pendientes = importacion.movimientos.filter(conciliado=False)
+    
+    matches_exitosos = 0
+    total_procesados = 0
+    
+    for movimiento in movimientos_pendientes:
+        total_procesados += 1
+        match_exitoso, mensaje = movimiento.aplicar_match_automatico()
+        if match_exitoso:
+            matches_exitosos += 1
+    
+    # Actualizar estadísticas
+    importacion.registros_conciliados = importacion.movimientos.filter(
+        conciliado=True
+    ).count()
+    importacion.save()
+    
+    messages.success(
+        request,
+        f"Matching masivo completado: {matches_exitosos} de {total_procesados} movimientos conciliados"
+    )
+    
+    return redirect('core:importacion_detalle', importacion_id=importacion.id)
 

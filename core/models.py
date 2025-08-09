@@ -5,11 +5,12 @@ from decimal import Decimal
 from uuid import uuid4
 from django.conf import settings
 from django.utils import timezone
-from django.db.models import Sum
+from django.db.models import Sum, F, Case, When
 from django.views.generic import View
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import path
+from django.core.exceptions import ValidationError
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
@@ -101,18 +102,42 @@ class Cuenta(models.Model):
     def __str__(self):
         return f"{self.nombre} ({self.tipo.nombre})"
 
-    # Saldo "al vuelo" - actualizado para v0.6.0
-    def saldo(self):
-        # Sumar transacciones donde esta cuenta es origen (salidas)
+    # Saldo "al vuelo" - v0.7.0 usando partidas contables
+    def saldo(self, as_of_date=None):
+        """
+        Calcula el saldo usando las partidas contables (doble partida).
+        Más preciso que el método anterior basado en transacciones unificadas.
+        """
+        qs = self.partidas_contables.all()
+        if as_of_date:
+            qs = qs.filter(asiento__fecha__lte=as_of_date)
+        
+        # Calcular balance según naturaleza contable
+        balance = qs.aggregate(
+            balance=Sum(
+                Case(
+                    When(debito__isnull=False, then=F('debito')),
+                    default=F('credito') * -1,
+                    output_field=models.DecimalField()
+                )
+            )
+        )['balance'] or Decimal('0.00')
+        
+        # Para cuentas deudoras: débitos positivos, créditos negativos
+        # Para cuentas acreedoras: invertir el signo 
+        if self.naturaleza == "ACREEDORA":
+            balance = -balance
+            
+        return self.saldo_inicial + balance
+
+    # Método legacy mantenido por compatibilidad
+    def saldo_legacy(self):
+        """Método anterior basado en transacciones unificadas"""
         salidas = self.transacciones_origen.aggregate(
             total=models.Sum("monto"))["total"] or Decimal("0.00")
-        
-        # Sumar transacciones donde esta cuenta es destino (entradas) 
         entradas = self.transacciones_destino.aggregate(
             total=models.Sum("monto"))["total"] or Decimal("0.00")
         
-        # Para cuentas deudoras: saldo inicial + entradas - salidas
-        # Para cuentas acreedoras: saldo inicial + salidas - entradas (deuda)
         if self.naturaleza == "DEUDORA":
             return self.saldo_inicial + entradas - salidas
         else:  # ACREEDORA
@@ -189,6 +214,14 @@ class TransaccionTipo(models.TextChoices):
     TRANSFERENCIA = "TRANSFERENCIA", _("Transferencia")
 
 
+class TransaccionEstado(models.TextChoices):
+    """Estados del ciclo de vida de las transacciones"""
+    PENDIENTE = 'pending', _('Pendiente')
+    LIQUIDADA = 'cleared', _('Liquidada') 
+    CONCILIADA = 'reconciled', _('Conciliada')
+    VERIFICADA = 'verified', _('Verificada')
+
+
 class Transaccion(models.Model):
     """Modelo simplificado v0.6.0 - Un registro por transacción"""
     monto = models.DecimalField(
@@ -230,6 +263,7 @@ class Transaccion(models.Model):
     tipo = models.CharField(
         max_length=13,
         choices=TransaccionTipo.choices,
+        default=TransaccionTipo.GASTO,  # Valor por defecto
         editable=False,  # Se calcula automáticamente
     )
     
@@ -248,6 +282,35 @@ class Transaccion(models.Model):
     )
     
     conciliado = models.BooleanField(default=False)
+    
+    # Nuevo campo de estado
+    estado = models.CharField(
+        max_length=12,
+        choices=TransaccionEstado.choices,
+        default=TransaccionEstado.PENDIENTE,
+        help_text="Estado del ciclo de vida de la transacción"
+    )
+    
+    # Campos de conciliación bancaria
+    fecha_conciliacion = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="Fecha cuando se concilió la transacción"
+    )
+    
+    referencia_bancaria = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Referencia/ID del banco para matching automático"
+    )
+    
+    saldo_posterior = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Saldo de la cuenta después de esta transacción"
+    )
 
     class Meta:
         indexes = [
@@ -255,6 +318,7 @@ class Transaccion(models.Model):
             models.Index(fields=["categoria"]),
             models.Index(fields=["cuenta_origen"]),
             models.Index(fields=["tipo"]),
+            models.Index(fields=["estado"]),
         ]
         ordering = ["-fecha"]
 
@@ -270,15 +334,12 @@ class Transaccion(models.Model):
             raise models.ValidationError("Las cuentas origen y destino deben ser diferentes")
 
     def save(self, *args, **kwargs):
-        """Inferir tipo automáticamente antes de guardar"""
+        """Inferir tipo y generar asientos contables automáticamente"""
+        # Inferir tipo automáticamente
         if self.cuenta_destino:
-            # Es transferencia entre cuentas
             self.tipo = TransaccionTipo.TRANSFERENCIA
         elif self.categoria:
-            # Determinar si es gasto o ingreso por la categoría
             if self.categoria.tipo in ['PERSONAL', 'NEGOCIO']:
-                # La mayoría de gastos personales/negocio son gastos
-                # TODO: Mejorar lógica según categorías específicas
                 self.tipo = TransaccionTipo.GASTO
             else:
                 self.tipo = TransaccionTipo.INGRESO
@@ -286,7 +347,143 @@ class Transaccion(models.Model):
         # Asegurar monto positivo
         self.monto = abs(self.monto)
         
+        # Guardar la transacción principal
+        is_new = self.pk is None
         super().save(*args, **kwargs)
+        
+        # Generar asiento contable automáticamente (solo para transacciones nuevas)
+        if is_new:
+            self._crear_asiento_contable()
+
+    def _crear_asiento_contable(self):
+        """Crea automáticamente el asiento contable de doble partida"""
+        with transaction.atomic():
+            # Crear el asiento principal
+            asiento = AsientoContable.objects.create(
+                fecha=self.fecha,
+                descripcion=self.descripcion,
+                transaccion_origen=self,
+                estado=self.estado
+            )
+            
+            if self.tipo == TransaccionTipo.TRANSFERENCIA:
+                self._crear_partidas_transferencia(asiento)
+            elif self.tipo == TransaccionTipo.GASTO:
+                self._crear_partidas_gasto(asiento)
+            elif self.tipo == TransaccionTipo.INGRESO:
+                self._crear_partidas_ingreso(asiento)
+
+    def _crear_partidas_transferencia(self, asiento):
+        """Crear partidas para transferencia entre cuentas"""
+        # Debitar cuenta destino (dinero que entra)
+        PartidaContable.objects.create(
+            asiento=asiento,
+            cuenta=self.cuenta_destino,
+            debito=self.monto,
+            descripcion=f"Transferencia de {self.cuenta_origen.nombre}",
+            transaccion_referencia=self
+        )
+        
+        # Acreditar cuenta origen (dinero que sale)
+        PartidaContable.objects.create(
+            asiento=asiento,
+            cuenta=self.cuenta_origen,
+            credito=self.monto,
+            descripcion=f"Transferencia a {self.cuenta_destino.nombre}",
+            transaccion_referencia=self
+        )
+
+    def _crear_partidas_gasto(self, asiento):
+        """Crear partidas para gasto"""
+        # Necesitamos una cuenta de gastos - crear si no existe
+        cuenta_gastos = self._obtener_cuenta_gastos()
+        
+        # Debitar cuenta de gastos (aumenta el gasto)
+        PartidaContable.objects.create(
+            asiento=asiento,
+            cuenta=cuenta_gastos,
+            debito=self.monto,
+            descripcion=f"Gasto: {self.categoria.nombre}",
+            transaccion_referencia=self
+        )
+        
+        # Acreditar cuenta origen (dinero que sale)
+        PartidaContable.objects.create(
+            asiento=asiento,
+            cuenta=self.cuenta_origen,
+            credito=self.monto,
+            descripcion=f"Pago: {self.descripcion}",
+            transaccion_referencia=self
+        )
+
+    def _crear_partidas_ingreso(self, asiento):
+        """Crear partidas para ingreso"""
+        # Necesitamos una cuenta de ingresos - crear si no existe
+        cuenta_ingresos = self._obtener_cuenta_ingresos()
+        
+        # Debitar cuenta destino (dinero que entra)  
+        PartidaContable.objects.create(
+            asiento=asiento,
+            cuenta=self.cuenta_destino,
+            debito=self.monto,
+            descripcion=f"Ingreso: {self.categoria.nombre}",
+            transaccion_referencia=self
+        )
+        
+        # Acreditar cuenta de ingresos (aumenta el ingreso)
+        PartidaContable.objects.create(
+            asiento=asiento,
+            cuenta=cuenta_ingresos,
+            credito=self.monto,
+            descripcion=f"Ingreso: {self.descripcion}",
+            transaccion_referencia=self
+        )
+
+    def _obtener_cuenta_gastos(self):
+        """Obtiene o crea cuenta de gastos para la categoría"""
+        # Buscar tipo de cuenta de gastos
+        tipo_gastos, _ = TipoCuenta.objects.get_or_create(
+            codigo="GAST",
+            defaults={
+                'nombre': 'Gastos',
+                'grupo': 'SER'
+            }
+        )
+        
+        # Buscar o crear cuenta específica para esta categoría
+        nombre_cuenta = f"Gastos - {self.categoria.nombre}"
+        cuenta_gastos, _ = Cuenta.objects.get_or_create(
+            nombre=nombre_cuenta,
+            defaults={
+                'tipo': tipo_gastos,
+                'naturaleza': 'DEUDORA',  # Los gastos son deudores
+                'moneda': self.moneda
+            }
+        )
+        return cuenta_gastos
+
+    def _obtener_cuenta_ingresos(self):
+        """Obtiene o crea cuenta de ingresos para la categoría"""
+        # Buscar tipo de cuenta de ingresos  
+        tipo_ingresos, _ = TipoCuenta.objects.get_or_create(
+            codigo="ING",
+            defaults={
+                'nombre': 'Ingresos',
+                'grupo': 'ING'
+            }
+        )
+        
+        # Buscar o crear cuenta específica para esta categoría
+        nombre_cuenta = f"Ingresos - {self.categoria.nombre}"
+        cuenta_ingresos, _ = Cuenta.objects.get_or_create(
+            nombre=nombre_cuenta,
+            defaults={
+                'tipo': tipo_ingresos,
+                'naturaleza': 'ACREEDORA',  # Los ingresos son acreedores
+                'moneda': self.moneda
+            }
+        )
+        return cuenta_ingresos
 
     def __str__(self):
         if self.tipo == TransaccionTipo.TRANSFERENCIA:
@@ -307,7 +504,82 @@ class Transaccion(models.Model):
     @property
     def es_ingreso(self):
         return self.tipo == TransaccionTipo.INGRESO
-       
+
+    # Métodos para manejo de estados
+    def marcar_liquidada(self, referencia_bancaria="", saldo_posterior=None):
+        """Marca la transacción como liquidada (procesada por el banco)"""
+        if self.estado == TransaccionEstado.PENDIENTE:
+            self.estado = TransaccionEstado.LIQUIDADA
+            self.referencia_bancaria = referencia_bancaria
+            if saldo_posterior is not None:
+                self.saldo_posterior = saldo_posterior
+            self.save(update_fields=['estado', 'referencia_bancaria', 'saldo_posterior'])
+            
+            # Actualizar el asiento contable asociado
+            if hasattr(self, 'asiento_contable'):
+                self.asiento_contable.estado = TransaccionEstado.LIQUIDADA
+                self.asiento_contable.save(update_fields=['estado'])
+
+    def marcar_conciliada(self, usuario=None):
+        """Marca la transacción como conciliada"""
+        if self.estado in [TransaccionEstado.LIQUIDADA, TransaccionEstado.PENDIENTE]:
+            self.estado = TransaccionEstado.CONCILIADA
+            self.conciliado = True
+            self.fecha_conciliacion = timezone.now()
+            self.save(update_fields=['estado', 'conciliado', 'fecha_conciliacion'])
+            
+            # Actualizar el asiento contable asociado
+            if hasattr(self, 'asiento_contable'):
+                self.asiento_contable.estado = TransaccionEstado.CONCILIADA
+                self.asiento_contable.save(update_fields=['estado'])
+
+    def marcar_verificada(self, usuario=None):
+        """Marca la transacción como verificada (revisión final)"""
+        if self.estado == TransaccionEstado.CONCILIADA:
+            self.estado = TransaccionEstado.VERIFICADA
+            self.save(update_fields=['estado'])
+            
+            # Actualizar el asiento contable asociado
+            if hasattr(self, 'asiento_contable'):
+                self.asiento_contable.estado = TransaccionEstado.VERIFICADA
+                self.asiento_contable.save(update_fields=['estado'])
+
+    def revertir_estado(self):
+        """Revierte la transacción al estado anterior"""
+        estado_anterior = {
+            TransaccionEstado.LIQUIDADA: TransaccionEstado.PENDIENTE,
+            TransaccionEstado.CONCILIADA: TransaccionEstado.LIQUIDADA,
+            TransaccionEstado.VERIFICADA: TransaccionEstado.CONCILIADA,
+        }
+        
+        if self.estado in estado_anterior:
+            nuevo_estado = estado_anterior[self.estado]
+            self.estado = nuevo_estado
+            
+            # Limpiar campos según el estado
+            if nuevo_estado == TransaccionEstado.PENDIENTE:
+                self.conciliado = False
+                self.fecha_conciliacion = None
+            
+            self.save()
+            
+            # Actualizar asiento contable
+            if hasattr(self, 'asiento_contable'):
+                self.asiento_contable.estado = nuevo_estado
+                self.asiento_contable.save(update_fields=['estado'])
+
+    @property
+    def puede_conciliarse(self):
+        """Indica si la transacción puede ser conciliada"""
+        return self.estado in [TransaccionEstado.PENDIENTE, TransaccionEstado.LIQUIDADA]
+
+    @property
+    def requiere_atencion(self):
+        """Indica si la transacción requiere atención (pendiente por mucho tiempo)"""
+        if self.estado == TransaccionEstado.PENDIENTE:
+            days_pending = (timezone.now().date() - self.fecha).days
+            return days_pending > 5  # Más de 5 días pendiente
+        return False
 
 
 
@@ -577,6 +849,344 @@ class Periodo(models.Model):
         # Fecha_inicio siempre = fecha_corte
         self.fecha_inicio = self.fecha_corte
         super().save(*args, **kwargs)
+
+
+# === MODELOS DE DOBLE PARTIDA (CAPA SUBYACENTE) ======================
+
+class AsientoContable(models.Model):
+    """
+    Asiento contable que agrupa las partidas de doble entrada.
+    Transparente al usuario - generado automáticamente.
+    """
+    uuid = models.UUIDField(default=uuid4, editable=False, unique=True)
+    fecha = models.DateField()
+    descripcion = models.CharField(max_length=255)
+    
+    # Referencia a la transacción unificada del usuario
+    transaccion_origen = models.OneToOneField(
+        'Transaccion',
+        on_delete=models.CASCADE,
+        related_name='asiento_contable',
+        null=True,
+        blank=True
+    )
+    
+    estado = models.CharField(
+        max_length=12,
+        choices=TransaccionEstado.choices,
+        default=TransaccionEstado.PENDIENTE
+    )
+    
+    # Auditoría
+    creado_en = models.DateTimeField(auto_now_add=True)
+    modificado_en = models.DateTimeField(auto_now=True)
+    creado_por = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='asientos_creados'
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['fecha']),
+            models.Index(fields=['estado']),
+            models.Index(fields=['transaccion_origen']),
+        ]
+        ordering = ['-fecha', '-creado_en']
+
+    def clean(self):
+        """Validar que el asiento esté balanceado"""
+        if self.pk:
+            total_debitos = self.partidas.aggregate(
+                total=Sum('debito'))['total'] or Decimal('0.00')
+            total_creditos = self.partidas.aggregate(
+                total=Sum('credito'))['total'] or Decimal('0.00')
+            
+            if total_debitos != total_creditos:
+                raise ValidationError(
+                    f"Asiento no balanceado: Débitos={total_debitos}, Créditos={total_creditos}"
+                )
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"Asiento {self.fecha}: {self.descripcion[:50]}"
+
+    @property
+    def total_debitos(self):
+        return self.partidas.aggregate(Sum('debito'))['debito__sum'] or Decimal('0.00')
+    
+    @property
+    def total_creditos(self):
+        return self.partidas.aggregate(Sum('credito'))['credito__sum'] or Decimal('0.00')
+    
+    @property
+    def esta_balanceado(self):
+        return self.total_debitos == self.total_creditos
+
+
+class PartidaContable(models.Model):
+    """
+    Partida individual de doble entrada (debe/haber).
+    Cada asiento tiene múltiples partidas que suman cero.
+    """
+    asiento = models.ForeignKey(
+        AsientoContable,
+        on_delete=models.CASCADE,
+        related_name='partidas'
+    )
+    cuenta = models.ForeignKey(
+        'Cuenta',
+        on_delete=models.RESTRICT,
+        related_name='partidas_contables'
+    )
+    
+    # Importes de debe y haber - solo uno puede tener valor
+    debito = models.DecimalField(
+        max_digits=12, 
+        decimal_places=2, 
+        null=True, 
+        blank=True,
+        help_text="Importe del debe"
+    )
+    credito = models.DecimalField(
+        max_digits=12, 
+        decimal_places=2, 
+        null=True, 
+        blank=True,
+        help_text="Importe del haber"
+    )
+    
+    descripcion = models.CharField(max_length=255, blank=True)
+    
+    # Referencia opcional a la transacción para trazabilidad
+    transaccion_referencia = models.ForeignKey(
+        'Transaccion',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='partidas_generadas'
+    )
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['cuenta', 'asiento']),
+            models.Index(fields=['asiento', 'debito']),
+            models.Index(fields=['asiento', 'credito']),
+        ]
+
+    def clean(self):
+        """Validar que solo uno de débito o crédito tenga valor"""
+        if self.debito and self.credito:
+            raise ValidationError("Una partida no puede tener débito Y crédito")
+        
+        if not self.debito and not self.credito:
+            raise ValidationError("Una partida debe tener débito O crédito")
+            
+        if self.debito and self.debito <= 0:
+            raise ValidationError("El débito debe ser mayor a cero")
+            
+        if self.credito and self.credito <= 0:
+            raise ValidationError("El crédito debe ser mayor a cero")
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        importe = self.debito if self.debito else self.credito
+        tipo = "Débito" if self.debito else "Crédito"
+        return f"{self.cuenta.nombre} - {tipo}: ${importe}"
+
+    @property
+    def importe(self):
+        """Devuelve el importe de la partida (positivo para débito, negativo para crédito)"""
+        return self.debito if self.debito else -self.credito
+
+    @property
+    def importe_absoluto(self):
+        """Devuelve el valor absoluto del importe"""
+        return self.debito if self.debito else self.credito
+
+
+# === MODELOS PARA CONCILIACIÓN AUTOMÁTICA =============================
+
+class ImportacionBancaria(models.Model):
+    """Registro de importaciones de estados de cuenta bancarios"""
+    cuenta = models.ForeignKey(Cuenta, on_delete=models.CASCADE, related_name='importaciones')
+    archivo_nombre = models.CharField(max_length=255)
+    fecha_importacion = models.DateTimeField(auto_now_add=True)
+    periodo_inicio = models.DateField()
+    periodo_fin = models.DateField()
+    total_registros = models.IntegerField(default=0)
+    registros_procesados = models.IntegerField(default=0)
+    registros_conciliados = models.IntegerField(default=0)
+    
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='importaciones_realizadas'
+    )
+    
+    class Meta:
+        ordering = ['-fecha_importacion']
+        
+    def __str__(self):
+        return f"Importación {self.cuenta.nombre} - {self.fecha_importacion:%d/%m/%Y}"
+
+
+class MovimientoBancario(models.Model):
+    """Movimientos importados del estado de cuenta bancario"""
+    importacion = models.ForeignKey(
+        ImportacionBancaria, 
+        on_delete=models.CASCADE, 
+        related_name='movimientos'
+    )
+    
+    fecha = models.DateField()
+    descripcion = models.CharField(max_length=255)
+    referencia = models.CharField(max_length=100, blank=True)
+    monto = models.DecimalField(max_digits=12, decimal_places=2)
+    saldo_posterior = models.DecimalField(max_digits=12, decimal_places=2, null=True, blank=True)
+    
+    # Matching con transacciones internas
+    transaccion_conciliada = models.ForeignKey(
+        Transaccion,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='movimiento_bancario_match'
+    )
+    
+    CONFIANZA_MATCH = [
+        ('EXACTA', 'Coincidencia Exacta (99%)'),
+        ('ALTA', 'Alta Confianza (95%)'),
+        ('MEDIA', 'Media Confianza (90%)'),
+        ('BAJA', 'Baja Confianza (85%)'),
+        ('MANUAL', 'Revisión Manual'),
+    ]
+    
+    confianza_match = models.CharField(
+        max_length=10,
+        choices=CONFIANZA_MATCH,
+        default='MANUAL'
+    )
+    
+    conciliado = models.BooleanField(default=False)
+    fecha_conciliacion = models.DateTimeField(null=True, blank=True)
+    
+    class Meta:
+        indexes = [
+            models.Index(fields=['fecha', 'monto']),
+            models.Index(fields=['referencia']),
+            models.Index(fields=['conciliado']),
+        ]
+        ordering = ['-fecha']
+    
+    def __str__(self):
+        signo = "+" if self.monto >= 0 else ""
+        return f"{self.fecha}: {signo}${self.monto} - {self.descripcion[:50]}"
+    
+    def buscar_coincidencias(self):
+        """Busca transacciones internas que coincidan con este movimiento bancario"""
+        cuenta = self.importacion.cuenta
+        
+        # Criterios de búsqueda con diferentes niveles de confianza
+        candidatos = []
+        
+        # 1. Coincidencia EXACTA: fecha, monto y cuenta
+        exactas = Transaccion.objects.filter(
+            fecha=self.fecha,
+            monto=abs(self.monto),
+            cuenta_origen=cuenta,
+            estado=TransaccionEstado.PENDIENTE
+        )
+        
+        for t in exactas:
+            candidatos.append({
+                'transaccion': t,
+                'confianza': 'EXACTA',
+                'score': 99,
+                'criterios': ['fecha_exacta', 'monto_exacto', 'cuenta_correcta']
+            })
+        
+        # 2. Coincidencia ALTA: ±1 día, monto exacto
+        if not candidatos:
+            rango_fechas = Transaccion.objects.filter(
+                fecha__range=[
+                    self.fecha - timedelta(days=1),
+                    self.fecha + timedelta(days=1)
+                ],
+                monto=abs(self.monto),
+                cuenta_origen=cuenta,
+                estado=TransaccionEstado.PENDIENTE
+            )
+            
+            for t in rango_fechas:
+                candidatos.append({
+                    'transaccion': t,
+                    'confianza': 'ALTA',
+                    'score': 95,
+                    'criterios': ['fecha_cercana', 'monto_exacto', 'cuenta_correcta']
+                })
+        
+        # 3. Coincidencia MEDIA: ±3 días, monto similar (±5%)
+        if not candidatos:
+            tolerancia_monto = abs(self.monto) * Decimal('0.05')  # 5% tolerancia
+            monto_min = abs(self.monto) - tolerancia_monto
+            monto_max = abs(self.monto) + tolerancia_monto
+            
+            similares = Transaccion.objects.filter(
+                fecha__range=[
+                    self.fecha - timedelta(days=3),
+                    self.fecha + timedelta(days=3)
+                ],
+                monto__range=[monto_min, monto_max],
+                cuenta_origen=cuenta,
+                estado=TransaccionEstado.PENDIENTE
+            )
+            
+            for t in similares:
+                candidatos.append({
+                    'transaccion': t,
+                    'confianza': 'MEDIA',
+                    'score': 90,
+                    'criterios': ['fecha_aproximada', 'monto_similar', 'cuenta_correcta']
+                })
+        
+        return candidatos
+    
+    def aplicar_match_automatico(self, umbral_confianza=95):
+        """Aplica matching automático si la confianza es suficiente"""
+        candidatos = self.buscar_coincidencias()
+        
+        if candidatos:
+            mejor_candidato = max(candidatos, key=lambda x: x['score'])
+            
+            if mejor_candidato['score'] >= umbral_confianza:
+                transaccion = mejor_candidato['transaccion']
+                
+                # Marcar transacción como liquidada
+                transaccion.marcar_liquidada(
+                    referencia_bancaria=self.referencia,
+                    saldo_posterior=self.saldo_posterior
+                )
+                
+                # Vincular movimiento bancario con transacción
+                self.transaccion_conciliada = transaccion
+                self.confianza_match = mejor_candidato['confianza']
+                self.conciliado = True
+                self.fecha_conciliacion = timezone.now()
+                self.save()
+                
+                return True, f"Match automático con {mejor_candidato['confianza']} confianza"
+        
+        return False, "No se encontraron coincidencias suficientes"
 
 
 # --- Historial de cambios de estado (abrir/cerrar) ---------------------
