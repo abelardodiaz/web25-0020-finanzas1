@@ -31,3 +31,5 @@ staticfiles/
 # Archivos de IDE
 .idea/
 .vscode/
+
+prueba-BD-DELICADO.py

@@ -1,10 +1,57 @@
 
-#CHANGELOG
 # Registro de Cambios - WEB0020-FINANZAS1
 ## 📊 Sistema de Gestión Financiera
 
-
 ## 📅 Historial de Cambios
+
+## 🗓️ Versión 0.8.1 - 10 de Agosto, 2025
+
+### ✨ **Perfeccionamiento del Sistema BBVA** 
+- 🔗 **Navegación mejorada:** Integración completa del sistema BBVA en el menú principal
+- 🎯 **Acceso directo:** Enlace "BBVA" en la barra de navegación para importación bancaria
+- 📱 **Experiencia fluida:** Transición perfecta entre diferentes modos de importación
+- 🎨 **Interfaz unificada:** Diseño consistente con el resto del sistema
+
+### 🔧 **Correcciones Técnicas**
+- ✅ **URLs optimizadas:** Sistema de rutas BBVA completamente funcional
+- ✅ **Templates pulidos:** Formularios y wizard con mejor usabilidad
+- ✅ **Servidor estable:** Todas las funcionalidades BBVA operativas sin errores
+
+### 📈 **Beneficios para el Usuario**
+- **Importación más accesible:** Encuentra fácilmente las herramientas de BBVA
+- **Flujo intuitivo:** Desde el menú principal hasta la creación de transacciones
+- **Control total:** Revisa cada movimiento antes de importar
+- **Mejor organización:** Sistema de navegación coherente y profesional
+
+---
+
+## 🗓️ Versión 0.8.0 - 10 de Agosto, 2025
+
+### 🎯 **Revolución en Importación Bancaria BBVA**
+- 🏦 **Wizard detallado paso a paso:** Ahora puedes revisar cada uno de tus movimientos bancarios individualmente antes de importarlos
+- 🤖 **Detección inteligente:** El sistema reconoce automáticamente bancos (Santander, Banorte, Banamex, etc.) y extrae números de cuenta
+- ✏️ **Control total:** Puedes personalizar el nombre de cada cuenta nueva, cambiar categorías y decidir qué movimientos importar
+- 📊 **Navegación visual:** Barra de progreso con indicadores numerados y colores diferentes para gastos e ingresos
+
+### 💰 **Sistema Contable Mejorado**
+- 🔄 **Doble entrada automática:** Cada movimiento bancario ahora registra correctamente de dónde sale y a dónde llega el dinero
+- 📝 **Creación automática de cuentas:** Si no existe una cuenta para una transferencia, el sistema la crea automáticamente con tu aprobación
+- 🎯 **Trazabilidad completa:** Puedes seguir exactamente el camino de cada peso desde su origen hasta su destino
+- ✅ **Estados realistas:** Las transacciones se marcan como "Liquidadas" porque ya fueron procesadas por el banco
+
+### 🎨 **Interfaz Renovada**
+- 🌈 **Diseño moderno:** Gradientes, animaciones y colores que hacen más atractivo el uso del sistema
+- 📱 **Experiencia intuitiva:** Formularios más claros con ayuda contextual y confirmaciones de seguridad
+- 🔍 **Vista previa completa:** Antes de confirmar puedes ver exactamente qué transacciones se crearán
+- 💾 **Resumen inteligente:** Estadísticas automáticas de cuánto dinero entra, sale y cuántas cuentas nuevas se crearán
+
+### 📈 **Beneficios para el Usuario**
+- **Importación bancaria sin estrés:** Ya no más cuentas genéricas, ahora tienes nombres personalizados
+- **Control granular:** Decides exactamente qué se importa y cómo se clasifica
+- **Menos errores:** Al revisar cada movimiento, evitas sorpresas en tus reportes
+- **Mejor organización:** Cuentas con nombres que realmente entiendes (ej: "Santander - Juan Pérez" en lugar de "Cuenta Externa")
+
+---
 
 ## 🗓️ Versión 0.7.1 - 09 de Agosto, 2025
 

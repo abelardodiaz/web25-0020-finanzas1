@@ -91,6 +91,11 @@
                        class="px-3 py-2 rounded-md text-sm font-medium {% if 'conciliacion' in request.path %}bg-gray-900 dark:bg-gray-700{% else %}hover:bg-gray-700 dark:hover:bg-gray-800{% endif %}">
                         <i class="fas fa-balance-scale mr-1"></i> Conciliación
                     </a>
+                    
+                    <a href="{% url 'core:bbva_simple' %}" 
+                       class="px-3 py-2 rounded-md text-sm font-medium {% if 'bbva' in request.path %}bg-gray-900 dark:bg-gray-700{% else %}hover:bg-gray-700 dark:hover:bg-gray-800{% endif %}">
+                        <i class="fas fa-file-excel mr-1 text-green-400"></i> BBVA
+                    </a>
                 </div>
                 
                 <!-- Menú de usuario -->

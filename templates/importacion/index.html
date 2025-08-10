@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Importación Bancaria{% endblock %}
+
+{% block content %}
+<div class="container max-w-4xl mx-auto py-6">
+    <!-- Header -->
+    <div class="mb-6">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+            <i class="fas fa-upload text-blue-500 mr-2"></i>
+            Importación de Estados de Cuenta
+        </h1>
+        <p class="text-gray-600 dark:text-gray-400">
+            Sube archivos CSV de estados de cuenta bancarios para conciliación automática
+        </p>
+    </div>
+
+    <!-- Formulario de Importación -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+            <i class="fas fa-file-csv text-green-500 mr-2"></i>
+            Subir Archivo CSV
+        </h2>
+        
+        <form method="post" enctype="multipart/form-data" class="space-y-4">
+            {% csrf_token %}
+            
+            <!-- Selección de Cuenta -->
+            <div>
+                <label for="cuenta" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Cuenta Bancaria
+                </label>
+                {% if cuentas_disponibles %}
+                    <select name="cuenta" id="cuenta" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" required>
+                        <option value="">Selecciona una cuenta...</option>
+                        {% for cuenta in cuentas_disponibles %}
+                            <option value="{{ cuenta.id }}">
+                                {{ cuenta.nombre }} - {{ cuenta.referencia }} ({{ cuenta.moneda }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                {% else %}
+                    <div class="p-4 border border-yellow-300 bg-yellow-50 dark:bg-yellow-900 rounded-lg">
+                        <p class="text-yellow-800 dark:text-yellow-200">
+                            ⚠️ No hay cuentas disponibles. 
+                            <a href="{% url 'core:cuenta_create' %}" class="underline font-medium">Crear cuenta aquí</a>
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Subida de Archivo -->
+            <div>
+                <label for="archivo_csv" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    Archivo CSV del Estado de Cuenta
+                </label>
+                <input type="file" name="archivo_csv" id="archivo_csv" 
+                    accept=".csv" 
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" required>
+                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                    Solo archivos CSV (.csv) descargados del portal bancario
+                </p>
+            </div>
+
+            <!-- Opciones Adicionales -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="formato_fecha" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Formato de Fecha
+                    </label>
+                    <select name="formato_fecha" id="formato_fecha" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                        <option value="dd/mm/yyyy">DD/MM/YYYY</option>
+                        <option value="mm/dd/yyyy">MM/DD/YYYY</option>
+                        <option value="yyyy-mm-dd">YYYY-MM-DD</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label for="separador" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Separador CSV
+                    </label>
+                    <select name="separador" id="separador" 
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                        <option value=",">Coma (,)</option>
+                        <option value=";">Punto y coma (;)</option>
+                        <option value="	">Tabulador</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Botón de Procesamiento -->
+            <div class="flex justify-end">
+                <button type="submit" 
+                    class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md transition-colors focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                    <i class="fas fa-upload mr-2"></i>
+                    Procesar Archivo
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-6 mb-6">
+        <h3 class="text-lg font-semibold text-blue-800 dark:text-blue-200 mb-3">
+            <i class="fas fa-info-circle mr-2"></i>
+            Instrucciones de Uso
+        </h3>
+        <div class="space-y-2 text-blue-700 dark:text-blue-300 text-sm">
+            <p><strong>1. Formato del archivo:</strong> El archivo CSV debe contener al menos las columnas: Fecha, Descripción, Monto</p>
+            <p><strong>2. Estructura esperada:</strong> Fecha | Descripción | Monto | Referencia (opcional)</p>
+            <p><strong>3. Montos:</strong> Los montos negativos representan salidas de dinero, positivos representan ingresos</p>
+            <p><strong>4. Procesamiento:</strong> El sistema detectará automáticamente duplicados y sugerirá coincidencias</p>
+            <p><strong>5. Conciliación:</strong> Podrás revisar y confirmar las coincidencias antes de crear las transacciones</p>
+        </div>
+    </div>
+
+    <!-- Importaciones Recientes -->
+    {% if importaciones_recientes %}
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">
+            <i class="fas fa-history text-gray-500 mr-2"></i>
+            Importaciones Recientes
+        </h2>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Fecha
+                        </th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Cuenta
+                        </th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Archivo
+                        </th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Registros
+                        </th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Conciliados
+                        </th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Acciones
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                    {% for importacion in importaciones_recientes %}
+                    <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                        <td class="px-4 py-2 text-sm text-gray-800 dark:text-gray-200">
+                            {{ importacion.fecha_importacion|date:"d/m/Y H:i" }}
+                        </td>
+                        <td class="px-4 py-2 text-sm text-gray-800 dark:text-gray-200">
+                            {{ importacion.cuenta.nombre|truncatechars:20 }}
+                        </td>
+                        <td class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+                            {{ importacion.nombre_archivo|truncatechars:30 }}
+                        </td>
+                        <td class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+                            {{ importacion.total_registros }}
+                        </td>
+                        <td class="px-4 py-2 text-sm text-gray-600 dark:text-gray-400">
+                            {{ importacion.registros_conciliados }}/{{ importacion.total_registros }}
+                        </td>
+                        <td class="px-4 py-2">
+                            <a href="{% url 'core:importacion_detalle' importacion.id %}" 
+                               class="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm">
+                                Ver detalle
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+// Validación del formulario
+document.querySelector('form').addEventListener('submit', function(e) {
+    const archivo = document.getElementById('archivo_csv').files[0];
+    const cuenta = document.getElementById('cuenta').value;
+    
+    if (!archivo) {
+        e.preventDefault();
+        alert('⚠️ Por favor selecciona un archivo CSV');
+        return;
+    }
+    
+    if (!cuenta) {
+        e.preventDefault();
+        alert('⚠️ Por favor selecciona una cuenta bancaria');
+        return;
+    }
+    
+    // Validar extensión
+    const extension = archivo.name.toLowerCase();
+    if (!extension.endsWith('.csv')) {
+        e.preventDefault();
+        alert('⚠️ Solo se permiten archivos CSV (.csv)');
+        return;
+    }
+    
+    // Mostrar loading
+    const btn = e.target.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Procesando...';
+});
+</script>
+{% endblock %}

@@ -1,0 +1,238 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Resumen Final - Importación BBVA{% endblock %}
+
+{% block content %}
+<div class="container max-w-6xl mx-auto py-6">
+    <!-- Header -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                    <i class="fas fa-check-double text-green-500 mr-2"></i>
+                    Resumen Final de Importación
+                </h1>
+                <p class="text-gray-600 dark:text-gray-400">
+                    {{ importacion.cuenta_bbva.nombre }} - Revisión completada
+                </p>
+            </div>
+            <div class="text-right">
+                <div class="text-3xl font-bold text-green-600">
+                    ✅ {{ stats.total_validados }} Revisados
+                </div>
+            </div>
+        </div>
+        
+        <!-- Estadísticas -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div class="bg-green-50 dark:bg-green-900 rounded-lg p-4">
+                <div class="text-sm text-green-600 dark:text-green-400">Se importarán</div>
+                <div class="text-2xl font-bold text-green-700 dark:text-green-300">
+                    {{ stats.total_importar }}
+                </div>
+                <div class="text-xs text-green-500">transacciones</div>
+            </div>
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                <div class="text-sm text-gray-600 dark:text-gray-400">Se ignorarán</div>
+                <div class="text-2xl font-bold text-gray-700 dark:text-gray-300">
+                    {{ stats.total_ignorados }}
+                </div>
+                <div class="text-xs text-gray-500">movimientos</div>
+            </div>
+            <div class="bg-blue-50 dark:bg-blue-900 rounded-lg p-4">
+                <div class="text-sm text-blue-600 dark:text-blue-400">Cuentas nuevas</div>
+                <div class="text-2xl font-bold text-blue-700 dark:text-blue-300">
+                    {{ stats.total_cuentas_nuevas }}
+                </div>
+                <div class="text-xs text-blue-500">se crearán</div>
+            </div>
+            <div class="bg-purple-50 dark:bg-purple-900 rounded-lg p-4">
+                <div class="text-sm text-purple-600 dark:text-purple-400">Flujo neto</div>
+                <div class="text-lg font-bold 
+                    {% if stats.total_ingresos > stats.total_gastos %}
+                        text-green-700 dark:text-green-300
+                    {% else %}
+                        text-red-700 dark:text-red-300
+                    {% endif %}">
+                    ${{ stats.total_ingresos|floatformat:2|add:stats.total_gastos|floatformat:2 }}
+                </div>
+                <div class="text-xs text-purple-500">diferencia</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alerta importante -->
+    <div class="bg-yellow-50 dark:bg-yellow-900 border border-yellow-300 rounded-lg p-4 mb-6">
+        <div class="flex items-start">
+            <div class="flex-shrink-0">
+                <i class="fas fa-exclamation-triangle text-yellow-600 text-xl"></i>
+            </div>
+            <div class="ml-3">
+                <h3 class="text-lg font-medium text-yellow-800 dark:text-yellow-200">
+                    ⚠️ Confirmar antes de proceder
+                </h3>
+                <p class="text-yellow-700 dark:text-yellow-300 mt-1">
+                    Al confirmar se crearán <strong>{{ stats.total_importar }} transacciones</strong> 
+                    {% if stats.total_cuentas_nuevas > 0 %}
+                    y <strong>{{ stats.total_cuentas_nuevas }} cuentas nuevas</strong>
+                    {% endif %}
+                    en tu sistema. Esta acción no se puede deshacer fácilmente.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lista detallada de movimientos -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden mb-6">
+        <div class="p-4 bg-gray-50 dark:bg-gray-700 border-b">
+            <h2 class="text-lg font-semibold text-gray-800 dark:text-white">
+                <i class="fas fa-list-check text-blue-500 mr-2"></i>
+                Detalle de Transacciones a Crear
+            </h2>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-700">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                            Fecha
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                            Descripción
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                            Cuenta Origen
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                            Cuenta Destino
+                        </th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                            Categoría
+                        </th>
+                        <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                            Monto
+                        </th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                            Estado
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                    {% for mov in movimientos %}
+                    <tr class="{% if mov.ignorar %}opacity-50 bg-gray-50 dark:bg-gray-700{% else %}hover:bg-gray-50 dark:hover:bg-gray-700{% endif %}">
+                        <td class="px-4 py-3 text-sm text-gray-800 dark:text-gray-200">
+                            {{ mov.fecha_original|date:"d/m/Y" }}
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                            <div class="text-gray-800 dark:text-gray-200">
+                                {{ mov.descripcion_limpia|truncatechars:40 }}
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                            {% if mov.es_gasto %}
+                                <div class="font-medium text-blue-600">
+                                    🏦 {{ importacion.cuenta_bbva.nombre }}
+                                </div>
+                                <div class="text-xs text-gray-500">{{ importacion.cuenta_bbva.referencia }}</div>
+                            {% else %}
+                                {% if mov.cuenta_destino_confirmada %}
+                                    <div class="font-medium text-gray-800 dark:text-gray-200">
+                                        {{ mov.cuenta_destino_confirmada.nombre }}
+                                        {% if not mov.cuenta_destino_confirmada.pk %}
+                                            <span class="text-xs text-green-600 ml-1">📝 Nueva</span>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <span class="text-red-500 text-sm">⚠️ Sin definir</span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-sm">
+                            {% if not mov.es_gasto %}
+                                <div class="font-medium text-blue-600">
+                                    🏦 {{ importacion.cuenta_bbva.nombre }}
+                                </div>
+                                <div class="text-xs text-gray-500">{{ importacion.cuenta_bbva.referencia }}</div>
+                            {% else %}
+                                {% if mov.cuenta_destino_confirmada %}
+                                    <div class="font-medium text-gray-800 dark:text-gray-200">
+                                        {{ mov.cuenta_destino_confirmada.nombre }}
+                                        {% if not mov.cuenta_destino_confirmada.pk %}
+                                            <span class="text-xs text-green-600 ml-1">📝 Nueva</span>
+                                        {% endif %}
+                                    </div>
+                                {% else %}
+                                    <span class="text-red-500 text-sm">⚠️ Sin definir</span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                            {{ mov.categoria_confirmada.nombre|default:"Sin categoría" }}
+                        </td>
+                        <td class="px-4 py-3 text-right text-sm font-medium
+                            {% if mov.es_gasto %}text-red-600 dark:text-red-400{% else %}text-green-600 dark:text-green-400{% endif %}">
+                            {% if not mov.ignorar %}
+                                {% if mov.es_gasto %}-{% else %}+{% endif %}${{ mov.monto_calculado|floatformat:2 }}
+                            {% else %}
+                                <span class="text-gray-400">-</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                            {% if mov.ignorar %}
+                                <span class="px-2 py-1 text-xs bg-gray-200 text-gray-600 rounded-full">
+                                    ❌ Ignorar
+                                </span>
+                            {% else %}
+                                <span class="px-2 py-1 text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full">
+                                    ✅ Importar
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Botones de acción -->
+    <div class="flex justify-between items-center">
+        <div>
+            <a href="/bbva/wizard-detallado/{{ importacion.id }}/?mov={{ stats.total_validados }}" 
+               class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-md">
+                <i class="fas fa-arrow-left mr-2"></i>Revisar Último
+            </a>
+        </div>
+        
+        <div class="space-x-3">
+            <button onclick="cancelarImportacion()" 
+                class="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-md">
+                <i class="fas fa-times mr-2"></i>Cancelar Todo
+            </button>
+            
+            <form method="post" style="display: inline;" onsubmit="return confirmarImportacion()">
+                {% csrf_token %}
+                <button type="submit" 
+                    class="px-8 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md text-lg">
+                    <i class="fas fa-check-circle mr-2"></i>Confirmar y Crear Transacciones
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function cancelarImportacion() {
+    if (confirm('¿Estás seguro de cancelar toda la importación? Se perderán todos los cambios realizados.')) {
+        window.location.href = '/bbva/';
+    }
+}
+
+function confirmarImportacion() {
+    const mensaje = `¿Confirmas crear ${{{ stats.total_importar }}} transacciones${{{ stats.total_cuentas_nuevas }} > 0 ? ` y ${{{ stats.total_cuentas_nuevas }}} cuentas nuevas` : ''}?\n\nEsta acción no se puede deshacer fácilmente.`;
+    return confirm(mensaje);
+}
+</script>
+{% endblock %}

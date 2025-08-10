@@ -1,0 +1,164 @@
+[
+{
+  "model": "core.tipocuenta",
+  "pk": 1,
+  "fields": {
+    "codigo": "CCH",
+    "nombre": "CAJA CHICA",
+    "grupo": "DEB"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 2,
+  "fields": {
+    "codigo": "DEB",
+    "nombre": "CUENTA DEBITO",
+    "grupo": "DEB"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 3,
+  "fields": {
+    "codigo": "EFE",
+    "nombre": "EFECTIVO",
+    "grupo": "DEB"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 4,
+  "fields": {
+    "codigo": "PROV",
+    "nombre": "PROVEEDOR",
+    "grupo": "SER"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 5,
+  "fields": {
+    "codigo": "SERV",
+    "nombre": "SERVICIOS",
+    "grupo": "SER"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 6,
+  "fields": {
+    "codigo": "TDC",
+    "nombre": "TARJETA DE CREDITO",
+    "grupo": "CRE"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 7,
+  "fields": {
+    "codigo": "HIP",
+    "nombre": "CREDITO HIPOTECARIO",
+    "grupo": "CRE"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 8,
+  "fields": {
+    "codigo": "BBVA",
+    "nombre": "CUENTA BBVA DEBITO",
+    "grupo": "DEB"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 9,
+  "fields": {
+    "codigo": "AHORRO",
+    "nombre": "CUENTA DE AHORRO",
+    "grupo": "DEB"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 10,
+  "fields": {
+    "codigo": "INVER",
+    "nombre": "CUENTA DE INVERSION",
+    "grupo": "DEB"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 11,
+  "fields": {
+    "codigo": "NOMINA",
+    "nombre": "CUENTA DE NOMINA",
+    "grupo": "DEB"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 12,
+  "fields": {
+    "codigo": "DIGITAL",
+    "nombre": "CUENTA DIGITAL",
+    "grupo": "DEB"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 13,
+  "fields": {
+    "codigo": "CREDITO",
+    "nombre": "LINEA DE CREDITO",
+    "grupo": "CRE"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 14,
+  "fields": {
+    "codigo": "PRESTAMO",
+    "nombre": "PRESTAMO PERSONAL",
+    "grupo": "CRE"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 15,
+  "fields": {
+    "codigo": "ING",
+    "nombre": "INGRESOS",
+    "grupo": "ING"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 16,
+  "fields": {
+    "codigo": "VENTA",
+    "nombre": "VENTAS",
+    "grupo": "ING"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 17,
+  "fields": {
+    "codigo": "COMIS",
+    "nombre": "COMISIONES",
+    "grupo": "ING"
+  }
+},
+{
+  "model": "core.tipocuenta",
+  "pk": 18,
+  "fields": {
+    "codigo": "INTERES",
+    "nombre": "INTERESES",
+    "grupo": "ING"
+  }
+}
+]

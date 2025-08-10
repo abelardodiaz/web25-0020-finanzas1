@@ -311,6 +311,29 @@ class Transaccion(models.Model):
         blank=True,
         help_text="Saldo de la cuenta después de esta transacción"
     )
+    
+    # Campos específicos para importación BBVA
+    importacion_bbva = models.ForeignKey(
+        'ImportacionBBVA',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='transacciones_creadas',
+        help_text="Importación BBVA que creó esta transacción"
+    )
+    
+    referencia_bbva = models.TextField(
+        blank=True,
+        help_text="Descripción original del estado de cuenta BBVA"
+    )
+    
+    saldo_posterior_bbva = models.DecimalField(
+        max_digits=12,
+        decimal_places=2,
+        null=True,
+        blank=True,
+        help_text="Saldo reportado por BBVA después de esta transacción"
+    )
 
     class Meta:
         indexes = [
@@ -1272,3 +1295,143 @@ class PeriodoPDFView(LoginRequiredMixin, View):
         p.showPage()
         p.save()
         return response
+
+
+# ===================================================================
+# MODELOS PARA IMPORTACIÓN BBVA ASISTIDA
+# ===================================================================
+
+class EstadoCuentaBBVA(models.TextChoices):
+    """Estados del proceso de importación BBVA"""
+    SUBIDO = 'SUBIDO', 'Archivo subido'
+    ANALIZADO = 'ANALIZADO', 'Análisis completado'
+    VALIDANDO = 'VALIDANDO', 'Validando con usuario'
+    PROCESANDO = 'PROCESANDO', 'Creando transacciones'
+    COMPLETADO = 'COMPLETADO', 'Importación completada'
+    ERROR = 'ERROR', 'Error en proceso'
+    CANCELADO = 'CANCELADO', 'Cancelado por usuario'
+
+
+class ImportacionBBVA(models.Model):
+    """Registro maestro de cada importación BBVA"""
+    
+    # Archivos y usuario
+    archivo = models.FileField(upload_to='importaciones/bbva/%Y/%m/')
+    usuario = models.ForeignKey(
+        settings.AUTH_USER_MODEL, 
+        on_delete=models.CASCADE,
+        null=True, blank=True
+    )
+    
+    # Cuenta objetivo
+    cuenta_bbva = models.ForeignKey(
+        Cuenta, 
+        on_delete=models.CASCADE,
+        help_text="Cuenta BBVA 5019 de tipo DÉBITO"
+    )
+    numero_cuenta_detectado = models.CharField(max_length=20, blank=True)
+    
+    # Control del proceso
+    estado = models.CharField(
+        max_length=12,
+        choices=EstadoCuentaBBVA.choices,
+        default=EstadoCuentaBBVA.SUBIDO
+    )
+    paso_actual = models.IntegerField(default=1)
+    total_pasos = models.IntegerField(default=6)
+    
+    # Datos del archivo
+    fecha_primer_movimiento = models.DateField(null=True)
+    fecha_ultimo_movimiento = models.DateField(null=True)
+    total_movimientos_archivo = models.IntegerField(default=0)
+    saldo_inicial_archivo = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+    saldo_final_archivo = models.DecimalField(max_digits=12, decimal_places=2, null=True)
+    
+    # Resultados del procesamiento
+    movimientos_nuevos = models.IntegerField(default=0)
+    movimientos_duplicados = models.IntegerField(default=0)
+    cuentas_creadas = models.IntegerField(default=0)
+    categorias_creadas = models.IntegerField(default=0)
+    
+    # Metadatos
+    fecha_inicio = models.DateTimeField(auto_now_add=True)
+    fecha_completado = models.DateTimeField(null=True, blank=True)
+    log_proceso = models.JSONField(default=dict, blank=True)
+    notas_usuario = models.TextField(blank=True)
+    
+    class Meta:
+        ordering = ['-fecha_inicio']
+        verbose_name = "Importación BBVA"
+        verbose_name_plural = "Importaciones BBVA"
+
+    def __str__(self):
+        return f"BBVA Import {self.id} - {self.estado} ({self.fecha_inicio.strftime('%d/%m/%Y')})"
+
+
+class MovimientoBBVATemporal(models.Model):
+    """Almacén temporal de movimientos durante el proceso de importación"""
+    
+    importacion = models.ForeignKey(
+        ImportacionBBVA, 
+        on_delete=models.CASCADE, 
+        related_name='movimientos_temporales'
+    )
+    
+    # Datos originales del archivo BBVA
+    fila_excel = models.IntegerField()
+    fecha_original = models.DateField()
+    descripcion_original = models.TextField()
+    cargo_original = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    abono_original = models.DecimalField(max_digits=12, decimal_places=2, default=0)
+    saldo_original = models.DecimalField(max_digits=12, decimal_places=2)
+    
+    # Análisis automático
+    es_gasto = models.BooleanField()  # True si cargo > 0
+    monto_calculado = models.DecimalField(max_digits=12, decimal_places=2)
+    tipo_detectado = models.CharField(max_length=50, blank=True)
+    categoria_sugerida = models.CharField(max_length=100, blank=True)
+    
+    # Validaciones del usuario
+    descripcion_limpia = models.CharField(max_length=255, blank=True)
+    categoria_confirmada = models.ForeignKey(
+        Categoria, 
+        null=True, 
+        blank=True, 
+        on_delete=models.SET_NULL
+    )
+    cuenta_destino_sugerida = models.CharField(max_length=100, blank=True)
+    cuenta_destino_confirmada = models.ForeignKey(
+        Cuenta,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='movimientos_bbva_destino'
+    )
+    
+    # Estado de procesamiento
+    validado_por_usuario = models.BooleanField(default=False)
+    es_duplicado = models.BooleanField(default=False)
+    transaccion_existente = models.ForeignKey(
+        Transaccion,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='duplicados_bbva'
+    )
+    transaccion_creada = models.ForeignKey(
+        Transaccion,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='origen_bbva'
+    )
+    
+    ignorar = models.BooleanField(default=False)
+    notas_usuario = models.TextField(blank=True)
+    
+    class Meta:
+        ordering = ['fila_excel']
+        unique_together = ['importacion', 'fila_excel']
+
+    def __str__(self):
+        return f"Mov #{self.fila_excel}: {self.descripcion_original[:50]}..."

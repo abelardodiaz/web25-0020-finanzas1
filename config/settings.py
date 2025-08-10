@@ -8,6 +8,13 @@ from pathlib import Path
 import os
 import environ
 
+# Configurar PyMySQL como reemplazo de MySQLdb
+try:
+    import pymysql
+    pymysql.install_as_MySQLdb()
+except ImportError:
+    pass
+
 # Build paths
 BASE_DIR = Path(__file__).resolve().parent.parent
 

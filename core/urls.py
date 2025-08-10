@@ -12,8 +12,12 @@ from .views import (
     cambiar_estado_transaccion, conciliacion_view, conciliar_masivo, TransaccionEstadoUpdateView,
     # Vistas de matching automático
     importacion_bancaria_view, importacion_detalle_view, aplicar_match_manual, 
-    revertir_match, buscar_transacciones_candidatas, ejecutar_matching_masivo
+    revertir_match, buscar_transacciones_candidatas, ejecutar_matching_masivo,
+    # Vistas BBVA
+    BBVASimpleView, BBVADetalleView, bbva_validar_movimiento, bbva_resumen_importacion,
+    BBVAWizardView, BBVAWizardDetalladoView, BBVAResumenFinalView
 )
+# Vistas BBVA están ahora en views.py
 import core.views as core_views
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.shortcuts import get_object_or_404
@@ -114,4 +118,13 @@ urlpatterns = [
     path('api/match/manual/', aplicar_match_manual, name='aplicar_match_manual'),
     path('api/match/revertir/', revertir_match, name='revertir_match'),
     path('api/transacciones/candidatas/', buscar_transacciones_candidatas, name='buscar_candidatas'),
+    
+    # URLs de importación BBVA
+    path('bbva/', BBVASimpleView.as_view(), name='bbva_simple'),
+    path('bbva/wizard/', BBVAWizardView.as_view(), name='bbva_wizard'),
+    path('bbva/wizard-detallado/<int:importacion_id>/', BBVAWizardDetalladoView.as_view(), name='bbva_wizard_detallado'),
+    path('bbva/resumen-final/<int:importacion_id>/', BBVAResumenFinalView.as_view(), name='bbva_resumen_final'),
+    path('bbva/<int:importacion_id>/', BBVADetalleView.as_view(), name='bbva_detalle'),
+    path('bbva/validar/<int:movimiento_id>/', bbva_validar_movimiento, name='bbva_validar_movimiento'),
+    path('bbva/resumen/<int:importacion_id>/', bbva_resumen_importacion, name='bbva_resumen_importacion'),
 ]

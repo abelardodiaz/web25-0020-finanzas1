@@ -1,0 +1,324 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Asistente BBVA - Movimiento {{ movimiento_actual }} de {{ total_movimientos }}{% endblock %}
+
+{% block content %}
+<div class="container max-w-5xl mx-auto py-6">
+    <!-- Progress Bar -->
+    <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-magic text-purple-500 mr-2"></i>
+                Asistente de Importación BBVA
+            </h1>
+            <span class="text-sm text-gray-600 dark:text-gray-400">
+                Movimiento {{ movimiento_actual }} de {{ total_movimientos }}
+            </span>
+        </div>
+        
+        <!-- Barra de progreso -->
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 h-3 rounded-full transition-all duration-300" 
+                 style="width: {{ progreso }}%"></div>
+        </div>
+        
+        <!-- Indicadores de movimientos -->
+        <div class="flex justify-between mt-2">
+            {% for i in movimientos_indices %}
+            <div class="flex flex-col items-center">
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold
+                    {% if i < movimiento_actual %}
+                        bg-green-500 text-white
+                    {% elif i == movimiento_actual %}
+                        bg-purple-600 text-white animate-pulse
+                    {% else %}
+                        bg-gray-300 dark:bg-gray-600 text-gray-600 dark:text-gray-400
+                    {% endif %}">
+                    {% if i < movimiento_actual %}
+                        ✓
+                    {% else %}
+                        {{ i }}
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Contenido del Movimiento -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <!-- Header del movimiento -->
+        <div class="bg-gradient-to-r 
+            {% if movimiento.es_gasto %}
+                from-red-500 to-red-600
+            {% else %}
+                from-green-500 to-green-600
+            {% endif %} p-6 text-white">
+            <div class="flex justify-between items-start">
+                <div>
+                    <h2 class="text-xl font-bold mb-2">
+                        {% if movimiento.es_gasto %}
+                            💳 CARGO - Sale dinero de BBVA
+                        {% else %}
+                            💰 ABONO - Entra dinero a BBVA
+                        {% endif %}
+                    </h2>
+                    <div class="text-3xl font-bold">
+                        {% if movimiento.es_gasto %}-{% else %}+{% endif %}
+                        ${{ movimiento.monto_calculado|floatformat:2 }} MXN
+                    </div>
+                    <div class="text-sm opacity-90 mt-2">
+                        📅 {{ movimiento.fecha_original|date:"d/m/Y" }}
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm opacity-75">Saldo después:</div>
+                    <div class="text-xl font-semibold">${{ movimiento.saldo_original|floatformat:2 }}</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Descripción Original -->
+        <div class="p-6 border-b border-gray-200 dark:border-gray-700">
+            <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Descripción del banco:</label>
+            <div class="mt-1 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg font-mono text-sm">
+                {{ movimiento.descripcion_original }}
+            </div>
+        </div>
+
+        <!-- Formulario de edición -->
+        <form method="post" id="formMovimiento" class="p-6 space-y-6">
+            {% csrf_token %}
+            <input type="hidden" name="movimiento_id" value="{{ movimiento.id }}">
+            <input type="hidden" name="accion" id="accion" value="siguiente">
+            
+            <!-- Grid de 2 columnas -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                <!-- Columna Izquierda: Transacción -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2">
+                        <i class="fas fa-file-invoice-dollar text-blue-500 mr-2"></i>
+                        Datos de la Transacción
+                    </h3>
+                    
+                    <!-- Descripción limpia -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Descripción para mostrar:
+                        </label>
+                        <input type="text" name="descripcion" value="{{ movimiento.descripcion_limpia }}"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                            bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                        <p class="text-xs text-gray-500 mt-1">Esta descripción aparecerá en tus reportes</p>
+                    </div>
+                    
+                    <!-- Categoría -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Categoría:
+                        </label>
+                        <select name="categoria_id" 
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                            bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                            <option value="">-- Sin categoría --</option>
+                            {% for cat in categorias %}
+                                <option value="{{ cat.id }}" 
+                                    {% if cat.nombre == movimiento.categoria_sugerida %}selected{% endif %}>
+                                    {{ cat.nombre }} ({{ cat.tipo }})
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <!-- Tipo detectado -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            Tipo de operación detectado:
+                        </label>
+                        <div class="p-3 bg-blue-50 dark:bg-blue-900 rounded-lg">
+                            <span class="text-blue-800 dark:text-blue-200 font-medium">
+                                {% if movimiento.tipo_detectado == 'transferencia_salida' %}
+                                    📤 Transferencia enviada
+                                {% elif movimiento.tipo_detectado == 'transferencia_entrada' %}
+                                    📥 Transferencia recibida
+                                {% elif movimiento.tipo_detectado == 'pago_tdc' %}
+                                    💳 Pago de tarjeta
+                                {% elif movimiento.tipo_detectado == 'deposito' %}
+                                    💵 Depósito
+                                {% else %}
+                                    🔄 {{ movimiento.tipo_detectado }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Columna Derecha: Cuentas -->
+                <div class="space-y-4">
+                    <h3 class="text-lg font-semibold text-gray-800 dark:text-white border-b pb-2">
+                        <i class="fas fa-university text-green-500 mr-2"></i>
+                        Cuentas Involucradas
+                    </h3>
+                    
+                    <!-- Cuenta BBVA (fija) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            {% if movimiento.es_gasto %}Cuenta Origen:{% else %}Cuenta Destino:{% endif %}
+                        </label>
+                        <div class="p-3 bg-gray-100 dark:bg-gray-700 rounded-lg">
+                            <div class="font-medium text-gray-800 dark:text-white">
+                                🏦 {{ cuenta_bbva.nombre }}
+                            </div>
+                            <div class="text-sm text-gray-500">{{ cuenta_bbva.referencia }}</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Cuenta relacionada (editable) -->
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                            {% if movimiento.es_gasto %}Cuenta Destino:{% else %}Cuenta Origen:{% endif %}
+                        </label>
+                        
+                        <!-- Selector de cuenta existente o nueva -->
+                        <div class="space-y-2">
+                            <select name="cuenta_relacionada_id" id="cuentaRelacionada"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                                bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                <option value="nueva">➕ Crear nueva cuenta...</option>
+                                <optgroup label="Cuentas existentes">
+                                    {% for cuenta in cuentas_existentes %}
+                                        {% if cuenta.id != cuenta_bbva.id %}
+                                        <option value="{{ cuenta.id }}"
+                                            {% if cuenta_sugerida and cuenta.id == cuenta_sugerida.id %}selected{% endif %}>
+                                            {{ cuenta.nombre }} ({{ cuenta.tipo.nombre }})
+                                        </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                </optgroup>
+                            </select>
+                            
+                            <!-- Campos para nueva cuenta -->
+                            <div id="nuevaCuentaFields" class="space-y-2 
+                                {% if cuenta_sugerida %}hidden{% endif %}">
+                                <input type="text" name="nueva_cuenta_nombre" 
+                                    placeholder="Nombre de la cuenta" 
+                                    value="{{ nombre_cuenta_sugerido }}"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                                    bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                
+                                <input type="text" name="nueva_cuenta_referencia" 
+                                    placeholder="Número/Referencia" 
+                                    value="{{ referencia_sugerida }}"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                                    bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                
+                                <select name="nueva_cuenta_tipo" 
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                                    bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                    {% for tipo in tipos_cuenta %}
+                                        <option value="{{ tipo.id }}"
+                                            {% if tipo_sugerido and tipo.id == tipo_sugerido.id %}selected{% endif %}>
+                                            {{ tipo.nombre }} ({{ tipo.grupo }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Información detectada -->
+                    {% if banco_detectado or numero_detectado %}
+                    <div class="p-3 bg-yellow-50 dark:bg-yellow-900 rounded-lg">
+                        <div class="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-1">
+                            🔍 Información detectada:
+                        </div>
+                        {% if banco_detectado %}
+                        <div class="text-sm text-yellow-700 dark:text-yellow-300">
+                            Banco: {{ banco_detectado }}
+                        </div>
+                        {% endif %}
+                        {% if numero_detectado %}
+                        <div class="text-sm text-yellow-700 dark:text-yellow-300">
+                            Número: {{ numero_detectado }}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Opciones adicionales -->
+            <div class="border-t pt-4">
+                <label class="flex items-center space-x-2 text-sm">
+                    <input type="checkbox" name="ignorar" value="true" 
+                        class="rounded border-gray-300 dark:border-gray-600">
+                    <span class="text-gray-700 dark:text-gray-300">
+                        ❌ Ignorar este movimiento (no crear transacción)
+                    </span>
+                </label>
+            </div>
+            
+            <!-- Botones de acción -->
+            <div class="flex justify-between pt-4 border-t">
+                <div>
+                    {% if movimiento_actual > 1 %}
+                    <button type="button" onclick="navegarMovimiento('anterior')"
+                        class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-md">
+                        <i class="fas fa-arrow-left mr-2"></i>Anterior
+                    </button>
+                    {% endif %}
+                </div>
+                
+                <div class="space-x-3">
+                    <button type="button" onclick="cancelarImportacion()"
+                        class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-medium rounded-md">
+                        <i class="fas fa-times mr-2"></i>Cancelar Todo
+                    </button>
+                    
+                    {% if movimiento_actual < total_movimientos %}
+                    <button type="submit" 
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md">
+                        Siguiente <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                    {% else %}
+                    <button type="button" onclick="mostrarResumen()"
+                        class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md">
+                        <i class="fas fa-check mr-2"></i>Revisar y Confirmar
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+// Mostrar/ocultar campos de nueva cuenta
+document.getElementById('cuentaRelacionada').addEventListener('change', function() {
+    const nuevaCuentaFields = document.getElementById('nuevaCuentaFields');
+    if (this.value === 'nueva') {
+        nuevaCuentaFields.classList.remove('hidden');
+    } else {
+        nuevaCuentaFields.classList.add('hidden');
+    }
+});
+
+function navegarMovimiento(direccion) {
+    document.getElementById('accion').value = direccion;
+    document.getElementById('formMovimiento').submit();
+}
+
+function cancelarImportacion() {
+    if (confirm('¿Estás seguro de cancelar toda la importación? Se perderán todos los cambios.')) {
+        window.location.href = '/bbva/';
+    }
+}
+
+function mostrarResumen() {
+    document.getElementById('accion').value = 'resumen';
+    document.getElementById('formMovimiento').submit();
+}
+</script>
+{% endblock %}

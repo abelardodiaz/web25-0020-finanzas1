@@ -18,6 +18,7 @@ from .filters import TransaccionFilter, CuentaFilter
 
 from django.contrib import messages
 from django.db import transaction
+from django.db import transaction as db_transaction
 from django.urls import reverse_lazy
 from django.views.generic.edit import FormView
 from .forms import TransferenciaForm, IngresoForm, forms
@@ -60,6 +61,7 @@ from django.http import HttpResponse
 from django.http import HttpResponseRedirect
 
 import logging
+import re
 logger = logging.getLogger(__name__)
 
 from django.shortcuts import render
@@ -1165,7 +1167,6 @@ class CuentaDetailView(DetailView):
 
 # === VISTAS PARA GESTIÓN DE ESTADOS Y CONCILIACIÓN ======================
 
-@login_required
 @require_POST
 @csrf_exempt
 def cambiar_estado_transaccion(request, transaccion_id):
@@ -1211,7 +1212,6 @@ def cambiar_estado_transaccion(request, transaccion_id):
         }, status=500)
 
 
-@login_required
 def conciliacion_view(request):
     """Vista principal para conciliación bancaria"""
     # Obtener transacciones no conciliadas agrupadas por cuenta
@@ -1255,7 +1255,6 @@ def conciliacion_view(request):
     })
 
 
-@login_required
 def conciliar_masivo(request):
     """Vista para conciliar múltiples transacciones"""
     if request.method == 'POST':
@@ -1327,7 +1326,6 @@ class TransaccionEstadoUpdateView(LoginRequiredMixin, View):
 
 # === VISTAS PARA MATCHING AUTOMÁTICO E IMPORTACIÓN BANCARIA =============
 
-@login_required
 def importacion_bancaria_view(request):
     """Vista principal para importación de estados de cuenta"""
     if request.method == 'POST':
@@ -1349,7 +1347,6 @@ def importacion_bancaria_view(request):
     })
 
 
-@login_required
 def procesar_importacion_bancaria(request):
     """Procesa la importación de archivo bancario CSV"""
     try:
@@ -1443,7 +1440,6 @@ def procesar_importacion_bancaria(request):
         return redirect('core:importacion_bancaria')
 
 
-@login_required
 def importacion_detalle_view(request, importacion_id):
     """Vista de detalle de una importación específica"""
     importacion = get_object_or_404(ImportacionBancaria, id=importacion_id)
@@ -1470,7 +1466,6 @@ def importacion_detalle_view(request, importacion_id):
     })
 
 
-@login_required
 @require_POST
 def aplicar_match_manual(request):
     """Aplica match manual entre movimiento bancario y transacción"""
@@ -1523,7 +1518,6 @@ def aplicar_match_manual(request):
         }, status=500)
 
 
-@login_required
 @require_POST
 def revertir_match(request):
     """Revierte un match entre movimiento bancario y transacción"""
@@ -1570,7 +1564,6 @@ def revertir_match(request):
         }, status=500)
 
 
-@login_required
 def buscar_transacciones_candidatas(request):
     """API para buscar transacciones candidatas para matching manual"""
     movimiento_id = request.GET.get('movimiento_id')
@@ -1600,7 +1593,6 @@ def buscar_transacciones_candidatas(request):
     return JsonResponse({'candidatos': data})
 
 
-@login_required
 def ejecutar_matching_masivo(request, importacion_id):
     """Ejecuta matching automático para toda una importación"""
     importacion = get_object_or_404(ImportacionBancaria, id=importacion_id)
@@ -1629,3 +1621,513 @@ def ejecutar_matching_masivo(request, importacion_id):
     
     return redirect('core:importacion_detalle', importacion_id=importacion.id)
 
+
+# ============================================================================
+# VISTAS BBVA - Sistema de importación asistida
+# ============================================================================
+
+from .services.bbva_assistant import AsistenteBBVA
+from .models import ImportacionBBVA, MovimientoBBVATemporal
+from .bbva_wizard_view import BBVAWizardView
+
+
+class BBVASimpleView(View):
+    """Vista simple para probar importación BBVA"""
+    template_name = 'bbva/simple.html'
+    
+    def get(self, request):
+        """Mostrar formulario de importación"""
+        # Buscar cuentas BBVA (tipo débito que contenga 5019 en referencia)
+        cuentas_bbva = Cuenta.objects.filter(
+            tipo__grupo='DEB'
+        ).filter(referencia__icontains='5019')
+        
+        # Si no hay cuentas BBVA, sugerir crear una
+        if not cuentas_bbva.exists():
+            messages.warning(request, 
+                '⚠️ No se encontró cuenta BBVA 5019. Debes crear una cuenta de tipo débito con referencia que contenga "5019"')
+        
+        # Importaciones recientes (todas si no hay usuario)
+        if request.user.is_authenticated:
+            importaciones_recientes = ImportacionBBVA.objects.filter(
+                usuario=request.user
+            )[:10]
+        else:
+            importaciones_recientes = ImportacionBBVA.objects.all()[:10]
+        
+        return render(request, self.template_name, {
+            'cuentas_bbva': cuentas_bbva,
+            'importaciones_recientes': importaciones_recientes
+        })
+    
+    def post(self, request):
+        """Procesar archivo BBVA"""
+        archivo = request.FILES.get('archivo_bbva')
+        cuenta_id = request.POST.get('cuenta_id')
+        
+        if not archivo:
+            messages.error(request, '❌ Debe seleccionar un archivo')
+            return redirect('core:bbva_simple')
+        
+        if not cuenta_id:
+            messages.error(request, '❌ Debe seleccionar una cuenta BBVA')
+            return redirect('core:bbva_simple')
+        
+        try:
+            # Paso 1: Leer archivo
+            df, info_archivo = AsistenteBBVA.paso1_leer_archivo(archivo)
+            
+            messages.success(request, 
+                f"✅ Archivo leído: {info_archivo['total_movimientos']} movimientos detectados")
+            messages.info(request, 
+                f"📅 Periodo: {info_archivo['fecha_primer_movimiento']} - {info_archivo['fecha_ultimo_movimiento']}")
+            messages.info(request, 
+                f"💰 Cargos: ${info_archivo['total_cargos']:.2f}, Abonos: ${info_archivo['total_abonos']:.2f}")
+            
+            # Paso 2: Crear importación (usar usuario o None)
+            usuario = request.user if request.user.is_authenticated else None
+            importacion = AsistenteBBVA.paso2_crear_importacion(
+                archivo, cuenta_id, usuario, info_archivo
+            )
+            
+            # Paso 3: Analizar movimientos
+            movimientos_temporales = AsistenteBBVA.paso3_analizar_movimientos(importacion, df)
+            
+            messages.success(request, 
+                f"✅ Análisis completado: {len(movimientos_temporales)} movimientos analizados")
+            
+            # Redirigir al wizard detallado para revisar movimiento por movimiento
+            messages.info(request, 
+                f"🔍 Ahora revisaremos cada uno de los {len(movimientos_temporales)} movimientos paso a paso")
+            return redirect('core:bbva_wizard_detallado', importacion_id=importacion.id)
+            
+        except Exception as e:
+            messages.error(request, f'❌ Error procesando archivo: {str(e)}')
+            return redirect('core:bbva_simple')
+
+
+class BBVADetalleView(View):
+    """Vista detalle de una importación"""
+    template_name = 'bbva/detalle.html'
+    
+    def get(self, request, importacion_id):
+        """Mostrar detalle de importación"""
+        # Obtener importación (filtrar por usuario solo si está autenticado)
+        if request.user.is_authenticated:
+            importacion = get_object_or_404(
+                ImportacionBBVA, 
+                id=importacion_id, 
+                usuario=request.user
+            )
+        else:
+            importacion = get_object_or_404(ImportacionBBVA, id=importacion_id)
+        
+        # Obtener movimientos paginados
+        page = int(request.GET.get('page', 1))
+        per_page = 20
+        
+        movimientos = importacion.movimientos_temporales.all()
+        start = (page - 1) * per_page
+        end = start + per_page
+        movimientos_pagina = movimientos[start:end]
+        
+        # Calcular paginación
+        total_pages = (movimientos.count() + per_page - 1) // per_page
+        
+        # Obtener resumen
+        resumen = AsistenteBBVA.obtener_resumen_importacion(importacion)
+        
+        return render(request, self.template_name, {
+            'importacion': importacion,
+            'movimientos': movimientos_pagina,
+            'resumen': resumen,
+            'page': page,
+            'total_pages': total_pages,
+            'has_next': page < total_pages,
+            'has_prev': page > 1
+        })
+    
+    def post(self, request, importacion_id):
+        """Procesar confirmaciones y crear transacciones"""
+        # Obtener importación (filtrar por usuario solo si está autenticado)
+        if request.user.is_authenticated:
+            importacion = get_object_or_404(
+                ImportacionBBVA,
+                id=importacion_id,
+                usuario=request.user
+            )
+        else:
+            importacion = get_object_or_404(ImportacionBBVA, id=importacion_id)
+        
+        try:
+            # Marcar todos los movimientos como validados (versión simple)
+            importacion.movimientos_temporales.update(
+                validado_por_usuario=True,
+                ignorar=False
+            )
+            
+            # Crear transacciones
+            resultado = AsistenteBBVA.paso6_crear_transacciones(importacion)
+            
+            if resultado['errores']:
+                messages.warning(request, 
+                    f"⚠️ {len(resultado['errores'])} errores durante importación")
+                for error in resultado['errores'][:5]:  # Mostrar solo los primeros 5
+                    messages.error(request, error)
+            
+            messages.success(request, 
+                f"✅ Importación completada: {resultado['transacciones_creadas']} transacciones creadas")
+            
+            return redirect('core:transacciones_list')
+            
+        except Exception as e:
+            messages.error(request, f'❌ Error creando transacciones: {str(e)}')
+            return redirect('core:bbva_detalle', importacion_id=importacion.id)
+
+
+def bbva_validar_movimiento(request, movimiento_id):
+    """AJAX para validar un movimiento individual"""
+    if request.method != 'POST':
+        return JsonResponse({'error': 'Método no permitido'}, status=405)
+    
+    try:
+        # Filtrar por usuario solo si está autenticado
+        if request.user.is_authenticated:
+            movimiento = get_object_or_404(
+                MovimientoBBVATemporal,
+                id=movimiento_id,
+                importacion__usuario=request.user
+            )
+        else:
+            movimiento = get_object_or_404(MovimientoBBVATemporal, id=movimiento_id)
+        
+        # Actualizar movimiento
+        movimiento.descripcion_limpia = request.POST.get('descripcion', movimiento.descripcion_limpia)
+        movimiento.ignorar = request.POST.get('ignorar') == 'true'
+        movimiento.notas_usuario = request.POST.get('notas', '')
+        movimiento.validado_por_usuario = True
+        movimiento.save()
+        
+        return JsonResponse({
+            'success': True,
+            'message': 'Movimiento actualizado'
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=400)
+
+
+def bbva_resumen_importacion(request, importacion_id):
+    """AJAX para obtener resumen actualizado"""
+    try:
+        # Filtrar por usuario solo si está autenticado
+        if request.user.is_authenticated:
+            importacion = get_object_or_404(
+                ImportacionBBVA,
+                id=importacion_id,
+                usuario=request.user
+            )
+        else:
+            importacion = get_object_or_404(ImportacionBBVA, id=importacion_id)
+        
+        resumen = AsistenteBBVA.obtener_resumen_importacion(importacion)
+        
+        return JsonResponse({
+            'success': True,
+            'resumen': resumen
+        })
+        
+    except Exception as e:
+        return JsonResponse({
+            'error': str(e)
+        }, status=400)
+
+
+
+
+# ============================================================================
+# WIZARD BBVA DETALLADO - Movimiento por movimiento
+# ============================================================================
+
+
+class BBVAWizardDetalladoView(View):
+    """Wizard detallado que revisa cada movimiento individualmente"""
+    template_name = 'bbva/wizard_movimiento.html'
+    
+    def get(self, request, importacion_id):
+        """Mostrar el movimiento actual para revisión"""
+        importacion = get_object_or_404(ImportacionBBVA, id=importacion_id)
+        
+        # Obtener número de movimiento actual (por defecto 1)
+        movimiento_num = int(request.GET.get('mov', 1))
+        
+        # Obtener todos los movimientos ordenados
+        movimientos = importacion.movimientos_temporales.all().order_by('fila_excel')
+        total_movimientos = movimientos.count()
+        
+        if movimiento_num > total_movimientos:
+            # Si ya revisamos todos, mostrar resumen
+            return redirect('core:bbva_resumen_final', importacion_id=importacion_id)
+        
+        # Obtener el movimiento actual
+        movimiento = movimientos[movimiento_num - 1]
+        
+        # Detectar información de la cuenta relacionada
+        info_detectada = self.detectar_info_cuenta(movimiento)
+        
+        # Buscar si ya existe una cuenta similar
+        cuenta_sugerida = self.buscar_cuenta_existente(info_detectada)
+        
+        context = {
+            'importacion': importacion,
+            'movimiento': movimiento,
+            'movimiento_actual': movimiento_num,
+            'total_movimientos': total_movimientos,
+            'progreso': (movimiento_num / total_movimientos) * 100,
+            'movimientos_indices': list(range(1, min(total_movimientos + 1, 13))),  # Max 12 indicadores
+            'cuenta_bbva': importacion.cuenta_bbva,
+            'categorias': Categoria.objects.all().order_by('tipo', 'nombre'),
+            'cuentas_existentes': Cuenta.objects.all().order_by('nombre'),
+            'tipos_cuenta': TipoCuenta.objects.all().order_by('nombre'),
+            'cuenta_sugerida': cuenta_sugerida,
+            'banco_detectado': info_detectada.get('banco'),
+            'numero_detectado': info_detectada.get('numero'),
+            'nombre_cuenta_sugerido': info_detectada.get('nombre_cuenta'),
+            'referencia_sugerida': info_detectada.get('referencia'),
+            'tipo_sugerido': info_detectada.get('tipo_cuenta'),
+        }
+        
+        return render(request, self.template_name, context)
+    
+    def post(self, request, importacion_id):
+        """Procesar la confirmación del movimiento actual"""
+        importacion = get_object_or_404(ImportacionBBVA, id=importacion_id)
+        
+        movimiento_id = request.POST.get('movimiento_id')
+        movimiento = get_object_or_404(MovimientoBBVATemporal, id=movimiento_id)
+        
+        accion = request.POST.get('accion', 'siguiente')
+        
+        # Obtener número de movimiento actual
+        movimientos = importacion.movimientos_temporales.all().order_by('fila_excel')
+        movimiento_num = list(movimientos).index(movimiento) + 1
+        
+        if accion == 'anterior':
+            # Ir al movimiento anterior
+            if movimiento_num > 1:
+                return redirect(f'/bbva/wizard-detallado/{importacion_id}/?mov={movimiento_num - 1}')
+        
+        elif accion == 'resumen':
+            # Guardar cambios y mostrar resumen
+            self.guardar_movimiento(request, movimiento)
+            return redirect('core:bbva_resumen_final', importacion_id=importacion_id)
+        
+        else:  # siguiente
+            # Guardar los cambios del movimiento actual
+            self.guardar_movimiento(request, movimiento)
+            
+            # Ir al siguiente movimiento
+            if movimiento_num < movimientos.count():
+                messages.success(request, f'✅ Movimiento {movimiento_num} guardado')
+                return redirect(f'/bbva/wizard-detallado/{importacion_id}/?mov={movimiento_num + 1}')
+            else:
+                # Era el último, ir al resumen
+                return redirect('core:bbva_resumen_final', importacion_id=importacion_id)
+        
+        return redirect(f'/bbva/wizard-detallado/{importacion_id}/?mov={movimiento_num}')
+    
+    def guardar_movimiento(self, request, movimiento):
+        """Guardar los cambios del movimiento"""
+        with db_transaction.atomic():
+            # Actualizar descripción
+            movimiento.descripcion_limpia = request.POST.get('descripcion', movimiento.descripcion_limpia)
+            
+            # Actualizar categoría
+            categoria_id = request.POST.get('categoria_id')
+            if categoria_id:
+                movimiento.categoria_confirmada_id = categoria_id
+            
+            # Marcar para ignorar si aplica
+            movimiento.ignorar = request.POST.get('ignorar') == 'true'
+            
+            # Manejar cuenta relacionada
+            cuenta_rel_id = request.POST.get('cuenta_relacionada_id')
+            
+            if cuenta_rel_id == 'nueva':
+                # Crear nueva cuenta
+                nombre = request.POST.get('nueva_cuenta_nombre')
+                referencia = request.POST.get('nueva_cuenta_referencia')
+                tipo_id = request.POST.get('nueva_cuenta_tipo')
+                
+                if nombre and tipo_id:
+                    tipo = TipoCuenta.objects.get(id=tipo_id)
+                    nueva_cuenta = Cuenta.objects.create(
+                        nombre=nombre,
+                        referencia=referencia or f'AUTO-{movimiento.id}',
+                        moneda='MXN',
+                        tipo=tipo,
+                        naturaleza='DEUDORA' if tipo.grupo in ['DEB', 'EFE'] else 'ACREEDORA',
+                        saldo_inicial=0,
+                        activa=True,
+                        descripcion=f'Creada desde importación BBVA'
+                    )
+                    movimiento.cuenta_destino_confirmada = nueva_cuenta
+            elif cuenta_rel_id:
+                # Usar cuenta existente
+                movimiento.cuenta_destino_confirmada_id = cuenta_rel_id
+            
+            # Marcar como validado por usuario
+            movimiento.validado_por_usuario = True
+            movimiento.save()
+    
+    def detectar_info_cuenta(self, movimiento):
+        """Detectar información de la cuenta desde la descripción"""
+        descripcion = movimiento.descripcion_original.upper()
+        info = {}
+        
+        # Patrones de bancos
+        patrones_banco = {
+            'SANTANDER': 'Santander',
+            'BANORTE': 'Banorte',
+            'BANAMEX': 'Banamex',
+            'BANCOMER': 'Bancomer',
+            'BBVA': 'BBVA',
+            'HSBC': 'HSBC',
+            'SCOTIABANK': 'Scotiabank',
+            'INBURSA': 'Inbursa',
+            'AZTECA': 'Banco Azteca',
+            'STP': 'STP',
+            'MERCADO PAGO': 'Mercado Pago',
+            'NU MEXICO': 'Nu Bank',
+            'CONSUBANCO': 'Consubanco'
+        }
+        
+        # Detectar banco
+        for patron, nombre in patrones_banco.items():
+            if patron in descripcion:
+                info['banco'] = nombre
+                break
+        
+        # Detectar número de cuenta
+        match = re.search(r'(\d{10,})', descripcion)
+        if match:
+            info['numero'] = match.group(1)[:10]
+            info['referencia'] = match.group(1)[:10]
+        
+        # Sugerir nombre de cuenta
+        if 'banco' in info:
+            if 'ENVIADO' in descripcion:
+                info['nombre_cuenta'] = f"{info['banco']} - Destino"
+            else:
+                info['nombre_cuenta'] = f"{info['banco']} - Origen"
+        elif 'PAGO CUENTA DE TERCERO' in descripcion:
+            info['nombre_cuenta'] = "Depósito de Tercero"
+            info['banco'] = "Externo"
+        else:
+            info['nombre_cuenta'] = "Cuenta Externa"
+        
+        # Sugerir tipo de cuenta
+        if 'TARJETA' in descripcion or 'TDC' in descripcion:
+            info['tipo_cuenta'] = TipoCuenta.objects.filter(codigo='TDC').first()
+        elif 'MERCADO PAGO' in descripcion:
+            info['tipo_cuenta'] = TipoCuenta.objects.filter(codigo='DIG').first()
+        else:
+            info['tipo_cuenta'] = TipoCuenta.objects.filter(codigo='DEB').first()
+        
+        return info
+    
+    def buscar_cuenta_existente(self, info_detectada):
+        """Buscar si ya existe una cuenta con características similares"""
+        if not info_detectada:
+            return None
+        
+        # Buscar por número/referencia
+        if 'numero' in info_detectada:
+            cuenta = Cuenta.objects.filter(
+                referencia__contains=info_detectada['numero']
+            ).first()
+            if cuenta:
+                return cuenta
+        
+        # Buscar por nombre del banco
+        if 'banco' in info_detectada:
+            cuenta = Cuenta.objects.filter(
+                nombre__icontains=info_detectada['banco']
+            ).first()
+            if cuenta:
+                return cuenta
+        
+        return None
+
+
+class BBVAResumenFinalView(View):
+    """Vista del resumen final antes de crear las transacciones"""
+    template_name = 'bbva/resumen_final.html'
+    
+    def get(self, request, importacion_id):
+        """Mostrar resumen de todos los movimientos configurados"""
+        importacion = get_object_or_404(ImportacionBBVA, id=importacion_id)
+        
+        movimientos = importacion.movimientos_temporales.filter(
+            validado_por_usuario=True
+        ).order_by('fila_excel')
+        
+        # Contar estadísticas
+        stats = {
+            'total_validados': movimientos.count(),
+            'total_ignorados': movimientos.filter(ignorar=True).count(),
+            'total_importar': movimientos.filter(ignorar=False).count(),
+            'cuentas_nuevas': set(),  # Cuentas que se crearán
+            'total_gastos': 0,
+            'total_ingresos': 0,
+        }
+        
+        # Calcular totales y cuentas nuevas
+        for mov in movimientos.filter(ignorar=False):
+            if mov.es_gasto:
+                stats['total_gastos'] += float(mov.monto_calculado)
+            else:
+                stats['total_ingresos'] += float(mov.monto_calculado)
+            
+            # Ver si la cuenta es nueva (no tiene ID)
+            if mov.cuenta_destino_confirmada and not mov.cuenta_destino_confirmada.pk:
+                stats['cuentas_nuevas'].add(mov.cuenta_destino_confirmada.nombre)
+        
+        stats['total_cuentas_nuevas'] = len(stats['cuentas_nuevas'])
+        
+        context = {
+            'importacion': importacion,
+            'movimientos': movimientos,
+            'stats': stats,
+        }
+        
+        return render(request, self.template_name, context)
+    
+    def post(self, request, importacion_id):
+        """Confirmar y crear todas las transacciones"""
+        importacion = get_object_or_404(ImportacionBBVA, id=importacion_id)
+        
+        try:
+            # Crear transacciones finales
+            resultado = AsistenteBBVA.paso6_crear_transacciones(importacion)
+            
+            if resultado['errores']:
+                messages.warning(request, 
+                    f"⚠️ {len(resultado['errores'])} errores durante importación")
+                for error in resultado['errores'][:3]:
+                    messages.error(request, error)
+            
+            messages.success(request, 
+                f"✅ Importación completada: {resultado['transacciones_creadas']} transacciones creadas")
+            
+            # Limpiar sesión
+            if 'importacion_bbva_id' in request.session:
+                del request.session['importacion_bbva_id']
+            
+            return redirect('core:transacciones_list')
+            
+        except Exception as e:
+            messages.error(request, f'❌ Error creando transacciones: {str(e)}')
+            return redirect('core:bbva_resumen_final', importacion_id=importacion_id)

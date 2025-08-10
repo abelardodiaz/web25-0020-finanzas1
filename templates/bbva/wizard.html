@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Wizard Importación BBVA - Paso {{ paso_actual }} de 6{% endblock %}
+
+{% block content %}
+<div class="container max-w-6xl mx-auto py-6">
+    <!-- Progress Bar -->
+    <div class="mb-6">
+        <div class="flex items-center justify-between mb-2">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-white">
+                <i class="fas fa-magic text-purple-500 mr-2"></i>
+                Asistente de Importación BBVA
+            </h1>
+            <span class="text-sm text-gray-600 dark:text-gray-400">
+                Paso {{ paso_actual }} de 6
+            </span>
+        </div>
+        
+        <!-- Barra de progreso -->
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+            <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" 
+                 style="width: {{ progreso }}%"></div>
+        </div>
+        
+        <!-- Pasos -->
+        <div class="flex justify-between mt-2 text-xs">
+            <span class="{% if paso_actual >= 1 %}text-blue-600 font-semibold{% else %}text-gray-500{% endif %}">
+                1. Archivo
+            </span>
+            <span class="{% if paso_actual >= 2 %}text-blue-600 font-semibold{% else %}text-gray-500{% endif %}">
+                2. Análisis
+            </span>
+            <span class="{% if paso_actual >= 3 %}text-blue-600 font-semibold{% else %}text-gray-500{% endif %}">
+                3. Categorías
+            </span>
+            <span class="{% if paso_actual >= 4 %}text-blue-600 font-semibold{% else %}text-gray-500{% endif %}">
+                4. Cuentas
+            </span>
+            <span class="{% if paso_actual >= 5 %}text-blue-600 font-semibold{% else %}text-gray-500{% endif %}">
+                5. Revisión
+            </span>
+            <span class="{% if paso_actual >= 6 %}text-blue-600 font-semibold{% else %}text-gray-500{% endif %}">
+                6. Confirmar
+            </span>
+        </div>
+    </div>
+
+    <!-- Contenido del Paso -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
+        {% if paso_actual == 1 %}
+            <!-- PASO 1: Subir Archivo -->
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+                <i class="fas fa-upload text-green-500 mr-2"></i>
+                Paso 1: Subir Archivo Excel
+            </h2>
+            
+            <form method="post" enctype="multipart/form-data" class="space-y-4">
+                {% csrf_token %}
+                <input type="hidden" name="paso" value="1">
+                
+                <!-- Selección de Cuenta BBVA -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Cuenta BBVA
+                    </label>
+                    <select name="cuenta_id" class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                        bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" required>
+                        <option value="">Selecciona cuenta...</option>
+                        {% for cuenta in cuentas_bbva %}
+                            <option value="{{ cuenta.id }}">{{ cuenta.nombre }} - {{ cuenta.referencia }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <!-- Archivo -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                        Archivo Excel BBVA
+                    </label>
+                    <input type="file" name="archivo_bbva" accept=".xlsx,.xls" required
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
+                        bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                </div>
+                
+                <div class="flex justify-end">
+                    <button type="submit" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md">
+                        Siguiente <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </form>
+            
+        {% elif paso_actual == 2 %}
+            <!-- PASO 2: Análisis Inicial -->
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+                <i class="fas fa-chart-bar text-blue-500 mr-2"></i>
+                Paso 2: Análisis del Archivo
+            </h2>
+            
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Periodo</div>
+                    <div class="text-lg font-semibold text-gray-800 dark:text-white">
+                        {{ info_archivo.fecha_primer_movimiento }} - {{ info_archivo.fecha_ultimo_movimiento }}
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Total Movimientos</div>
+                    <div class="text-lg font-semibold text-gray-800 dark:text-white">
+                        {{ info_archivo.total_movimientos }}
+                    </div>
+                </div>
+                <div class="bg-red-50 dark:bg-red-900 rounded-lg p-4">
+                    <div class="text-sm text-red-600 dark:text-red-400">Total Cargos (Gastos)</div>
+                    <div class="text-lg font-semibold text-red-700 dark:text-red-300">
+                        ${{ info_archivo.total_cargos|floatformat:2 }}
+                    </div>
+                </div>
+                <div class="bg-green-50 dark:bg-green-900 rounded-lg p-4">
+                    <div class="text-sm text-green-600 dark:text-green-400">Total Abonos (Ingresos)</div>
+                    <div class="text-lg font-semibold text-green-700 dark:text-green-300">
+                        ${{ info_archivo.total_abonos|floatformat:2 }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Vista previa de movimientos -->
+            <div class="border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden mb-4">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Fecha</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Descripción</th>
+                            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Cargo</th>
+                            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Abono</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                        {% for mov in movimientos_preview %}
+                        <tr>
+                            <td class="px-4 py-2 text-sm">{{ mov.fecha|date:"d/m/Y" }}</td>
+                            <td class="px-4 py-2 text-sm">{{ mov.descripcion|truncatechars:50 }}</td>
+                            <td class="px-4 py-2 text-sm text-right text-red-600">
+                                {% if mov.cargo > 0 %}-${{ mov.cargo|floatformat:2 }}{% endif %}
+                            </td>
+                            <td class="px-4 py-2 text-sm text-right text-green-600">
+                                {% if mov.abono > 0 %}+${{ mov.abono|floatformat:2 }}{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="paso" value="2">
+                <input type="hidden" name="importacion_id" value="{{ importacion_id }}">
+                <div class="flex justify-between">
+                    <button type="submit" name="action" value="back" 
+                        class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-md">
+                        <i class="fas fa-arrow-left mr-2"></i> Anterior
+                    </button>
+                    <button type="submit" name="action" value="next"
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md">
+                        Siguiente <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </form>
+            
+        {% elif paso_actual == 3 %}
+            <!-- PASO 3: Revisar Categorías -->
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+                <i class="fas fa-tags text-yellow-500 mr-2"></i>
+                Paso 3: Revisar y Asignar Categorías
+            </h2>
+            
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+                Revisa las categorías detectadas automáticamente y ajusta si es necesario.
+            </p>
+            
+            <form method="post" id="categoriasForm">
+                {% csrf_token %}
+                <input type="hidden" name="paso" value="3">
+                <input type="hidden" name="importacion_id" value="{{ importacion_id }}">
+                
+                <div class="space-y-4 max-h-96 overflow-y-auto">
+                    {% for mov in movimientos %}
+                    <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <div class="flex-1">
+                                <div class="font-medium text-gray-800 dark:text-white">
+                                    {{ mov.fecha_original|date:"d/m/Y" }} - 
+                                    {% if mov.es_gasto %}
+                                        <span class="text-red-600">Gasto: -${{ mov.monto_calculado|floatformat:2 }}</span>
+                                    {% else %}
+                                        <span class="text-green-600">Ingreso: +${{ mov.monto_calculado|floatformat:2 }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="text-sm text-gray-600 dark:text-gray-400">
+                                    {{ mov.descripcion_limpia }}
+                                </div>
+                            </div>
+                            {% if mov.es_duplicado %}
+                                <span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">
+                                    ⚠️ Posible duplicado
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs text-gray-500 dark:text-gray-400">Categoría</label>
+                                <select name="categoria_{{ mov.id }}" 
+                                    class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded 
+                                    bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                    {% for cat in categorias %}
+                                        <option value="{{ cat.id }}" 
+                                            {% if cat.nombre == mov.categoria_sugerida %}selected{% endif %}>
+                                            {{ cat.nombre }} ({{ cat.tipo }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 dark:text-gray-400">Acción</label>
+                                <select name="accion_{{ mov.id }}"
+                                    class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded 
+                                    bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                    <option value="importar">✅ Importar</option>
+                                    <option value="ignorar" {% if mov.es_duplicado %}selected{% endif %}>
+                                        ❌ Ignorar
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="flex justify-between mt-6">
+                    <button type="submit" name="action" value="back"
+                        class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-md">
+                        <i class="fas fa-arrow-left mr-2"></i> Anterior
+                    </button>
+                    <button type="submit" name="action" value="next"
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md">
+                        Siguiente <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </form>
+            
+        {% elif paso_actual == 4 %}
+            <!-- PASO 4: Asignar Cuentas Destino -->
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+                <i class="fas fa-exchange-alt text-purple-500 mr-2"></i>
+                Paso 4: Asignar Cuentas Destino/Origen
+            </h2>
+            
+            <p class="text-gray-600 dark:text-gray-400 mb-4">
+                Para transferencias y pagos, especifica la cuenta relacionada.
+            </p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="paso" value="4">
+                <input type="hidden" name="importacion_id" value="{{ importacion_id }}">
+                
+                <div class="space-y-4 max-h-96 overflow-y-auto">
+                    {% for mov in movimientos_transferencias %}
+                    <div class="border border-gray-200 dark:border-gray-600 rounded-lg p-4">
+                        <div class="mb-2">
+                            <div class="font-medium text-gray-800 dark:text-white">
+                                {{ mov.fecha_original|date:"d/m/Y" }} - 
+                                {% if mov.es_gasto %}
+                                    <span class="text-red-600">Transferencia Enviada: -${{ mov.monto_calculado|floatformat:2 }}</span>
+                                {% else %}
+                                    <span class="text-green-600">Transferencia Recibida: +${{ mov.monto_calculado|floatformat:2 }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="text-sm text-gray-600 dark:text-gray-400">
+                                {{ mov.descripcion_original|truncatechars:100 }}
+                            </div>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="text-xs text-gray-500 dark:text-gray-400">
+                                    {% if mov.es_gasto %}Cuenta Destino{% else %}Cuenta Origen{% endif %}
+                                </label>
+                                <select name="cuenta_rel_{{ mov.id }}"
+                                    class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded 
+                                    bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                                    <option value="">-- No especificar --</option>
+                                    {% for cuenta in cuentas_todas %}
+                                        {% if cuenta.id != cuenta_bbva_id %}
+                                            <option value="{{ cuenta.id }}">
+                                                {{ cuenta.nombre }} ({{ cuenta.tipo.nombre }})
+                                            </option>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <option value="nueva">➕ Crear nueva cuenta...</option>
+                                </select>
+                            </div>
+                            <div id="nueva_cuenta_{{ mov.id }}" style="display:none;">
+                                <label class="text-xs text-gray-500 dark:text-gray-400">Nombre nueva cuenta</label>
+                                <input type="text" name="nueva_cuenta_{{ mov.id }}" 
+                                    placeholder="Ej: Cuenta Externa"
+                                    class="w-full px-2 py-1 text-sm border border-gray-300 dark:border-gray-600 rounded 
+                                    bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200">
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="flex justify-between mt-6">
+                    <button type="submit" name="action" value="back"
+                        class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-md">
+                        <i class="fas fa-arrow-left mr-2"></i> Anterior
+                    </button>
+                    <button type="submit" name="action" value="next"
+                        class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md">
+                        Siguiente <i class="fas fa-arrow-right ml-2"></i>
+                    </button>
+                </div>
+            </form>
+            
+        {% elif paso_actual == 5 %}
+            <!-- PASO 5: Revisión Final -->
+            <h2 class="text-xl font-semibold text-gray-800 dark:text-white mb-4">
+                <i class="fas fa-check-double text-green-500 mr-2"></i>
+                Paso 5: Revisión Final
+            </h2>
+            
+            <div class="bg-yellow-50 dark:bg-yellow-900 border border-yellow-300 rounded-lg p-4 mb-4">
+                <p class="text-yellow-800 dark:text-yellow-200">
+                    <i class="fas fa-exclamation-triangle mr-2"></i>
+                    Revisa cuidadosamente antes de confirmar. Las transacciones se crearán en el sistema.
+                </p>
+            </div>
+            
+            <!-- Resumen -->
+            <div class="grid grid-cols-3 gap-4 mb-6">
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">A importar</div>
+                    <div class="text-2xl font-bold text-gray-800 dark:text-white">
+                        {{ resumen.total_importar }}
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">A ignorar</div>
+                    <div class="text-2xl font-bold text-gray-800 dark:text-white">
+                        {{ resumen.total_ignorar }}
+                    </div>
+                </div>
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                    <div class="text-sm text-gray-500 dark:text-gray-400">Cuentas nuevas</div>
+                    <div class="text-2xl font-bold text-gray-800 dark:text-white">
+                        {{ resumen.cuentas_nuevas }}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Lista de movimientos finales -->
+            <div class="border border-gray-200 dark:border-gray-600 rounded-lg overflow-hidden">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50 dark:bg-gray-700">
+                        <tr>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Fecha</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Descripción</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Categoría</th>
+                            <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400">Cuenta Rel.</th>
+                            <th class="px-4 py-2 text-right text-xs font-medium text-gray-500 dark:text-gray-400">Monto</th>
+                            <th class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-600">
+                        {% for mov in movimientos_finales %}
+                        <tr class="{% if mov.ignorar %}opacity-50{% endif %}">
+                            <td class="px-4 py-2 text-sm">{{ mov.fecha_original|date:"d/m/Y" }}</td>
+                            <td class="px-4 py-2 text-sm">{{ mov.descripcion_limpia|truncatechars:40 }}</td>
+                            <td class="px-4 py-2 text-sm">{{ mov.categoria_confirmada.nombre|default:"Sin categoría" }}</td>
+                            <td class="px-4 py-2 text-sm">
+                                {% if mov.cuenta_destino_confirmada %}
+                                    {{ mov.cuenta_destino_confirmada.nombre }}
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-2 text-sm text-right">
+                                {% if mov.es_gasto %}
+                                    <span class="text-red-600">-${{ mov.monto_calculado|floatformat:2 }}</span>
+                                {% else %}
+                                    <span class="text-green-600">+${{ mov.monto_calculado|floatformat:2 }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-2 text-center">
+                                {% if mov.ignorar %}
+                                    <span class="text-xs px-2 py-1 bg-gray-200 text-gray-600 rounded-full">Ignorar</span>
+                                {% else %}
+                                    <span class="text-xs px-2 py-1 bg-green-200 text-green-800 rounded-full">Importar</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <form method="post" class="mt-6">
+                {% csrf_token %}
+                <input type="hidden" name="paso" value="5">
+                <input type="hidden" name="importacion_id" value="{{ importacion_id }}">
+                
+                <div class="flex justify-between">
+                    <button type="submit" name="action" value="back"
+                        class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white font-medium rounded-md">
+                        <i class="fas fa-arrow-left mr-2"></i> Anterior
+                    </button>
+                    <button type="submit" name="action" value="confirm"
+                        class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md">
+                        <i class="fas fa-check mr-2"></i> Confirmar Importación
+                    </button>
+                </div>
+            </form>
+            
+        {% elif paso_actual == 6 %}
+            <!-- PASO 6: Completado -->
+            <div class="text-center py-8">
+                <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+                <h2 class="text-2xl font-bold text-gray-800 dark:text-white mb-2">
+                    ¡Importación Completada!
+                </h2>
+                <p class="text-gray-600 dark:text-gray-400 mb-6">
+                    Se han creado {{ resultado.transacciones_creadas }} transacciones exitosamente.
+                </p>
+                
+                {% if resultado.errores %}
+                <div class="bg-red-50 dark:bg-red-900 border border-red-300 rounded-lg p-4 mb-4 text-left">
+                    <p class="text-red-800 dark:text-red-200 font-medium mb-2">
+                        ⚠️ Se encontraron algunos errores:
+                    </p>
+                    <ul class="list-disc list-inside text-sm text-red-700 dark:text-red-300">
+                        {% for error in resultado.errores %}
+                        <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                
+                <div class="flex justify-center space-x-4">
+                    <a href="{% url 'core:bbva_simple' %}" 
+                       class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-md">
+                        <i class="fas fa-file-excel mr-2"></i> Nueva Importación
+                    </a>
+                    <a href="{% url 'core:transacciones_list' %}" 
+                       class="px-6 py-2 bg-green-600 hover:bg-green-700 text-white font-medium rounded-md">
+                        <i class="fas fa-list mr-2"></i> Ver Transacciones
+                    </a>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+// Mostrar/ocultar campo de nueva cuenta
+document.querySelectorAll('select[name^="cuenta_rel_"]').forEach(select => {
+    select.addEventListener('change', function() {
+        const movId = this.name.replace('cuenta_rel_', '');
+        const nuevaCuentaDiv = document.getElementById('nueva_cuenta_' + movId);
+        
+        if (this.value === 'nueva') {
+            nuevaCuentaDiv.style.display = 'block';
+        } else {
+            nuevaCuentaDiv.style.display = 'none';
+        }
+    });
+});
+</script>
+{% endblock %}

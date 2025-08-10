@@ -1,0 +1,38 @@
+[
+{
+  "model": "core.cuenta",
+  "pk": 1,
+  "fields": {
+    "nombre": "BBVA Débito Principal 5019",
+    "referencia": "4694*****5019",
+    "moneda": "MXN",
+    "saldo_inicial": "0.00",
+    "naturaleza": "DEUDORA",
+    "tipo": 8
+  }
+},
+{
+  "model": "core.cuenta",
+  "pk": 2,
+  "fields": {
+    "nombre": "Efectivo Casa",
+    "referencia": "EFECTIVO-CASA-01",
+    "moneda": "MXN", 
+    "saldo_inicial": "0.00",
+    "naturaleza": "DEUDORA",
+    "tipo": 3
+  }
+},
+{
+  "model": "core.cuenta",
+  "pk": 3,
+  "fields": {
+    "nombre": "TDC BBVA Platino",
+    "referencia": "4152*****8901",
+    "moneda": "MXN",
+    "saldo_inicial": "0.00",
+    "naturaleza": "ACREEDORA",
+    "tipo": 6
+  }
+}
+]

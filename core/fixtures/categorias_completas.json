@@ -1,0 +1,398 @@
+[
+{
+  "model": "core.categoria",
+  "pk": 1,
+  "fields": {
+    "nombre": "ELECTRICIDAD",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 2,
+  "fields": {
+    "nombre": "ELECTRICIDAD",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 3,
+  "fields": {
+    "nombre": "AGUA",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 4,
+  "fields": {
+    "nombre": "AGUA",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 5,
+  "fields": {
+    "nombre": "INTERNET",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 6,
+  "fields": {
+    "nombre": "INTERNET",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 7,
+  "fields": {
+    "nombre": "GAS",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 8,
+  "fields": {
+    "nombre": "GAS",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 9,
+  "fields": {
+    "nombre": "ART LIMPIEZA",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 10,
+  "fields": {
+    "nombre": "ART LIMPIEZA",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 11,
+  "fields": {
+    "nombre": "DESPENSA",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 12,
+  "fields": {
+    "nombre": "DESPENSA",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 13,
+  "fields": {
+    "nombre": "SERVIDORES",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 14,
+  "fields": {
+    "nombre": "MERCANCIA",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 15,
+  "fields": {
+    "nombre": "COMPRAS",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 16,
+  "fields": {
+    "nombre": "ROPA Y CALZADO",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 17,
+  "fields": {
+    "nombre": "PAGOS TDC",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 18,
+  "fields": {
+    "nombre": "PAGOS TDC",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 19,
+  "fields": {
+    "nombre": "VARIOS",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 20,
+  "fields": {
+    "nombre": "VARIOS",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 21,
+  "fields": {
+    "nombre": "TRANSFERENCIAS",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 22,
+  "fields": {
+    "nombre": "TRANSFERENCIAS",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 23,
+  "fields": {
+    "nombre": "DEPOSITOS",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 24,
+  "fields": {
+    "nombre": "DEPOSITOS",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 25,
+  "fields": {
+    "nombre": "SERVICIOS DOMICILIADOS",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 26,
+  "fields": {
+    "nombre": "SERVICIOS DOMICILIADOS",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 27,
+  "fields": {
+    "nombre": "TIENDAS DE CONVENIENCIA",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 28,
+  "fields": {
+    "nombre": "TIENDAS DEPARTAMENTALES",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 29,
+  "fields": {
+    "nombre": "SERVICIOS DIGITALES",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 30,
+  "fields": {
+    "nombre": "SERVICIOS DIGITALES",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 31,
+  "fields": {
+    "nombre": "ENTRETENIMIENTO",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 32,
+  "fields": {
+    "nombre": "TRANSPORTE",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 33,
+  "fields": {
+    "nombre": "TRANSPORTE",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 34,
+  "fields": {
+    "nombre": "COMPRAS EN LINEA",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 35,
+  "fields": {
+    "nombre": "COMPRAS EN LINEA",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 36,
+  "fields": {
+    "nombre": "PAGOS DIGITALES",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 37,
+  "fields": {
+    "nombre": "PAGOS DIGITALES",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 38,
+  "fields": {
+    "nombre": "SOFTWARE",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 39,
+  "fields": {
+    "nombre": "SERVICIOS BASICOS",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 40,
+  "fields": {
+    "nombre": "SERVICIOS BASICOS",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 41,
+  "fields": {
+    "nombre": "TELECOMUNICACIONES",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 42,
+  "fields": {
+    "nombre": "TELECOMUNICACIONES",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 43,
+  "fields": {
+    "nombre": "SIN CATEGORIZAR",
+    "tipo": "PERSONAL",
+    "padre": null
+  }
+},
+{
+  "model": "core.categoria",
+  "pk": 44,
+  "fields": {
+    "nombre": "SIN CATEGORIZAR",
+    "tipo": "NEGOCIO",
+    "padre": null
+  }
+}
+]
