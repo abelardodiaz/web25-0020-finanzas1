@@ -17,40 +17,38 @@ class TransaccionFilter(django_filters.FilterSet):
         widget=forms.DateInput(attrs={"type": "date"})
     )
 
-    # --- declaramos vacíos para evitar consultas tempranas -------------
-    medio_pago = django_filters.ModelChoiceFilter(
+    # --- Filtro por cuenta (busca en origen O destino) -------------
+    cuenta = django_filters.ModelChoiceFilter(
         queryset=Cuenta.objects.none(),
-        label="Cuenta / Medio de pago"
+        label="Cuenta",
+        method='filter_by_cuenta'
     )
+    
     categoria = django_filters.ModelChoiceFilter(
         queryset=Categoria.objects.none(),
         label="Categoría"
     )
 
-    # Nuevo filtro: Cuenta de servicio / proveedor
-    cuenta_servicio = django_filters.ModelChoiceFilter(
-        queryset=Cuenta.objects.none(),
-        label="Cuenta servicio"
-    )
-
     class Meta:
         model  = Transaccion
-        fields = ["fecha_desde", "fecha_hasta", "medio_pago", "cuenta_servicio", "categoria"]
+        fields = ["fecha_desde", "fecha_hasta", "categoria"]
+    
+    def filter_by_cuenta(self, queryset, name, value):
+        """Filtra transacciones donde la cuenta aparece como origen O destino"""
+        if value:
+            from django.db.models import Q
+            return queryset.filter(Q(cuenta_origen=value) | Q(cuenta_destino=value))
+        return queryset
 
     # ------------ rellenamos los queryset en tiempo de ejecución -------
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        try:
-            tipo_serv = TipoCuenta.objects.get(codigo="SERV")
-            self.filters["medio_pago"].queryset = Cuenta.objects.exclude(tipo=tipo_serv)
-        except TipoCuenta.DoesNotExist:
-            self.filters["medio_pago"].queryset = Cuenta.objects.all()
-
-        # Cuentas de servicio (grupo SER)
-        self.filters["cuenta_servicio"].queryset = Cuenta.objects.filter(tipo__grupo="SER")
-
-        # todas las categorías son seguras una vez la tabla existe
-        self.filters["categoria"].queryset = Categoria.objects.all()
+        
+        # Todas las cuentas para el filtro
+        self.filters["cuenta"].queryset = Cuenta.objects.all().order_by("nombre")
+        
+        # Todas las categorías
+        self.filters["categoria"].queryset = Categoria.objects.all().order_by("nombre")
 
 
 # ------------------------------------------------------------------

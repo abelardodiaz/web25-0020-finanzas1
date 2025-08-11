@@ -1,0 +1,228 @@
+{
+  "metadata": {
+    "lote_id": "BBVA5019_20250810_001",
+    "fecha_importacion": "2025-08-10T15:30:00",
+    "usuario_importacion": "admin",
+    "archivos_procesados": [
+      "movimientos (1).xlsx",
+      "movimientos (2).xlsx", 
+      "movimientos (3).xlsx"
+    ],
+    "cuenta_origen_excel": "BBVA 5019",
+    "estado_importacion": "COMPLETADO",
+    "resumen_importacion": {
+      "total_movimientos": 118,
+      "importados_exitosamente": 115,
+      "errores": 0,
+      "duplicados_detectados": 3,
+      "nuevas_cuentas_creadas": 0,
+      "nuevas_categorias_creadas": 0
+    }
+  },
+  "movimientos": [
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 4,
+        "fecha_excel": "09/08/2025",
+        "descripcion_excel": "SPEI RECIBIDOSANTANDER / 0194884469  014 2102921TRANSFERENCIA",
+        "cargo_excel": null,
+        "abono_excel": 270.00,
+        "saldo_excel": 15234.56
+      },
+      "datos_procesados": {
+        "fecha_procesada": "2025-08-09",
+        "monto_calculado": 270.00,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Santander 0194884469",
+        "hash_movimiento": "sha256:a1b2c3d4e5f6..."
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "ING", 
+          "naturaleza": "ACREEDORA",
+          "id_sistema": 2
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "DEB",
+          "naturaleza": "DEUDORA",
+          "id_sistema": 1
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "NEGOCIO",
+          "id_sistema": 1
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.00
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA", 
+          "efecto": "AUMENTA",
+          "monto": 270.00
+        }
+      },
+      "estado_importacion": {
+        "estado": "IMPORTADO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": 123
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 5,
+        "fecha_excel": "07/08/2025",
+        "descripcion_excel": "SPEI ENVIADO BANORTE      / 0065700028  072 2207250debito Banorte comisiones",
+        "cargo_excel": -200.00,
+        "abono_excel": null,
+        "saldo_excel": 14964.56
+      },
+      "datos_procesados": {
+        "fecha_procesada": "2025-08-07",
+        "monto_calculado": -200.00,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Transferencia para comisiones débito Banorte",
+        "hash_movimiento": "sha256:b2c3d4e5f6g7..."
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "DEB",
+          "naturaleza": "DEUDORA", 
+          "id_sistema": 1
+        },
+        "cuenta_destino": {
+          "nombre": "TDB BANORTE 3172",
+          "tipo_cuenta": "DEB",
+          "naturaleza": "DEUDORA",
+          "id_sistema": 3
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "PERSONAL",
+          "id_sistema": 2
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDB BANORTE 3172",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA", 
+          "monto": 200.00
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 200.00
+        }
+      },
+      "estado_importacion": {
+        "estado": "IMPORTADO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": 124
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 6,
+        "fecha_excel": "07/08/2025", 
+        "descripcion_excel": "SPEI ENVIADO BANAMEX      / 0065693832  002 2207250pago tc 865 bnmx",
+        "cargo_excel": -7502.01,
+        "abono_excel": null,
+        "saldo_excel": 7462.55
+      },
+      "datos_procesados": {
+        "fecha_procesada": "2025-08-07",
+        "monto_calculado": -7502.01,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago TDC Banamex Premiere 865",
+        "hash_movimiento": "sha256:c3d4e5f6g7h8..."
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "DEB",
+          "naturaleza": "DEUDORA",
+          "id_sistema": 1
+        },
+        "cuenta_destino": {
+          "nombre": "TDC BANAMEX PREMIERE 865",
+          "tipo_cuenta": "CRE",
+          "naturaleza": "ACREEDORA",
+          "id_sistema": 4
+        },
+        "categoria": {
+          "nombre": "Pagos de Tarjetas",
+          "tipo": "PERSONAL",
+          "id_sistema": 3
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDC BANAMEX PREMIERE 865",
+          "naturaleza": "ACREEDORA",
+          "efecto": "DISMINUYE",
+          "monto": 7502.01
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019", 
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 7502.01
+        }
+      },
+      "estado_importacion": {
+        "estado": "IMPORTADO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": 125
+      }
+    }
+  ],
+  "mapeos_automaticos": {
+    "cuentas_por_patron": {
+      "SPEI.*SANTANDER.*0194884469": {
+        "cuenta_origen": "Ingresos ISP",
+        "tipo_transaccion": "INGRESO", 
+        "categoria": "Ingresos ISP",
+        "confianza": 0.95
+      },
+      "SPEI.*BANORTE.*0065700028": {
+        "cuenta_destino": "TDB BANORTE 3172",
+        "tipo_transaccion": "TRANSFERENCIA",
+        "categoria": "Transferencias Entre Cuentas",
+        "confianza": 0.90
+      },
+      "SPEI.*BANAMEX.*pago.*tc.*865": {
+        "cuenta_destino": "TDC BANAMEX PREMIERE 865",
+        "tipo_transaccion": "TRANSFERENCIA", 
+        "categoria": "Pagos de Tarjetas",
+        "confianza": 0.92
+      }
+    },
+    "montos_comunes": {
+      "270.00": {
+        "descripcion_tipica": "Pago mensual ISP",
+        "cuenta_origen_probable": "Ingresos ISP",
+        "categoria_probable": "Ingresos ISP",
+        "confianza": 0.85
+      }
+    }
+  }
+}

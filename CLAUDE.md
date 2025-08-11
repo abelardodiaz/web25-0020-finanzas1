@@ -220,3 +220,16 @@ def save(self, commit: bool = True) -> ModelClass:
 
 ## Development Server Notes
 - usa en puerto random entre 8200 y 8300 para ejecutar django server 
+
+## Project File Memories
+
+### Key File Reference
+- `@guias/registros_contables.md` - Critical file for understanding account logic and nature of creditor and debtor accounts in the financial system
+  - Version 2 contains detailed information about result accounts, asset accounts, and liability accounts
+  - Accounts are differentiated in the system by `es_medio_pago = true` or `es_medio_pago = false`
+
+### Language Reference
+- **sig** significa "siguiente"
+
+### Weird Moments
+- o que la chingada son 12 + 50 + 50, no te equivoques con eso

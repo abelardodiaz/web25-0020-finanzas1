@@ -13,7 +13,7 @@ from .models import (
 
 
 class CuentaForm(forms.ModelForm):
-    # Agregar campo para editar el grupo
+    # Campos obligatorios personalizados
     grupo = forms.ChoiceField(
         choices=TipoCuenta.GRUPOS,
         required=True,
@@ -24,10 +24,45 @@ class CuentaForm(forms.ModelForm):
         required=True,
         label="Naturaleza contable"
     )
+    medio_pago = forms.ChoiceField(
+        choices=[
+            (True, "SÍ"),
+            (False, "NO")
+        ],
+        required=True,
+        label="¿Es un medio de pago?",
+        help_text="Indica si esta cuenta puede usarse para realizar pagos"
+    )
     
     class Meta:
         model = Cuenta
-        fields = ["nombre", "tipo", "grupo", "naturaleza"]
+        # Campos obligatorios primero, luego opcionales
+        fields = [
+            # === CAMPOS OBLIGATORIOS ===
+            "nombre", "tipo", "grupo", "naturaleza", "medio_pago",
+            # === CAMPOS OPCIONALES ===  
+            "referencia", "ref_comentario", "no_cliente", 
+            "fecha_apertura", "no_contrato", "saldo_inicial", "propietario"
+            # moneda se excluye - siempre MXN
+        ]
+        widgets = {
+            "fecha_apertura": forms.DateInput(attrs={"type": "date"}, format='%Y-%m-%d'),
+            "ref_comentario": forms.Textarea(attrs={"rows": 3}),
+            "saldo_inicial": forms.NumberInput(attrs={"step": "0.01"}),
+        }
+        labels = {
+            # === CAMPOS OBLIGATORIOS ===
+            "nombre": "Nombre de la cuenta",
+            "tipo": "Tipo de cuenta",
+            # === CAMPOS OPCIONALES ===
+            "referencia": "Referencia/Número de cuenta",
+            "ref_comentario": "Comentario adicional",
+            "no_cliente": "Número de cliente", 
+            "fecha_apertura": "Fecha de apertura",
+            "no_contrato": "Número de contrato",
+            "saldo_inicial": "Saldo inicial",
+            "propietario": "Propietario"
+        }
         
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
@@ -39,11 +74,14 @@ class CuentaForm(forms.ModelForm):
                 self.fields['grupo'].initial = self.instance.tipo.grupo
             if hasattr(self.instance, 'naturaleza'):
                 self.fields['naturaleza'].initial = self.instance.naturaleza
+            if hasattr(self.instance, 'medio_pago'):
+                self.fields['medio_pago'].initial = str(self.instance.medio_pago)
             
     def save(self, commit: bool = True) -> Cuenta:
         cuenta = super().save(commit=False)
         grupo = self.cleaned_data['grupo']
         naturaleza = self.cleaned_data['naturaleza']
+        medio_pago = self.cleaned_data['medio_pago']
         
         # Actualizar solo el grupo del tipo de cuenta
         if cuenta.tipo:
@@ -52,6 +90,12 @@ class CuentaForm(forms.ModelForm):
         
         # La naturaleza ahora se guarda directamente en la cuenta
         cuenta.naturaleza = naturaleza
+        
+        # Convertir string a boolean para medio_pago
+        cuenta.medio_pago = medio_pago == 'True' or medio_pago is True
+        
+        # Asegurar que moneda siempre sea MXN
+        cuenta.moneda = 'MXN'
         
         if commit:
             cuenta.save()
@@ -64,9 +108,9 @@ class CategoriaForm(forms.ModelForm):
         fields = ['nombre', 'tipo']
 
 
-# === FORMULARIO SIMPLIFICADO v0.6.0 ===
+# === FORMULARIO ACTUALIZADO v0.8.1 ===
 class TransaccionForm(forms.ModelForm):
-    """Formulario simplificado para transacciones - solo 4 campos esenciales"""
+    """Formulario completo para transacciones v0.8.1"""
     
     # Campo para elegir entre cuenta destino o categoría
     destino_tipo = forms.ChoiceField(
@@ -80,27 +124,54 @@ class TransaccionForm(forms.ModelForm):
     
     class Meta:
         model = Transaccion
-        fields = ["monto", "fecha", "descripcion", "cuenta_origen", "cuenta_destino", "categoria"]
+        fields = [
+            "monto", "fecha", "descripcion", 
+            "cuenta_origen", "cuenta_destino", "categoria",
+            "periodo", "ajuste", "conciliado"
+        ]
         widgets = {
             "fecha": forms.DateInput(attrs={"type": "date"}, format='%Y-%m-%d'),
             "descripcion": forms.TextInput(attrs={"placeholder": "Ej: Pago de electricidad, Transferencia a ahorro..."}),
+            "ajuste": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "conciliado": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "monto": forms.NumberInput(attrs={"step": "0.01", "min": "0.01"}),
+        }
+        labels = {
+            "monto": "Monto ($)",
+            "fecha": "Fecha",
+            "descripcion": "Descripción",
+            "cuenta_origen": "¿De qué cuenta sale el dinero?",
+            "cuenta_destino": "¿A qué cuenta va el dinero?",
+            "categoria": "¿Qué tipo de gasto/ingreso es?",
+            "periodo": "Período de facturación",
+            "ajuste": "¿Es un ajuste manual?",
+            "conciliado": "¿Ya está conciliado?"
         }
 
     def __init__(self, *args: Any, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)
         
-        # Etiquetas más claras
-        self.fields["cuenta_origen"].label = "¿De qué cuenta sale el dinero?"
-        self.fields["cuenta_destino"].label = "¿A qué cuenta va el dinero?"
-        self.fields["categoria"].label = "¿Qué tipo de gasto/ingreso es?"
+        # Help texts actualizados
+        self.fields["ajuste"].help_text = "Marcar solo si es un ajuste que no requiere contrapartida automática"
+        self.fields["conciliado"].help_text = "Marcar si la transacción ya fue verificada con el banco"
+        self.fields["periodo"].help_text = "Asociar a un período de facturación (opcional)"
         
-        # Solo cuentas de pago para cuenta_origen
-        self.fields["cuenta_origen"].queryset = Cuenta.objects.medios_pago().order_by("nombre")
-        self.fields["cuenta_destino"].queryset = Cuenta.objects.medios_pago().order_by("nombre")
+        # Configurar querysets
+        self.fields["cuenta_origen"].queryset = Cuenta.objects.all().order_by("nombre")
+        self.fields["cuenta_destino"].queryset = Cuenta.objects.all().order_by("nombre")
+        self.fields["categoria"].queryset = Categoria.objects.all().order_by("nombre")
+        self.fields["periodo"].queryset = Periodo.objects.all().order_by("-fecha_corte")
         
         # Hacer campos condicionales
         self.fields["cuenta_destino"].required = False
         self.fields["categoria"].required = False
+        self.fields["periodo"].required = False
+        self.fields["conciliado"].required = False
+        self.fields["ajuste"].required = False
+        
+        # Valores por defecto
+        self.fields["conciliado"].initial = False
+        self.fields["ajuste"].initial = False
         
         # Si es edición, determinar el tipo de destino
         if self.instance and self.instance.pk:

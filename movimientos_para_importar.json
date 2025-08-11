@@ -1,0 +1,3610 @@
+{
+  "metadata": {
+    "lote_id": "BBVA5019_20250810_MANUAL_001",
+    "fecha_importacion": "2025-08-10T16:00:00",
+    "usuario_importacion": "admin",
+    "archivos_procesados": [
+      "movimientos (1).xlsx",
+      "movimientos (2).xlsx"
+    ],
+    "cuenta_origen_excel": "BBVA 5019",
+    "estado_importacion": "LISTO_PARA_IMPORTAR",
+    "resumen_importacion": {
+      "total_movimientos": 52,
+      "revisados_manualmente": 52,
+      "archivo_1_movimientos": 12,
+      "archivo_2_movimientos": 40,
+      "pendientes_archivo_3": 52
+    }
+  },
+  "movimientos": [
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 4,
+        "fecha_excel": "09/08/2025",
+        "descripcion_excel": "SPEI RECIBIDO SANTANDER / 0194884469 014 2102921TRANSFERENCIA",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-09",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Santander",
+        "hash_movimiento": "fe339765c32e321a"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "bc4f2a64-4d7f-4e88-830b-2382c3706581",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283474",
+        "fecha_modificacion": "2025-08-10T02:17:08.283509",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 5,
+        "fecha_excel": "07/08/2025",
+        "descripcion_excel": "SPEI ENVIADO BANORTE / 0065700028 072 2207250debito Banorte comisiones",
+        "cargo_excel": 200.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-07",
+        "monto_calculado": 200.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Transferencia para comisiones débito Banorte",
+        "hash_movimiento": "afd494704d785b84"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDB BANORTE 3172",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDB BANORTE 3172",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 200.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 200.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "ec2121a3-356f-4e50-a6a7-81932568badb",
+        "grupo_uuid": "GRUPO_0001",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283543",
+        "fecha_modificacion": "2025-08-10T02:17:08.283546",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 6,
+        "fecha_excel": "07/08/2025",
+        "descripcion_excel": "SPEI ENVIADO BANAMEX / 0065693832 002 2207250pago tc 865 bnmx",
+        "cargo_excel": 7502.01,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-07",
+        "monto_calculado": 7502.01,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago TDC Banamex Premiere 865",
+        "hash_movimiento": "bdadda53a821a5b6"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDC BANAMEX PREMIERE 865",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Pagos de Tarjetas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDC BANAMEX PREMIERE 865",
+          "naturaleza": "ACREEDORA",
+          "efecto": "DISMINUYE",
+          "monto": 7502.01
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 7502.01
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "cdee635f-bef5-4bc7-bb38-c53258d15a5a",
+        "grupo_uuid": "GRUPO_0002",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283569",
+        "fecha_modificacion": "2025-08-10T02:17:08.283571",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 7,
+        "fecha_excel": "07/08/2025",
+        "descripcion_excel": "SPEI ENVIADO BANORTE / 0065687629 072 2207250banorte tc clasica",
+        "cargo_excel": 7493.81,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-07",
+        "monto_calculado": 7493.81,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago TDC Banorte Clásica 5257",
+        "hash_movimiento": "8659678345b66322"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDC BANORTE CLASICA 5257",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Pagos de Tarjetas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDC BANORTE CLASICA 5257",
+          "naturaleza": "ACREEDORA",
+          "efecto": "DISMINUYE",
+          "monto": 7493.81
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 7493.81
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "f379cceb-c23f-4887-b31c-ebc56834705a",
+        "grupo_uuid": "GRUPO_0003",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283592",
+        "fecha_modificacion": "2025-08-10T02:17:08.283594",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 8,
+        "fecha_excel": "06/08/2025",
+        "descripcion_excel": "PAGO CUENTA DE TERCERO / 0045031016 BNET 0199466126 StramaMPS",
+        "cargo_excel": null,
+        "abono_excel": 19720.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-06",
+        "monto_calculado": 19720.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Renta Casa 142 - Cliente StramaMPS - BNET",
+        "hash_movimiento": "489b7bb1479b6591"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "INGRESOS RENTA CASA 142",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos Rentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 19720.0
+        },
+        "asiento_abono": {
+          "cuenta": "INGRESOS RENTA CASA 142",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 19720.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "0088e639-7b2e-4379-9b6c-50912cbc44ab",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283647",
+        "fecha_modificacion": "2025-08-10T02:17:08.283650",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 9,
+        "fecha_excel": "04/08/2025",
+        "descripcion_excel": "SPEI RECIBIDO BANORTE / 0169515978 072 0250804pago",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-04",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Banorte 0169515978",
+        "hash_movimiento": "292924c52cba11c3"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "9969fdee-f314-4b13-9902-3a1671d3a9fc",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283671",
+        "fecha_modificacion": "2025-08-10T02:17:08.283673",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 10,
+        "fecha_excel": "04/08/2025",
+        "descripcion_excel": "SPEI RECIBIDO NU MEXICO / 0168710396 638 0040825Transferencia",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-04",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Nu México 0168710396",
+        "hash_movimiento": "d3bd167a6d21da4d"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "d3d6f07d-1a8e-4835-84fb-66947ab0a7a0",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283689",
+        "fecha_modificacion": "2025-08-10T02:17:08.283691",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 11,
+        "fecha_excel": "04/08/2025",
+        "descripcion_excel": "PAGO CUENTA DE TERCERO / 0064996967 BNET 2767356773 deposito mes agos",
+        "cargo_excel": null,
+        "abono_excel": 670.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-04",
+        "monto_calculado": 670.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - Depósito BNET 2767356773 - mes agosto",
+        "hash_movimiento": "0aea6e1a8887c678"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 670.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 670.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "7af5e0e6-1a50-4705-81a4-05b1d9f78989",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283752",
+        "fecha_modificacion": "2025-08-10T02:17:08.283755",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 12,
+        "fecha_excel": "02/08/2025",
+        "descripcion_excel": "SPEI ENVIADO STP / 0090385129 646 2207250k",
+        "cargo_excel": 500.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-02",
+        "monto_calculado": 500.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Transferencia para gastos personales - SPEI STP 0090385129",
+        "hash_movimiento": "d951315e6d494d76"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDB OPENBANK 9365",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDB OPENBANK 9365",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 500.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 500.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "a482e76c-deed-40ff-8376-9c7472722c15",
+        "grupo_uuid": "GRUPO_0004",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283775",
+        "fecha_modificacion": "2025-08-10T02:17:08.283777",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 13,
+        "fecha_excel": "01/08/2025",
+        "descripcion_excel": "SPEI ENVIADO Mercado Pago / 0088620015 722 2207250tc",
+        "cargo_excel": 8394.27,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-01",
+        "monto_calculado": 8394.27,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Transferencia para pago TDC - SPEI Mercado Pago 0088620015",
+        "hash_movimiento": "53151fe35e0d9a65"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDB MPAGO 6007",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDB MPAGO 6007",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 8394.27
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 8394.27
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "4d59f590-063f-46ea-9698-6a8afcba4f33",
+        "grupo_uuid": "GRUPO_0005",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283793",
+        "fecha_modificacion": "2025-08-10T02:17:08.283795",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 14,
+        "fecha_excel": "01/08/2025",
+        "descripcion_excel": "PAGO CUENTA DE TERCERO / 0099284497 BNET 0194446569 Pago TC",
+        "cargo_excel": null,
+        "abono_excel": 10961.4,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-01",
+        "monto_calculado": 10961.4,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Préstamo refinanciamiento - BNET 0194446569",
+        "hash_movimiento": "f8e75c597303f89f"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "PRESTAMOS REFIN25",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Prestamos Recibidos",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 10961.4
+        },
+        "asiento_abono": {
+          "cuenta": "PRESTAMOS REFIN25",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 10961.4
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "763ded41-1bb0-44bb-b9e9-cad79d6e21d7",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283813",
+        "fecha_modificacion": "2025-08-10T02:17:08.283815",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (1).xlsx",
+        "numero_fila_excel": 15,
+        "fecha_excel": "01/08/2025",
+        "descripcion_excel": "SPEI RECIBIDO CONSUBANCO / 0151180399 140 2540925Ok",
+        "cargo_excel": null,
+        "abono_excel": 919.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-08-01",
+        "monto_calculado": 919.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Ingresos Uber Pro - SPEI Consubanco 0151180399",
+        "hash_movimiento": "e3b2ebb68e85af0d"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "TDB UBER PRO CONSUBANCO",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos Yaris",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 919.0
+        },
+        "asiento_abono": {
+          "cuenta": "TDB UBER PRO CONSUBANCO",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 919.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "8831791e-ec43-48ec-abca-248516ab93fe",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283830",
+        "fecha_modificacion": "2025-08-10T02:17:08.283832",
+        "notas_internas": "Importado desde movimientos (1).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 16,
+        "fecha_excel": "30/07/2025",
+        "descripcion_excel": "SPEI ENVIADO BANAMEX / 0076312440 002 2207250costco bnmx julio 28",
+        "cargo_excel": 2036.49,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-30",
+        "monto_calculado": 2036.49,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago TDC Banamex Costco 783 - compras julio",
+        "hash_movimiento": "7e21787091ec4314"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDC BANAMEX COSTCO 783",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Pagos de Tarjetas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDC BANAMEX COSTCO 783",
+          "naturaleza": "ACREEDORA",
+          "efecto": "DISMINUYE",
+          "monto": 2036.49
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 2036.49
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "5192a984-ff5d-4c71-819e-0cde096846e1",
+        "grupo_uuid": "GRUPO_0006",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283847",
+        "fecha_modificacion": "2025-08-10T02:17:08.283848",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 17,
+        "fecha_excel": "30/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO BANCOPPEL / 0141401703 137 9990008Yaris",
+        "cargo_excel": null,
+        "abono_excel": 3200.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-30",
+        "monto_calculado": 3200.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Ingresos Renta Yaris - SPEI Bancoppel 0141401703",
+        "hash_movimiento": "6dc583cddaa0a4dd"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos Renta Yaris",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos Yaris",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 3200.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos Renta Yaris",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 3200.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "2f577d91-beb7-418e-b06b-9bcb2a02d1de",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283863",
+        "fecha_modificacion": "2025-08-10T02:17:08.283865",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 18,
+        "fecha_excel": "28/07/2025",
+        "descripcion_excel": "PAGO TARJETA DE CREDITO / 2734443810 CUENTA: BMOV",
+        "cargo_excel": 10961.4,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-28",
+        "monto_calculado": 10961.4,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago TDC BBVA Platino 3358 - Ref 2734443810",
+        "hash_movimiento": "915c356010a1aafc"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDC BBVA PLATINO 3358",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Pagos de Tarjetas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDC BBVA PLATINO 3358",
+          "naturaleza": "ACREEDORA",
+          "efecto": "DISMINUYE",
+          "monto": 10961.4
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 10961.4
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "a3061a4c-dde2-4d7f-b1b5-16bbded5741f",
+        "grupo_uuid": "GRUPO_0007",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283880",
+        "fecha_modificacion": "2025-08-10T02:17:08.283881",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 19,
+        "fecha_excel": "28/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO BANORTE / 0130134951 072 0250728Sin informacion",
+        "cargo_excel": null,
+        "abono_excel": 6350.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-28",
+        "monto_calculado": 6350.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Préstamo refinanciamiento - SPEI Banorte 0130134951",
+        "hash_movimiento": "e3f6ae8b756f68a8"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "PRESTAMOS REFIN25",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Prestamos Recibidos",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 6350.0
+        },
+        "asiento_abono": {
+          "cuenta": "PRESTAMOS REFIN25",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 6350.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "5055da7b-ea7e-493f-bd60-80050dc8af89",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283894",
+        "fecha_modificacion": "2025-08-10T02:17:08.283895",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 20,
+        "fecha_excel": "28/07/2025",
+        "descripcion_excel": "BANCO INVEX SA INST 13511 / DES051005PM6 pendiente",
+        "cargo_excel": 6908.66,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-28",
+        "monto_calculado": 6908.66,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago TDC Invex Cero 5616 - Ref DES051005PM6",
+        "hash_movimiento": "d2091efd9b315018"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDC INVEX CERO 5616",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Pagos de Tarjetas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDC INVEX CERO 5616",
+          "naturaleza": "ACREEDORA",
+          "efecto": "DISMINUYE",
+          "monto": 6908.66
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 6908.66
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "0239db62-f56f-48a5-a72e-6564a64c30c8",
+        "grupo_uuid": "GRUPO_0008",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283910",
+        "fecha_modificacion": "2025-08-10T02:17:08.283912",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 21,
+        "fecha_excel": "28/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO SPIN BY OXXO / 0127619554 728 0389310k",
+        "cargo_excel": null,
+        "abono_excel": 258.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-28",
+        "monto_calculado": 258.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Transferencia de SPIN OXXO 2113 - SPEI 0127619554",
+        "hash_movimiento": "88b06b2453439d36"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "TDB SPIN OXXO 2113",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 258.0
+        },
+        "asiento_abono": {
+          "cuenta": "TDB SPIN OXXO 2113",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 258.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "0e54cb2d-aeca-429e-be23-dc61fd116394",
+        "grupo_uuid": "GRUPO_0009",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283928",
+        "fecha_modificacion": "2025-08-10T02:17:08.283929",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 22,
+        "fecha_excel": "28/07/2025",
+        "descripcion_excel": "PAGO DE PRESTAMO / 9810848652 TOTAL DE RECIBO",
+        "cargo_excel": 14002.8,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-28",
+        "monto_calculado": 14002.8,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago hipoteca Casa 142 - Ref 9810848652",
+        "hash_movimiento": "c3e6daa05ad1e1e4"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "CREDITO HIPOTECA CASA 142",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Pagos de Prestamos",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "CREDITO HIPOTECA CASA 142",
+          "naturaleza": "ACREEDORA",
+          "efecto": "DISMINUYE",
+          "monto": 14002.8
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 14002.8
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "433c182e-1163-495d-bcd3-bc342e81244a",
+        "grupo_uuid": "GRUPO_0010",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283944",
+        "fecha_modificacion": "2025-08-10T02:17:08.283946",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 23,
+        "fecha_excel": "25/07/2025",
+        "descripcion_excel": "SPEI ENVIADO STP / 0052319722 646 2207250k",
+        "cargo_excel": 500.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-25",
+        "monto_calculado": 500.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Transferencia para gastos personales - SPEI STP 0052319722",
+        "hash_movimiento": "da9d0a085ee518fe"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDB OPENBANK 9365",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDB OPENBANK 9365",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 500.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 500.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "1ddf8290-14eb-4860-9f76-5c0aec761b7d",
+        "grupo_uuid": "GRUPO_0011",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283960",
+        "fecha_modificacion": "2025-08-10T02:17:08.283962",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 24,
+        "fecha_excel": "24/07/2025",
+        "descripcion_excel": "TEF RECIBIDO BANK OF AMER / 3229935321 106 00000011043696473509",
+        "cargo_excel": null,
+        "abono_excel": 374.72,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-24",
+        "monto_calculado": 374.72,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - TEF Bank of America 3229935321",
+        "hash_movimiento": "ebd40f02e611c3f8"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 374.72
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 374.72
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "80483935-7e3b-4021-aef5-bda1fdacc955",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283976",
+        "fecha_modificacion": "2025-08-10T02:17:08.283978",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 25,
+        "fecha_excel": "20/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO Mercado Pago / 0190782902 722 1238574MERCADO*PAGO",
+        "cargo_excel": null,
+        "abono_excel": 6094.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-20",
+        "monto_calculado": 6094.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Ingresos por ventas en MercadoLibre - SPEI Mercado Pago 0190782902",
+        "hash_movimiento": "8bf7f53672ade428"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "TDB MPAGO 6007",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 6094.0
+        },
+        "asiento_abono": {
+          "cuenta": "TDB MPAGO 6007",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 6094.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "8e03bc73-fbe9-4f9e-8e69-594e6f6d728e",
+        "grupo_uuid": "GRUPO_0012",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.283991",
+        "fecha_modificacion": "2025-08-10T02:17:08.283992",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 26,
+        "fecha_excel": "20/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO AZTECA / 0190050210 127 5501950pago del mes de julio cruz",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-20",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Azteca 0190050210 - mes julio",
+        "hash_movimiento": "a4cd297cb4f7e6f1"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "72973426-bcc2-4187-9ff3-62cb53806372",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284006",
+        "fecha_modificacion": "2025-08-10T02:17:08.284008",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 27,
+        "fecha_excel": "21/07/2025",
+        "descripcion_excel": "LIVERPOOL POR INTERNET / ******0287 RFC: DLI 931201MI9 14:38 AUT: 765150",
+        "cargo_excel": 2040.4,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-21",
+        "monto_calculado": 2040.4,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago TDC Liverpool I300005028 9045 - Compra internet",
+        "hash_movimiento": "d5a9a058be0db0cf"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDC LIVERPOOL I300005028 9045",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Pagos de Tarjetas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDC LIVERPOOL I300005028 9045",
+          "naturaleza": "ACREEDORA",
+          "efecto": "DISMINUYE",
+          "monto": 2040.4
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 2040.4
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "cd5b4728-184a-4eb0-9a30-aeb6a651f78d",
+        "grupo_uuid": "GRUPO_0013",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284026",
+        "fecha_modificacion": "2025-08-10T02:17:08.284028",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 28,
+        "fecha_excel": "21/07/2025",
+        "descripcion_excel": "D LOCAL*STARLINK / ******0287 RFC: EME 200630JP1 01:08 AUT: 165554",
+        "cargo_excel": 1100.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-21",
+        "monto_calculado": 1100.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago Starlink Rincón 1 - Servicio internet satelital",
+        "hash_movimiento": "4634a11e2bde5b9f"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "STARLINK RINCON1",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Gastos Internet Negocio",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "STARLINK RINCON1",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 1100.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 1100.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "9edc9867-290f-4e7e-812c-73a1f2a5c3ec",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284040",
+        "fecha_modificacion": "2025-08-10T02:17:08.284041",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 29,
+        "fecha_excel": "18/07/2025",
+        "descripcion_excel": "SPEI ENVIADO STP / 0074463111 646 1207250ad",
+        "cargo_excel": 500.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-18",
+        "monto_calculado": 500.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Transferencia para gastos personales - SPEI STP 0074463111",
+        "hash_movimiento": "1316c1840c94d230"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDB OPENBANK 9365",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDB OPENBANK 9365",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 500.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 500.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "113c0f46-f6e9-40e9-888e-11581537fd99",
+        "grupo_uuid": "GRUPO_0014",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284056",
+        "fecha_modificacion": "2025-08-10T02:17:08.284057",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 30,
+        "fecha_excel": "18/07/2025",
+        "descripcion_excel": "STRIPE *SYSCOM MX / ******0287 RFC: SSC 840823JT3 10:33 AUT: 467028",
+        "cargo_excel": 293.82,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-18",
+        "monto_calculado": 293.82,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Compra SYSCOM vía Stripe - Proyecto 180 fibra",
+        "hash_movimiento": "147b8e3f5e8fa030"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "COMPRAS PROYECTO 180 FIBRA",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Compras Proyectos 2025",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "COMPRAS PROYECTO 180 FIBRA",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 293.82
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 293.82
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "03a1226a-ca41-4bf7-83b5-e7c61127f494",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284070",
+        "fecha_modificacion": "2025-08-10T02:17:08.284072",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 31,
+        "fecha_excel": "18/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO BANORTE / 0182558252 072 0250718Pedro Antonio Sanchez Sanchez",
+        "cargo_excel": null,
+        "abono_excel": 399.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-18",
+        "monto_calculado": 399.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Banorte 0182558252 - Pedro Antonio Sanchez",
+        "hash_movimiento": "0290f12aa3fed9e0"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 399.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 399.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "4bf15305-d92c-4e1d-820e-890984d95a8e",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284086",
+        "fecha_modificacion": "2025-08-10T02:17:08.284088",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 32,
+        "fecha_excel": "18/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO SPIN BY OXXO / 0181442188 728 0919388k",
+        "cargo_excel": null,
+        "abono_excel": 8560.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-18",
+        "monto_calculado": 8560.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Ingresos ISP - SPEI SPIN OXXO 0181442188",
+        "hash_movimiento": "f58d6ebb06dbd7a4"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "TDB SPIN OXXO 2113",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 8560.0
+        },
+        "asiento_abono": {
+          "cuenta": "TDB SPIN OXXO 2113",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 8560.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "1250fad8-6bb5-4ec8-a2c7-65aa7dd74f67",
+        "grupo_uuid": "GRUPO_0015",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284100",
+        "fecha_modificacion": "2025-08-10T02:17:08.284102",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 33,
+        "fecha_excel": "17/07/2025",
+        "descripcion_excel": "STRIPE *SYSCOM MX / ******0287 RFC: SSC 840823JT3 18:22 AUT: 097287",
+        "cargo_excel": 628.6,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-17",
+        "monto_calculado": 628.6,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Compra SYSCOM vía Stripe - Proyecto 180 fibra",
+        "hash_movimiento": "3434d2993479621f"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "COMPRAS PROYECTO 180 FIBRA",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Compras Proyectos 2025",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "COMPRAS PROYECTO 180 FIBRA",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 628.6
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 628.6
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "ff37fb3f-ac45-4337-be0d-036e4af6ee97",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284116",
+        "fecha_modificacion": "2025-08-10T02:17:08.284118",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 34,
+        "fecha_excel": "17/07/2025",
+        "descripcion_excel": "PAGO CUENTA DE TERCERO / 0072819561 BNET 0468469393 pago",
+        "cargo_excel": null,
+        "abono_excel": 400.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-17",
+        "monto_calculado": 400.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - BNET 0468469393",
+        "hash_movimiento": "1a5f8aa7140f533e"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 400.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 400.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "839e11b7-e700-4f0f-9c4b-ea544dd9651d",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284134",
+        "fecha_modificacion": "2025-08-10T02:17:08.284135",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 35,
+        "fecha_excel": "16/07/2025",
+        "descripcion_excel": "SISTEMAS Y SERVICIOS / GUIA:2111649 REF:5390392 CIE:0669911",
+        "cargo_excel": 765.77,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-16",
+        "monto_calculado": 765.77,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Sistemas y servicios - Proyecto 180 fibra - Guía 2111649",
+        "hash_movimiento": "afe900a08a0d9bb6"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "COMPRAS PROYECTO 180 FIBRA",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Compras Proyectos 2025",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "COMPRAS PROYECTO 180 FIBRA",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 765.77
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 765.77
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "7df652a4-9fc5-46ac-9e09-cea2d9039c53",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284147",
+        "fecha_modificacion": "2025-08-10T02:17:08.284149",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 36,
+        "fecha_excel": "15/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO HSBC / 0165258183 021 0123456Internet Lourdes alvarado",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-15",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI HSBC 0165258183 - Lourdes Alvarado",
+        "hash_movimiento": "24ee87dbdbd2cf86"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "0f425e67-88e6-46c0-a1be-231cda4650c9",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284163",
+        "fecha_modificacion": "2025-08-10T02:17:08.284164",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 37,
+        "fecha_excel": "15/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO HSBC / 0165252000 021 0123456Internet marisol alvarado",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-15",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI HSBC 0165252000 - Marisol Alvarado",
+        "hash_movimiento": "47931a48395aa32d"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "7abaa13a-5287-4de0-93ff-4a45fdc58bed",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284176",
+        "fecha_modificacion": "2025-08-10T02:17:08.284178",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 38,
+        "fecha_excel": "15/07/2025",
+        "descripcion_excel": "SPEI ENVIADO STP / 0056793919 646 0906250comida",
+        "cargo_excel": 435.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-15",
+        "monto_calculado": 435.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Transferencia para gastos personales - SPEI STP 0056793919 - comida",
+        "hash_movimiento": "9398df2480b4125e"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDB OPENBANK 9365",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDB OPENBANK 9365",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 435.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 435.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "a2eab681-b0d8-4d18-b82c-e3c62bf2c5de",
+        "grupo_uuid": "GRUPO_0016",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284192",
+        "fecha_modificacion": "2025-08-10T02:17:08.284194",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 39,
+        "fecha_excel": "15/07/2025",
+        "descripcion_excel": "PAGO CUENTA DE TERCERO / 0074280869 BNET 0194446569 paraTCBanoete",
+        "cargo_excel": null,
+        "abono_excel": 5833.32,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-15",
+        "monto_calculado": 5833.32,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Préstamo refinanciamiento - BNET 0194446569 - para TC Banorte",
+        "hash_movimiento": "7f2d1f3ff496d047"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "PRESTAMOS REFIN25",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Prestamos Recibidos",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 5833.32
+        },
+        "asiento_abono": {
+          "cuenta": "PRESTAMOS REFIN25",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 5833.32
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "74796d91-bf42-40f7-a9c7-7dbe5c477f05",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284208",
+        "fecha_modificacion": "2025-08-10T02:17:08.284209",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 40,
+        "fecha_excel": "15/07/2025",
+        "descripcion_excel": "PAGO CUENTA DE TERCERO / 0026149481 BNET 2914335600 abel",
+        "cargo_excel": null,
+        "abono_excel": 4000.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-15",
+        "monto_calculado": 4000.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago de tercero - BNET 2914335600 - Abel",
+        "hash_movimiento": "fc73709e7b5e2d27"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "SIN CLASIFICAR",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "SIN CLASIFICAR",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 4000.0
+        },
+        "asiento_abono": {
+          "cuenta": "SIN CLASIFICAR",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 4000.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "76d682f2-1dab-4b50-928c-c104c7f49fff",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284225",
+        "fecha_modificacion": "2025-08-10T02:17:08.284226",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 41,
+        "fecha_excel": "15/07/2025",
+        "descripcion_excel": "SPEI ENVIADO BANORTE / 0054907843 072 0906250k",
+        "cargo_excel": 5835.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-15",
+        "monto_calculado": 5835.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Transferencia para pago de tarjeta - SPEI Banorte 0054907843",
+        "hash_movimiento": "54703161e440538e"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "TDB BANORTE 3172",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "TDB BANORTE 3172",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 5835.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 5835.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "9f1d2c5d-6e29-4524-a6d9-94e7627ed621",
+        "grupo_uuid": "GRUPO_0017",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284240",
+        "fecha_modificacion": "2025-08-10T02:17:08.284242",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 42,
+        "fecha_excel": "14/07/2025",
+        "descripcion_excel": "SPEI ENVIADO BAJIO / 0099064105 030 09062504",
+        "cargo_excel": 65.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-14",
+        "monto_calculado": 65.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Compra comida en la calle - SPEI Bajío 0099064105",
+        "hash_movimiento": "42ef4197e3b3aa7c"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "Compra comida en la calle",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Gastos Personales",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "Compra comida en la calle",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 65.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 65.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "b5f61543-04fc-468a-9d38-b46beaec79fc",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284254",
+        "fecha_modificacion": "2025-08-10T02:17:08.284256",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 43,
+        "fecha_excel": "13/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO AZTECA / 0149630874 127 5501950julio 2025 pinot 132",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-13",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Azteca 0149630874 - pinot 132 julio 2025",
+        "hash_movimiento": "2d40c6b106bf7fbd"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "b7bc6ac2-b9ec-4bbc-83b6-5833638dd08f",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284269",
+        "fecha_modificacion": "2025-08-10T02:17:08.284271",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 44,
+        "fecha_excel": "12/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO BANORTE / 0147497664 072 0250712av higueras 249",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-12",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Banorte 0147497664 - av higueras 249",
+        "hash_movimiento": "b4d7d16f17d4f5aa"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "18fd0bdc-0828-452d-98d3-745d5e4c7c0f",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284285",
+        "fecha_modificacion": "2025-08-10T02:17:08.284286",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 45,
+        "fecha_excel": "12/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO AZTECA / 0145831657 127 5501950pago del mes de junio cruz",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-12",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Azteca 0145831657 - cruz junio",
+        "hash_movimiento": "fa05df4273ed3128"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "26ea4b52-2b81-4146-bbe4-dc449617afb5",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284298",
+        "fecha_modificacion": "2025-08-10T02:17:08.284300",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 46,
+        "fecha_excel": "11/07/2025",
+        "descripcion_excel": "SPEI ENVIADO BANAMEX / 0086553911 002 0906250julio 2025",
+        "cargo_excel": 8500.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-11",
+        "monto_calculado": 8500.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago renta casa 170 - SPEI Banamex 0086553911 - julio 2025",
+        "hash_movimiento": "9d499d387fdf8aae"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "RENTA DE CASA 170",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Gastos Renta",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "RENTA DE CASA 170",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 8500.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 8500.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "cde31962-8428-4d84-adbc-7b4d05033876",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284311",
+        "fecha_modificacion": "2025-08-10T02:17:08.284313",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 47,
+        "fecha_excel": "11/07/2025",
+        "descripcion_excel": "RETIRO SIN TARJETA QR / ******4662",
+        "cargo_excel": 500.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-11",
+        "monto_calculado": 500.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Retiro de efectivo sin tarjeta QR - Ref 4662",
+        "hash_movimiento": "be8addba85c5c6eb"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "CTA DEBITO EFECTIVO",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Transferencias Entre Cuentas",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "CTA DEBITO EFECTIVO",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 500.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 500.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "a852ed38-6f05-40dd-9e07-723c8ba2327d",
+        "grupo_uuid": "GRUPO_0018",
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284330",
+        "fecha_modificacion": "2025-08-10T02:17:08.284332",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 48,
+        "fecha_excel": "10/07/2025",
+        "descripcion_excel": "SPEI ENVIADO SANTANDER / 0083751678 014 0906250c142",
+        "cargo_excel": 800.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-10",
+        "monto_calculado": 800.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago mantenimiento AC colonos coto 4 - SPEI Santander 0083751678",
+        "hash_movimiento": "fdda81d077a200b4"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "COTO 4 AC COLONOS SANTANDER MTTO Y MULTAS",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Gastos Mantenimiento",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "COTO 4 AC COLONOS SANTANDER MTTO Y MULTAS",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 800.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 800.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "33c48791-610d-4e67-9f0a-f4113b4e56dd",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284346",
+        "fecha_modificacion": "2025-08-10T02:17:08.284347",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 49,
+        "fecha_excel": "10/07/2025",
+        "descripcion_excel": "PAGO CUENTA DE TERCERO / 0017653263 BNET 1506914864 jul 2025",
+        "cargo_excel": 500.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-10",
+        "monto_calculado": 500.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Pago renta azotea Siquiem/Sanfrancisco Asis - BNET 1506914864 jul 2025",
+        "hash_movimiento": "c6223f741635e8f8"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Gastos Renta",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 500.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 500.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "a0a3e214-d47c-4006-ba4f-d44773c4de3c",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284359",
+        "fecha_modificacion": "2025-08-10T02:17:08.284361",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 50,
+        "fecha_excel": "10/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO AZTECA / 0133716599 127 5501950pago internet",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-10",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Azteca 0133716599 - pago internet",
+        "hash_movimiento": "cbebfa40f4241136"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "6e7978b9-6852-4a50-b680-b36e894ce59c",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284374",
+        "fecha_modificacion": "2025-08-10T02:17:08.284375",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 51,
+        "fecha_excel": "10/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO SANTANDER / 0132945181 014 3985282TRANSFERENCIA",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-10",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Santander 0132945181",
+        "hash_movimiento": "e5e1f222907f7a95"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "36827375-8caa-4f32-95e2-2818600bf106",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284389",
+        "fecha_modificacion": "2025-08-10T02:17:08.284391",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 52,
+        "fecha_excel": "10/07/2025",
+        "descripcion_excel": "SPEI RECIBIDO BANCOPPEL / 0132927829 137 5041039Av higueras 215",
+        "cargo_excel": null,
+        "abono_excel": 270.0,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-10",
+        "monto_calculado": 270.0,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Pago cliente ISP - SPEI Bancoppel 0132927829 - Av higueras 215",
+        "hash_movimiento": "87d38065487f5038"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "Ingresos ISP",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Ingresos ISP",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        },
+        "asiento_abono": {
+          "cuenta": "Ingresos ISP",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 270.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "3bf37550-ffc4-4796-b3e5-67cb59491683",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284402",
+        "fecha_modificacion": "2025-08-10T02:17:08.284404",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 53,
+        "fecha_excel": "09/07/2025",
+        "descripcion_excel": "PAGO CUENTA DE TERCERO / 0035016043 BNET 0194446569 traspaso",
+        "cargo_excel": null,
+        "abono_excel": 19639.54,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-09",
+        "monto_calculado": 19639.54,
+        "tipo_movimiento": "ABONO",
+        "descripcion_limpia": "Préstamo refinanciamiento - BNET 0194446569 traspaso",
+        "hash_movimiento": "ef3d23e43cc94914"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": {
+          "nombre": "PRESTAMOS REFIN25",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Prestamos Recibidos",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 19639.54
+        },
+        "asiento_abono": {
+          "cuenta": "PRESTAMOS REFIN25",
+          "naturaleza": "ACREEDORA",
+          "efecto": "AUMENTA",
+          "monto": 19639.54
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "0804181e-9207-4b09-95eb-66cc4a1b50a6",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284418",
+        "fecha_modificacion": "2025-08-10T02:17:08.284420",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 54,
+        "fecha_excel": "09/07/2025",
+        "descripcion_excel": "IVA COM SERV BCA INTERNET / IVA COM SERV BC",
+        "cargo_excel": 0.8,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-09",
+        "monto_calculado": 0.8,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "IVA comisión servicios banca por internet",
+        "hash_movimiento": "0c8b6dbb8cb7c9e1"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "Comisiones Bancarias",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Comisiones e Intereses Bancarios",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "Comisiones Bancarias",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 0.8
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 0.8
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "ebcccccc-e7c8-4dd9-8895-93ac6fa2dafb",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284441",
+        "fecha_modificacion": "2025-08-10T02:17:08.284443",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    },
+    {
+      "datos_excel_originales": {
+        "archivo_origen": "movimientos (2).xlsx",
+        "numero_fila_excel": 55,
+        "fecha_excel": "09/07/2025",
+        "descripcion_excel": "SERV BANCA INTERNET / OPS SERV BCA IN",
+        "cargo_excel": 5.0,
+        "abono_excel": null,
+        "saldo_excel": null
+      },
+      "datos_procesados": {
+        "fecha_procesada": "202025-07-09",
+        "monto_calculado": 5.0,
+        "tipo_movimiento": "CARGO",
+        "descripcion_limpia": "Servicio banca por internet - Comisión BBVA",
+        "hash_movimiento": "27209d5d6e093ce7"
+      },
+      "clasificacion_contable": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": {
+          "nombre": "BBVA 5019",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "cuenta_destino": {
+          "nombre": "Comisiones Bancarias",
+          "tipo_cuenta": "AUTO_DETECTAR",
+          "naturaleza": "AUTO_DETECTAR",
+          "id_sistema": null
+        },
+        "categoria": {
+          "nombre": "Comisiones e Intereses Bancarios",
+          "tipo": "AUTO_DETECTAR",
+          "id_sistema": null
+        }
+      },
+      "logica_contable": {
+        "asiento_cargo": {
+          "cuenta": "Comisiones Bancarias",
+          "naturaleza": "DEUDORA",
+          "efecto": "AUMENTA",
+          "monto": 5.0
+        },
+        "asiento_abono": {
+          "cuenta": "BBVA 5019",
+          "naturaleza": "DEUDORA",
+          "efecto": "DISMINUYE",
+          "monto": 5.0
+        }
+      },
+      "campos_django": {
+        "uuid_unico": "e0e18761-e542-4746-bdff-076cd0ef9562",
+        "grupo_uuid": null,
+        "medio_pago_id": null,
+        "cuenta_servicio_id": null,
+        "estado": "PENDIENTE",
+        "fecha_creacion": "2025-08-10T02:17:08.284458",
+        "fecha_modificacion": "2025-08-10T02:17:08.284460",
+        "notas_internas": "Importado desde movimientos (2).xlsx - Revisado manualmente",
+        "referencia_externa": null
+      },
+      "estado_importacion": {
+        "estado": "LISTO",
+        "errores": [],
+        "advertencias": [],
+        "transaccion_id": null
+      }
+    }
+  ]
+}

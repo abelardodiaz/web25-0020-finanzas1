@@ -1,0 +1,142 @@
+[
+  {
+    "model": "core.categoria",
+    "pk": 1,
+    "fields": {
+      "nombre": "Ingresos ISP",
+      "tipo": "NEGOCIO",
+      "padre": null,
+      "descripcion": "Ingresos por servicios de Internet/ISP"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 2,
+    "fields": {
+      "nombre": "Transferencias Entre Cuentas",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Transferencias entre cuentas propias"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 3,
+    "fields": {
+      "nombre": "Pagos de Tarjetas",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Pagos realizados a tarjetas de crédito propias"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 4,
+    "fields": {
+      "nombre": "Ingresos Rentas",
+      "tipo": "NEGOCIO",
+      "padre": null,
+      "descripcion": "Ingresos por rentas de propiedades"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 5,
+    "fields": {
+      "nombre": "Prestamos Recibidos",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Préstamos recibidos de terceros"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 6,
+    "fields": {
+      "nombre": "Ingresos Yaris",
+      "tipo": "NEGOCIO",
+      "padre": null,
+      "descripcion": "Ingresos por servicios Yaris/Uber"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 7,
+    "fields": {
+      "nombre": "Pagos de Prestamos",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Pagos realizados a préstamos e hipotecas"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 8,
+    "fields": {
+      "nombre": "Gastos Internet Negocio",
+      "tipo": "NEGOCIO",
+      "padre": null,
+      "descripcion": "Gastos de servicios de internet para el negocio"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 9,
+    "fields": {
+      "nombre": "Compras Proyectos 2025",
+      "tipo": "NEGOCIO",
+      "padre": null,
+      "descripcion": "Compras y gastos para proyectos del 2025"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 10,
+    "fields": {
+      "nombre": "SIN CLASIFICAR",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Categoría temporal para movimientos sin clasificar"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 11,
+    "fields": {
+      "nombre": "Gastos Personales",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Gastos personales varios"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 12,
+    "fields": {
+      "nombre": "Gastos Renta",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Gastos de renta de propiedades"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 13,
+    "fields": {
+      "nombre": "Gastos Mantenimiento",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Gastos de mantenimiento y cuotas de condominios"
+    }
+  },
+  {
+    "model": "core.categoria",
+    "pk": 14,
+    "fields": {
+      "nombre": "Comisiones e Intereses Bancarios",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Comisiones, intereses y gastos bancarios"
+    }
+  }
+]

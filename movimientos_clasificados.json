@@ -1,0 +1,1562 @@
+{
+  "metadata": {
+    "fecha_analisis": "2025-08-10",
+    "archivos_procesados": ["movimientos (1).xlsx", "movimientos (2).xlsx", "movimientos (3).xlsx"],
+    "total_movimientos_analizados": 113
+  },
+  "cuentas_identificadas": {
+    "BBVA 5019": {
+      "nombre": "BBVA 5019",
+      "tipo": "DEB",
+      "naturaleza": "DEUDORA",
+      "grupo": "Bancos",
+      "descripcion": "Cuenta de débito BBVA principal"
+    },
+    "Ingresos ISP": {
+      "nombre": "Ingresos ISP",
+      "tipo": "ING",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Ingresos",
+      "descripcion": "Ingresos por servicios de ISP"
+    },
+    "TDB BANORTE 3172": {
+      "nombre": "TDB BANORTE 3172",
+      "tipo": "DEB",
+      "naturaleza": "DEUDORA",
+      "grupo": "Bancos",
+      "propietario": "ADS",
+      "descripcion": "Tarjeta de débito Banorte terminada en 3172"
+    },
+    "TDC BANAMEX PREMIERE 865": {
+      "nombre": "TDC BANAMEX PREMIERE 865",
+      "tipo": "CRE",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Tarjetas",
+      "propietario": "ADS",
+      "descripcion": "Tarjeta de crédito Banamex Premiere terminada en 865"
+    },
+    "TDC BANORTE CLASICA 5257": {
+      "nombre": "TDC BANORTE CLASICA 5257",
+      "tipo": "CRE",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Tarjetas",
+      "propietario": "ADS",
+      "descripcion": "Tarjeta de crédito Banorte Clásica terminada en 5257"
+    },
+    "INGRESOS RENTA CASA 142": {
+      "nombre": "INGRESOS RENTA CASA 142",
+      "tipo": "ING",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Ingresos",
+      "descripcion": "Ingresos por renta de casa 142"
+    },
+    "TDB OPENBANK 9365": {
+      "nombre": "TDB OPENBANK 9365",
+      "tipo": "DEB",
+      "naturaleza": "DEUDORA",
+      "grupo": "Bancos",
+      "propietario": "ADS",
+      "descripcion": "Cuenta de débito TDB OpenBank terminada en 9365"
+    },
+    "TDB MPAGO 6007": {
+      "nombre": "TDB MPAGO 6007",
+      "tipo": "DEB",
+      "naturaleza": "DEUDORA",
+      "grupo": "Bancos",
+      "propietario": "ADS",
+      "descripcion": "Cuenta de débito Mercado Pago terminada en 6007"
+    },
+    "PRESTAMOS REFIN25": {
+      "nombre": "PRESTAMOS REFIN25",
+      "tipo": "SER",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Prestamos",
+      "descripcion": "Préstamos recibidos refinanciamiento 2025"
+    },
+    "TDB UBER PRO CONSUBANCO": {
+      "nombre": "TDB UBER PRO CONSUBANCO",
+      "tipo": "ING",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Ingresos",
+      "descripcion": "Ingresos Uber Pro vía Consubanco"
+    },
+    "TDC BANAMEX COSTCO 783": {
+      "nombre": "TDC BANAMEX COSTCO 783",
+      "tipo": "CRE",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Tarjetas",
+      "propietario": "ADS",
+      "descripcion": "Tarjeta de crédito Banamex Costco terminada en 783"
+    },
+    "Ingresos Renta Yaris": {
+      "nombre": "Ingresos Renta Yaris",
+      "tipo": "ING",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Ingresos",
+      "descripcion": "Ingresos por renta de servicios Yaris"
+    },
+    "TDC BBVA PLATINO 3358": {
+      "nombre": "TDC BBVA PLATINO 3358",
+      "tipo": "CRE",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Tarjetas",
+      "propietario": "ADS",
+      "descripcion": "Tarjeta de crédito BBVA Platino terminada en 3358"
+    },
+    "TDC INVEX CERO 5616": {
+      "nombre": "TDC INVEX CERO 5616",
+      "tipo": "CRE",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Tarjetas",
+      "propietario": "ADS",
+      "descripcion": "Tarjeta de crédito Invex Cero terminada en 5616"
+    },
+    "TDB SPIN OXXO 2113": {
+      "nombre": "TDB SPIN OXXO 2113",
+      "tipo": "DEB",
+      "naturaleza": "DEUDORA",
+      "grupo": "Bancos",
+      "propietario": "ADS",
+      "descripcion": "Cuenta de débito SPIN by OXXO terminada en 2113"
+    },
+    "CREDITO HIPOTECA CASA 142": {
+      "nombre": "CREDITO HIPOTECA CASA 142",
+      "tipo": "SER",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Prestamos",
+      "descripcion": "Crédito hipotecario de la casa 142"
+    },
+    "TDC LIVERPOOL I300005028 9045": {
+      "nombre": "TDC LIVERPOOL I300005028 9045",
+      "tipo": "CRE",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Tarjetas",
+      "propietario": "ADS",
+      "descripcion": "Tarjeta de crédito Liverpool terminada en 9045"
+    },
+    "STARLINK RINCON1": {
+      "nombre": "STARLINK RINCON1",
+      "tipo": "SER",
+      "naturaleza": "ACREEDORA",
+      "grupo": "Servicios",
+      "descripcion": "Servicio de internet satelital Starlink - Rincón 1"
+    },
+    "COMPRAS PROYECTO 180 FIBRA": {
+      "nombre": "COMPRAS PROYECTO 180 FIBRA",
+      "tipo": "GAS",
+      "naturaleza": "DEUDORA",
+      "grupo": "Gastos",
+      "descripcion": "Gastos de compras para proyecto 180 fibra"
+    },
+    "SIN CLASIFICAR": {
+      "nombre": "SIN CLASIFICAR",
+      "tipo": "VAR",
+      "naturaleza": "DEUDORA",
+      "grupo": "Varios",
+      "descripcion": "Cuenta temporal para movimientos sin clasificar"
+    },
+    "Compra comida en la calle": {
+      "nombre": "Compra comida en la calle",
+      "tipo": "GAS",
+      "naturaleza": "DEUDORA",
+      "grupo": "Gastos",
+      "descripcion": "Gastos en comida y alimentos en la calle"
+    },
+    "RENTA DE CASA 170": {
+      "nombre": "RENTA DE CASA 170",
+      "tipo": "GAS",
+      "naturaleza": "DEUDORA",
+      "grupo": "Gastos",
+      "descripcion": "Gastos de renta de casa 170"
+    },
+    "CTA DEBITO EFECTIVO": {
+      "nombre": "CTA DEBITO EFECTIVO",
+      "tipo": "DEB",
+      "naturaleza": "DEUDORA",
+      "grupo": "Bancos",
+      "descripcion": "Cuenta de efectivo en mano"
+    },
+    "COTO 4 AC COLONOS SANTANDER MTTO Y MULTAS": {
+      "nombre": "COTO 4 AC COLONOS SANTANDER MTTO Y MULTAS",
+      "tipo": "GAS",
+      "naturaleza": "DEUDORA",
+      "grupo": "Gastos",
+      "descripcion": "Gastos de mantenimiento y multas AC colonos Santander coto 4"
+    },
+    "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS": {
+      "nombre": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS",
+      "tipo": "GAS",
+      "naturaleza": "DEUDORA",
+      "grupo": "Gastos",
+      "descripcion": "Gastos de renta de azotea Siquiem / Sanfrancisco Asis"
+    },
+    "Comisiones Bancarias": {
+      "nombre": "Comisiones Bancarias",
+      "tipo": "GAS",
+      "naturaleza": "DEUDORA",
+      "grupo": "Gastos",
+      "descripcion": "Gastos por comisiones e intereses bancarios"
+    }
+  },
+  "categorias_identificadas": {
+    "Ingresos ISP": {
+      "nombre": "Ingresos ISP",
+      "tipo": "NEGOCIO",
+      "padre": null,
+      "descripcion": "Ingresos por servicios de Internet/ISP"
+    },
+    "Transferencias Entre Cuentas": {
+      "nombre": "Transferencias Entre Cuentas",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Transferencias entre cuentas propias"
+    },
+    "Pagos de Tarjetas": {
+      "nombre": "Pagos de Tarjetas",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Pagos realizados a tarjetas de crédito propias"
+    },
+    "Ingresos Rentas": {
+      "nombre": "Ingresos Rentas",
+      "tipo": "NEGOCIO",
+      "padre": null,
+      "descripcion": "Ingresos por rentas de propiedades"
+    },
+    "Prestamos Recibidos": {
+      "nombre": "Prestamos Recibidos",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Préstamos recibidos de terceros"
+    },
+    "Ingresos Yaris": {
+      "nombre": "Ingresos Yaris",
+      "tipo": "NEGOCIO",
+      "padre": null,
+      "descripcion": "Ingresos por servicios Yaris/Uber"
+    },
+    "Pagos de Prestamos": {
+      "nombre": "Pagos de Prestamos",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Pagos realizados a préstamos e hipotecas"
+    },
+    "Gastos Internet Negocio": {
+      "nombre": "Gastos Internet Negocio",
+      "tipo": "NEGOCIO",
+      "padre": null,
+      "descripcion": "Gastos de servicios de internet para el negocio"
+    },
+    "Compras Proyectos 2025": {
+      "nombre": "Compras Proyectos 2025",
+      "tipo": "NEGOCIO",
+      "padre": null,
+      "descripcion": "Compras y gastos para proyectos del 2025"
+    },
+    "SIN CLASIFICAR": {
+      "nombre": "SIN CLASIFICAR",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Categoría temporal para movimientos sin clasificar"
+    },
+    "Gastos Personales": {
+      "nombre": "Gastos Personales",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Gastos personales varios"
+    },
+    "Gastos Renta": {
+      "nombre": "Gastos Renta",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Gastos de renta de propiedades"
+    },
+    "Gastos Mantenimiento": {
+      "nombre": "Gastos Mantenimiento",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Gastos de mantenimiento y cuotas de condominios"
+    },
+    "Comisiones e Intereses Bancarios": {
+      "nombre": "Comisiones e Intereses Bancarios",
+      "tipo": "PERSONAL",
+      "padre": null,
+      "descripcion": "Comisiones, intereses y gastos bancarios"
+    }
+  },
+  "movimientos_analizados": [
+    {
+      "numero": 1,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "09/08/2025",
+      "descripcion_original": "SPEI RECIBIDO SANTANDER / 0194884469 014 2102921TRANSFERENCIA",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Santander"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 2,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "07/08/2025",
+      "descripcion_original": "SPEI ENVIADO BANORTE / 0065700028 072 2207250debito Banorte comisiones",
+      "monto": 200.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDB BANORTE 3172",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Transferencia para comisiones débito Banorte"
+      },
+      "logica_contable": {
+        "cargo": "TDB BANORTE 3172 (DEUDORA) +$200.00",
+        "abono": "BBVA 5019 (DEUDORA) -$200.00"
+      }
+    },
+    {
+      "numero": 3,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "07/08/2025",
+      "descripcion_original": "SPEI ENVIADO BANAMEX / 0065693832 002 2207250pago tc 865 bnmx",
+      "monto": 7502.01,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDC BANAMEX PREMIERE 865",
+        "categoria": "Pagos de Tarjetas",
+        "descripcion_procesada": "Pago TDC Banamex Premiere 865"
+      },
+      "logica_contable": {
+        "cargo": "TDC BANAMEX PREMIERE 865 (ACREEDORA) -$7502.01",
+        "abono": "BBVA 5019 (DEUDORA) -$7502.01"
+      }
+    },
+    {
+      "numero": 4,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "07/08/2025",
+      "descripcion_original": "SPEI ENVIADO BANORTE / 0065687629 072 2207250banorte tc clasica",
+      "monto": 7493.81,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDC BANORTE CLASICA 5257",
+        "categoria": "Pagos de Tarjetas",
+        "descripcion_procesada": "Pago TDC Banorte Clásica 5257"
+      },
+      "logica_contable": {
+        "cargo": "TDC BANORTE CLASICA 5257 (ACREEDORA) -$7493.81",
+        "abono": "BBVA 5019 (DEUDORA) -$7493.81"
+      }
+    },
+    {
+      "numero": 5,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "06/08/2025",
+      "descripcion_original": "PAGO CUENTA DE TERCERO / 0045031016 BNET 0199466126 StramaMPS",
+      "monto": 19720.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "INGRESOS RENTA CASA 142",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos Rentas",
+        "descripcion_procesada": "Renta Casa 142 - Cliente StramaMPS - BNET"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$19720.00",
+        "abono": "INGRESOS RENTA CASA 142 (ACREEDORA) +$19720.00"
+      }
+    },
+    {
+      "numero": 6,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "04/08/2025",
+      "descripcion_original": "SPEI RECIBIDO BANORTE / 0169515978 072 0250804pago",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Banorte 0169515978"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 7,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "04/08/2025",
+      "descripcion_original": "SPEI RECIBIDO NU MEXICO / 0168710396 638 0040825Transferencia",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Nu México 0168710396"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 8,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "04/08/2025",
+      "descripcion_original": "PAGO CUENTA DE TERCERO / 0064996967 BNET 2767356773 deposito mes agos",
+      "monto": 670.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - Depósito BNET 2767356773 - mes agosto"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$670.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$670.00"
+      }
+    },
+    {
+      "numero": 9,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "02/08/2025",
+      "descripcion_original": "SPEI ENVIADO STP / 0090385129 646 2207250k",
+      "monto": 500.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDB OPENBANK 9365",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Transferencia para gastos personales - SPEI STP 0090385129"
+      },
+      "logica_contable": {
+        "cargo": "TDB OPENBANK 9365 (DEUDORA) +$500.00",
+        "abono": "BBVA 5019 (DEUDORA) -$500.00"
+      }
+    },
+    {
+      "numero": 10,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "01/08/2025",
+      "descripcion_original": "SPEI ENVIADO Mercado Pago / 0088620015 722 2207250tc",
+      "monto": 8394.27,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDB MPAGO 6007",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Transferencia para pago TDC - SPEI Mercado Pago 0088620015"
+      },
+      "logica_contable": {
+        "cargo": "TDB MPAGO 6007 (DEUDORA) +$8394.27",
+        "abono": "BBVA 5019 (DEUDORA) -$8394.27"
+      }
+    },
+    {
+      "numero": 11,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "01/08/2025",
+      "descripcion_original": "PAGO CUENTA DE TERCERO / 0099284497 BNET 0194446569 Pago TC",
+      "monto": 10961.40,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "PRESTAMOS REFIN25",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Prestamos Recibidos",
+        "descripcion_procesada": "Préstamo refinanciamiento - BNET 0194446569"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$10961.40",
+        "abono": "PRESTAMOS REFIN25 (ACREEDORA) +$10961.40"
+      }
+    },
+    {
+      "numero": 12,
+      "archivo": "movimientos (1).xlsx",
+      "fecha": "01/08/2025",
+      "descripcion_original": "SPEI RECIBIDO CONSUBANCO / 0151180399 140 2540925Ok",
+      "monto": 919.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "TDB UBER PRO CONSUBANCO",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos Yaris",
+        "descripcion_procesada": "Ingresos Uber Pro - SPEI Consubanco 0151180399"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$919.00",
+        "abono": "TDB UBER PRO CONSUBANCO (ACREEDORA) +$919.00"
+      }
+    },
+    {
+      "numero": 13,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "30/07/2025",
+      "descripcion_original": "SPEI ENVIADO BANAMEX / 0076312440 002 2207250costco bnmx julio 28",
+      "monto": 2036.49,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDC BANAMEX COSTCO 783",
+        "categoria": "Pagos de Tarjetas",
+        "descripcion_procesada": "Pago TDC Banamex Costco 783 - compras julio"
+      },
+      "logica_contable": {
+        "cargo": "TDC BANAMEX COSTCO 783 (ACREEDORA) -$2036.49",
+        "abono": "BBVA 5019 (DEUDORA) -$2036.49"
+      }
+    },
+    {
+      "numero": 14,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "30/07/2025",
+      "descripcion_original": "SPEI RECIBIDO BANCOPPEL / 0141401703 137 9990008Yaris",
+      "monto": 3200.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos Renta Yaris",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos Yaris",
+        "descripcion_procesada": "Ingresos Renta Yaris - SPEI Bancoppel 0141401703"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$3200.00",
+        "abono": "Ingresos Renta Yaris (ACREEDORA) +$3200.00"
+      }
+    },
+    {
+      "numero": 15,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "28/07/2025",
+      "descripcion_original": "PAGO TARJETA DE CREDITO / 2734443810 CUENTA: BMOV",
+      "monto": 10961.40,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDC BBVA PLATINO 3358",
+        "categoria": "Pagos de Tarjetas",
+        "descripcion_procesada": "Pago TDC BBVA Platino 3358 - Ref 2734443810"
+      },
+      "logica_contable": {
+        "cargo": "TDC BBVA PLATINO 3358 (ACREEDORA) -$10961.40",
+        "abono": "BBVA 5019 (DEUDORA) -$10961.40"
+      }
+    },
+    {
+      "numero": 16,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "28/07/2025",
+      "descripcion_original": "SPEI RECIBIDO BANORTE / 0130134951 072 0250728Sin informacion",
+      "monto": 6350.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "PRESTAMOS REFIN25",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Prestamos Recibidos",
+        "descripcion_procesada": "Préstamo refinanciamiento - SPEI Banorte 0130134951"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$6350.00",
+        "abono": "PRESTAMOS REFIN25 (ACREEDORA) +$6350.00"
+      }
+    },
+    {
+      "numero": 17,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "28/07/2025",
+      "descripcion_original": "BANCO INVEX SA INST 13511 / DES051005PM6 pendiente",
+      "monto": 6908.66,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDC INVEX CERO 5616",
+        "categoria": "Pagos de Tarjetas",
+        "descripcion_procesada": "Pago TDC Invex Cero 5616 - Ref DES051005PM6"
+      },
+      "logica_contable": {
+        "cargo": "TDC INVEX CERO 5616 (ACREEDORA) -$6908.66",
+        "abono": "BBVA 5019 (DEUDORA) -$6908.66"
+      }
+    },
+    {
+      "numero": 18,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "28/07/2025",
+      "descripcion_original": "SPEI RECIBIDO SPIN BY OXXO / 0127619554 728 0389310k",
+      "monto": 258.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "TDB SPIN OXXO 2113",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Transferencia de SPIN OXXO 2113 - SPEI 0127619554"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$258.00",
+        "abono": "TDB SPIN OXXO 2113 (DEUDORA) -$258.00"
+      }
+    },
+    {
+      "numero": 19,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "28/07/2025",
+      "descripcion_original": "PAGO DE PRESTAMO / 9810848652 TOTAL DE RECIBO",
+      "monto": 14002.80,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "CREDITO HIPOTECA CASA 142",
+        "categoria": "Pagos de Prestamos",
+        "descripcion_procesada": "Pago hipoteca Casa 142 - Ref 9810848652"
+      },
+      "logica_contable": {
+        "cargo": "CREDITO HIPOTECA CASA 142 (ACREEDORA) -$14002.80",
+        "abono": "BBVA 5019 (DEUDORA) -$14002.80"
+      }
+    },
+    {
+      "numero": 20,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "25/07/2025",
+      "descripcion_original": "SPEI ENVIADO STP / 0052319722 646 2207250k",
+      "monto": 500.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDB OPENBANK 9365",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Transferencia para gastos personales - SPEI STP 0052319722"
+      },
+      "logica_contable": {
+        "cargo": "TDB OPENBANK 9365 (DEUDORA) +$500.00",
+        "abono": "BBVA 5019 (DEUDORA) -$500.00"
+      }
+    },
+    {
+      "numero": 21,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "24/07/2025",
+      "descripcion_original": "TEF RECIBIDO BANK OF AMER / 3229935321 106 00000011043696473509",
+      "monto": 374.72,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - TEF Bank of America 3229935321"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$374.72",
+        "abono": "Ingresos ISP (ACREEDORA) +$374.72"
+      }
+    },
+    {
+      "numero": 22,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "20/07/2025",
+      "descripcion_original": "SPEI RECIBIDO Mercado Pago / 0190782902 722 1238574MERCADO*PAGO",
+      "monto": 6094.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "TDB MPAGO 6007",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Ingresos por ventas en MercadoLibre - SPEI Mercado Pago 0190782902"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$6094.00",
+        "abono": "TDB MPAGO 6007 (DEUDORA) -$6094.00"
+      }
+    },
+    {
+      "numero": 23,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "20/07/2025",
+      "descripcion_original": "SPEI RECIBIDO AZTECA / 0190050210 127 5501950pago del mes de julio cruz",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Azteca 0190050210 - mes julio"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 24,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "21/07/2025",
+      "descripcion_original": "LIVERPOOL POR INTERNET / ******0287 RFC: DLI 931201MI9 14:38 AUT: 765150",
+      "monto": 2040.40,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDC LIVERPOOL I300005028 9045",
+        "categoria": "Pagos de Tarjetas",
+        "descripcion_procesada": "Pago TDC Liverpool I300005028 9045 - Compra internet"
+      },
+      "logica_contable": {
+        "cargo": "TDC LIVERPOOL I300005028 9045 (ACREEDORA) -$2040.40",
+        "abono": "BBVA 5019 (DEUDORA) -$2040.40"
+      }
+    },
+    {
+      "numero": 25,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "21/07/2025",
+      "descripcion_original": "D LOCAL*STARLINK / ******0287 RFC: EME 200630JP1 01:08 AUT: 165554",
+      "monto": 1100.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "STARLINK RINCON1",
+        "categoria": "Gastos Internet Negocio",
+        "descripcion_procesada": "Pago Starlink Rincón 1 - Servicio internet satelital"
+      },
+      "logica_contable": {
+        "cargo": "STARLINK RINCON1 (ACREEDORA) +$1100.00",
+        "abono": "BBVA 5019 (DEUDORA) -$1100.00"
+      }
+    },
+    {
+      "numero": 26,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "18/07/2025",
+      "descripcion_original": "SPEI ENVIADO STP / 0074463111 646 1207250ad",
+      "monto": 500.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDB OPENBANK 9365",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Transferencia para gastos personales - SPEI STP 0074463111"
+      },
+      "logica_contable": {
+        "cargo": "TDB OPENBANK 9365 (DEUDORA) +$500.00",
+        "abono": "BBVA 5019 (DEUDORA) -$500.00"
+      }
+    },
+    {
+      "numero": 27,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "18/07/2025",
+      "descripcion_original": "STRIPE *SYSCOM MX / ******0287 RFC: SSC 840823JT3 10:33 AUT: 467028",
+      "monto": 293.82,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "COMPRAS PROYECTO 180 FIBRA",
+        "categoria": "Compras Proyectos 2025",
+        "descripcion_procesada": "Compra SYSCOM vía Stripe - Proyecto 180 fibra"
+      },
+      "logica_contable": {
+        "cargo": "COMPRAS PROYECTO 180 FIBRA (DEUDORA) +$293.82",
+        "abono": "BBVA 5019 (DEUDORA) -$293.82"
+      }
+    },
+    {
+      "numero": 28,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "18/07/2025",
+      "descripcion_original": "SPEI RECIBIDO BANORTE / 0182558252 072 0250718Pedro Antonio Sanchez Sanchez",
+      "monto": 399.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Banorte 0182558252 - Pedro Antonio Sanchez"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$399.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$399.00"
+      }
+    },
+    {
+      "numero": 29,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "18/07/2025",
+      "descripcion_original": "SPEI RECIBIDO SPIN BY OXXO / 0181442188 728 0919388k",
+      "monto": 8560.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "TDB SPIN OXXO 2113",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Ingresos ISP - SPEI SPIN OXXO 0181442188"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$8560.00",
+        "abono": "TDB SPIN OXXO 2113 (DEUDORA) -$8560.00"
+      }
+    },
+    {
+      "numero": 30,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "17/07/2025",
+      "descripcion_original": "STRIPE *SYSCOM MX / ******0287 RFC: SSC 840823JT3 18:22 AUT: 097287",
+      "monto": 628.60,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "COMPRAS PROYECTO 180 FIBRA",
+        "categoria": "Compras Proyectos 2025",
+        "descripcion_procesada": "Compra SYSCOM vía Stripe - Proyecto 180 fibra"
+      },
+      "logica_contable": {
+        "cargo": "COMPRAS PROYECTO 180 FIBRA (DEUDORA) +$628.60",
+        "abono": "BBVA 5019 (DEUDORA) -$628.60"
+      }
+    },
+    {
+      "numero": 31,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "17/07/2025",
+      "descripcion_original": "PAGO CUENTA DE TERCERO / 0072819561 BNET 0468469393 pago",
+      "monto": 400.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - BNET 0468469393"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$400.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$400.00"
+      }
+    },
+    {
+      "numero": 32,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "16/07/2025",
+      "descripcion_original": "SISTEMAS Y SERVICIOS / GUIA:2111649 REF:5390392 CIE:0669911",
+      "monto": 765.77,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "COMPRAS PROYECTO 180 FIBRA",
+        "categoria": "Compras Proyectos 2025",
+        "descripcion_procesada": "Sistemas y servicios - Proyecto 180 fibra - Guía 2111649"
+      },
+      "logica_contable": {
+        "cargo": "COMPRAS PROYECTO 180 FIBRA (DEUDORA) +$765.77",
+        "abono": "BBVA 5019 (DEUDORA) -$765.77"
+      }
+    },
+    {
+      "numero": 33,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "15/07/2025",
+      "descripcion_original": "SPEI RECIBIDO HSBC / 0165258183 021 0123456Internet Lourdes alvarado",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI HSBC 0165258183 - Lourdes Alvarado"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 34,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "15/07/2025",
+      "descripcion_original": "SPEI RECIBIDO HSBC / 0165252000 021 0123456Internet marisol alvarado",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI HSBC 0165252000 - Marisol Alvarado"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 35,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "15/07/2025",
+      "descripcion_original": "SPEI ENVIADO STP / 0056793919 646 0906250comida",
+      "monto": 435.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDB OPENBANK 9365",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Transferencia para gastos personales - SPEI STP 0056793919 - comida"
+      },
+      "logica_contable": {
+        "cargo": "TDB OPENBANK 9365 (DEUDORA) +$435.00",
+        "abono": "BBVA 5019 (DEUDORA) -$435.00"
+      }
+    },
+    {
+      "numero": 36,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "15/07/2025",
+      "descripcion_original": "PAGO CUENTA DE TERCERO / 0074280869 BNET 0194446569 paraTCBanoete",
+      "monto": 5833.32,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "PRESTAMOS REFIN25",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Prestamos Recibidos",
+        "descripcion_procesada": "Préstamo refinanciamiento - BNET 0194446569 - para TC Banorte"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$5833.32",
+        "abono": "PRESTAMOS REFIN25 (ACREEDORA) +$5833.32"
+      }
+    },
+    {
+      "numero": 37,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "15/07/2025",
+      "descripcion_original": "PAGO CUENTA DE TERCERO / 0026149481 BNET 2914335600 abel",
+      "monto": 4000.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "SIN CLASIFICAR",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "SIN CLASIFICAR",
+        "descripcion_procesada": "Pago de tercero - BNET 2914335600 - Abel"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$4000.00",
+        "abono": "SIN CLASIFICAR (DEUDORA) -$4000.00"
+      }
+    },
+    {
+      "numero": 38,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "15/07/2025",
+      "descripcion_original": "SPEI ENVIADO BANORTE / 0054907843 072 0906250k",
+      "monto": 5835.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDB BANORTE 3172",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Transferencia para pago de tarjeta - SPEI Banorte 0054907843"
+      },
+      "logica_contable": {
+        "cargo": "TDB BANORTE 3172 (DEUDORA) +$5835.00",
+        "abono": "BBVA 5019 (DEUDORA) -$5835.00"
+      }
+    },
+    {
+      "numero": 39,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "14/07/2025",
+      "descripcion_original": "SPEI ENVIADO BAJIO / 0099064105 030 09062504",
+      "monto": 65.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "Compra comida en la calle",
+        "categoria": "Gastos Personales",
+        "descripcion_procesada": "Compra comida en la calle - SPEI Bajío 0099064105"
+      },
+      "logica_contable": {
+        "cargo": "Compra comida en la calle (DEUDORA) +$65.00",
+        "abono": "BBVA 5019 (DEUDORA) -$65.00"
+      }
+    },
+    {
+      "numero": 40,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "13/07/2025",
+      "descripcion_original": "SPEI RECIBIDO AZTECA / 0149630874 127 5501950julio 2025 pinot 132",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Azteca 0149630874 - pinot 132 julio 2025"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 41,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "12/07/2025",
+      "descripcion_original": "SPEI RECIBIDO BANORTE / 0147497664 072 0250712av higueras 249",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Banorte 0147497664 - av higueras 249"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 42,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "12/07/2025",
+      "descripcion_original": "SPEI RECIBIDO AZTECA / 0145831657 127 5501950pago del mes de junio cruz",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Azteca 0145831657 - cruz junio"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 43,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "11/07/2025",
+      "descripcion_original": "SPEI ENVIADO BANAMEX / 0086553911 002 0906250julio 2025",
+      "monto": 8500.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "RENTA DE CASA 170",
+        "categoria": "Gastos Renta",
+        "descripcion_procesada": "Pago renta casa 170 - SPEI Banamex 0086553911 - julio 2025"
+      },
+      "logica_contable": {
+        "cargo": "RENTA DE CASA 170 (DEUDORA) +$8500.00",
+        "abono": "BBVA 5019 (DEUDORA) -$8500.00"
+      }
+    },
+    {
+      "numero": 44,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "11/07/2025",
+      "descripcion_original": "RETIRO SIN TARJETA QR / ******4662",
+      "monto": 500.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "CTA DEBITO EFECTIVO",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Retiro de efectivo sin tarjeta QR - Ref 4662"
+      },
+      "logica_contable": {
+        "cargo": "CTA DEBITO EFECTIVO (DEUDORA) +$500.00",
+        "abono": "BBVA 5019 (DEUDORA) -$500.00"
+      }
+    },
+    {
+      "numero": 45,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "10/07/2025",
+      "descripcion_original": "SPEI ENVIADO SANTANDER / 0083751678 014 0906250c142",
+      "monto": 800.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "COTO 4 AC COLONOS SANTANDER MTTO Y MULTAS",
+        "categoria": "Gastos Mantenimiento",
+        "descripcion_procesada": "Pago mantenimiento AC colonos coto 4 - SPEI Santander 0083751678"
+      },
+      "logica_contable": {
+        "cargo": "COTO 4 AC COLONOS SANTANDER MTTO Y MULTAS (DEUDORA) +$800.00",
+        "abono": "BBVA 5019 (DEUDORA) -$800.00"
+      }
+    },
+    {
+      "numero": 45,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "10/07/2025",
+      "descripcion_original": "PAGO CUENTA DE TERCERO / 0017653263 BNET 1506914864 jul 2025",
+      "monto": 500.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS",
+        "categoria": "Gastos Renta",
+        "descripcion_procesada": "Pago renta azotea Siquiem/Sanfrancisco Asis - BNET 1506914864 jul 2025"
+      },
+      "logica_contable": {
+        "cargo": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS (DEUDORA) +$500.00",
+        "abono": "BBVA 5019 (DEUDORA) -$500.00"
+      }
+    },
+    {
+      "numero": 46,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "10/07/2025",
+      "descripcion_original": "SPEI RECIBIDO AZTECA / 0133716599 127 5501950pago internet",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Azteca 0133716599 - pago internet"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 47,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "10/07/2025",
+      "descripcion_original": "SPEI RECIBIDO SANTANDER / 0132945181 014 3985282TRANSFERENCIA",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Santander 0132945181"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 48,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "10/07/2025",
+      "descripcion_original": "SPEI RECIBIDO BANCOPPEL / 0132927829 137 5041039Av higueras 215",
+      "monto": 270.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Bancoppel 0132927829 - Av higueras 215"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$270.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$270.00"
+      }
+    },
+    {
+      "numero": 49,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "09/07/2025",
+      "descripcion_original": "PAGO CUENTA DE TERCERO / 0035016043 BNET 0194446569 traspaso",
+      "monto": 19639.54,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "PRESTAMOS REFIN25",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Prestamos Recibidos",
+        "descripcion_procesada": "Préstamo refinanciamiento - BNET 0194446569 traspaso"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$19639.54",
+        "abono": "PRESTAMOS REFIN25 (ACREEDORA) +$19639.54"
+      }
+    },
+    {
+      "numero": 50,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "09/07/2025",
+      "descripcion_original": "IVA COM SERV BCA INTERNET / IVA COM SERV BC",
+      "monto": 0.80,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "Comisiones Bancarias",
+        "categoria": "Comisiones e Intereses Bancarios",
+        "descripcion_procesada": "IVA comisión servicios banca por internet"
+      },
+      "logica_contable": {
+        "cargo": "Comisiones Bancarias (DEUDORA) +$0.80",
+        "abono": "BBVA 5019 (DEUDORA) -$0.80"
+      }
+    },
+    {
+      "numero": 51,
+      "archivo": "movimientos (2).xlsx",
+      "fecha": "09/07/2025",
+      "descripcion_original": "SERV BANCA INTERNET / OPS SERV BCA IN",
+      "monto": 5.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "Comisiones Bancarias",
+        "categoria": "Comisiones e Intereses Bancarios",
+        "descripcion_procesada": "Servicio banca por internet - Comisión BBVA"
+      },
+      "logica_contable": {
+        "cargo": "Comisiones Bancarias (DEUDORA) +$5.00",
+        "abono": "BBVA 5019 (DEUDORA) -$5.00"
+      }
+    },
+    {
+      "numero": 51,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "30/06/2025",
+      "descripcion_original": "COBRO AUTOMATICO RECIBO   / 9810848652      PREST. 9810848652 2025063000000000000",
+      "monto": 14691.20,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "CREDITO HIPOTECA CASA 142",
+        "categoria": "Pagos de Prestamos",
+        "descripcion_procesada": "Pago hipoteca Casa 142 - Cobro automático Ref 9810848652"
+      },
+      "logica_contable": {
+        "cargo": "CREDITO HIPOTECA CASA 142 (ACREEDORA) -$14691.20",
+        "abono": "BBVA 5019 (DEUDORA) -$14691.20"
+      }
+    },
+    {
+      "numero": 52,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "30/06/2025",
+      "descripcion_original": "SU PAGO EN EFECTIVO       / 000000000000000 EN COMERCIO",
+      "monto": 4500.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "CTA DEBITO EFECTIVO",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Depósito de efectivo propio en BBVA 5019"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$4500.00",
+        "abono": "CTA DEBITO EFECTIVO (DEUDORA) -$4500.00"
+      }
+    },
+    {
+      "numero": 53,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "30/06/2025",
+      "descripcion_original": "SU PAGO EN EFECTIVO       / 000000000000000 EN COMERCIO",
+      "monto": 4500.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "CTA DEBITO EFECTIVO",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Depósito de efectivo propio en BBVA 5019"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$4500.00",
+        "abono": "CTA DEBITO EFECTIVO (DEUDORA) -$4500.00"
+      }
+    },
+    {
+      "numero": 54,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "30/06/2025",
+      "descripcion_original": "SPEI RECIBIDOSCOTIABANK   / 0179789959  044 0300625junio",
+      "monto": 500.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Gastos Renta",
+        "descripcion_procesada": "Ingreso por renta - SPEI Scotiabank 0179789959 - junio 2025"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$500.00",
+        "abono": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS (DEUDORA) -$500.00"
+      }
+    },
+    {
+      "numero": 55,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "29/06/2025",
+      "descripcion_original": "SU PAGO EN EFECTIVO       / 000000000000000 EN COMERCIO",
+      "monto": 5000.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "CTA DEBITO EFECTIVO",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Depósito de efectivo propio en BBVA 5019"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$5000.00",
+        "abono": "CTA DEBITO EFECTIVO (DEUDORA) -$5000.00"
+      }
+    },
+    {
+      "numero": 56,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "27/06/2025",
+      "descripcion_original": "SPEI ENVIADO STP          / 0072166809  646 0906250k",
+      "monto": 100.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDB OPENBANK 9365",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Transferencia para gastos personales - SPEI STP 0072166809"
+      },
+      "logica_contable": {
+        "cargo": "TDB OPENBANK 9365 (DEUDORA) +$100.00",
+        "abono": "BBVA 5019 (DEUDORA) -$100.00"
+      }
+    },
+    {
+      "numero": 57,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "27/06/2025",
+      "descripcion_original": "BANCO INVEX SA INST 13511 / DES051005PM6    pendiente",
+      "monto": 6908.66,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDC INVEX CERO 5616",
+        "categoria": "Pagos de Tarjetas",
+        "descripcion_procesada": "Pago TDC Invex Cero 5616 - Ref DES051005PM6"
+      },
+      "logica_contable": {
+        "cargo": "TDC INVEX CERO 5616 (ACREEDORA) -$6908.66",
+        "abono": "BBVA 5019 (DEUDORA) -$6908.66"
+      }
+    },
+    {
+      "numero": 58,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "26/06/2025",
+      "descripcion_original": "SPEI ENVIADO SANTANDER    / 0066403209  014 0906250tacos",
+      "monto": 95.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "Compra comida en la calle",
+        "categoria": "Gastos Personales",
+        "descripcion_procesada": "Compra de tacos - SPEI Santander 0066403209"
+      },
+      "logica_contable": {
+        "cargo": "Compra comida en la calle (DEUDORA) +$95.00",
+        "abono": "BBVA 5019 (DEUDORA) -$95.00"
+      }
+    },
+    {
+      "numero": 59,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "26/06/2025",
+      "descripcion_original": "SPEI ENVIADO BANORTE      / 0064858597  072 0906250guamas",
+      "monto": 500.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "GASTO",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "SIN CLASIFICAR",
+        "categoria": "SIN CLASIFICAR",
+        "descripcion_procesada": "Gasto sin clasificar - SPEI Banorte 0064858597 - guamas"
+      },
+      "logica_contable": {
+        "cargo": "SIN CLASIFICAR (DEUDORA) +$500.00",
+        "abono": "BBVA 5019 (DEUDORA) -$500.00"
+      }
+    },
+    {
+      "numero": 60,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "26/06/2025",
+      "descripcion_original": "SPEI ENVIADO BANAMEX      / 0030489399  002 0260625CONTRATO 05577000000",
+      "monto": 7155.76,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDC BANAMEX PREMIERE 865",
+        "categoria": "Pagos de Tarjetas",
+        "descripcion_procesada": "Pago TDC Banamex Premiere 865 - SPEI 0030489399 - Contrato 05577000000"
+      },
+      "logica_contable": {
+        "cargo": "TDC BANAMEX PREMIERE 865 (ACREEDORA) -$7155.76",
+        "abono": "BBVA 5019 (DEUDORA) -$7155.76"
+      }
+    },
+    {
+      "numero": 61,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "26/06/2025",
+      "descripcion_original": "PAGO CUENTA DE TERCERO    /  0069648854     BNET    0194446569 SergioDiaz",
+      "monto": 16000.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "PRESTAMOS REFIN25",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Prestamos Recibidos",
+        "descripcion_procesada": "Préstamo refinanciamiento - BNET 0194446569 SergioDiaz"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$16000.00",
+        "abono": "PRESTAMOS REFIN25 (ACREEDORA) +$16000.00"
+      }
+    },
+    {
+      "numero": 62,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "25/06/2025",
+      "descripcion_original": "LIVERPOOL POR INTERNET    / ******0287      RFC: DLI 931201MI9 20:43 AUT: 956656",
+      "monto": 1774.07,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDC LIVERPOOL I300005028 9045",
+        "categoria": "Pagos de Tarjetas",
+        "descripcion_procesada": "Pago TDC Liverpool I300005028 9045 - Compra internet"
+      },
+      "logica_contable": {
+        "cargo": "TDC LIVERPOOL I300005028 9045 (ACREEDORA) -$1774.07",
+        "abono": "BBVA 5019 (DEUDORA) -$1774.07"
+      }
+    },
+    {
+      "numero": 63,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "25/06/2025",
+      "descripcion_original": "TEF RECIBIDO BANK OF AMER / 3204148835  106 00000011043069205819",
+      "monto": 374.72,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - TEF Bank of America 3204148835"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$374.72",
+        "abono": "Ingresos ISP (ACREEDORA) +$374.72"
+      }
+    },
+    {
+      "numero": 64,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "24/06/2025",
+      "descripcion_original": "SPEI RECIBIDOBANORTE      / 0152005060  072 0250624Pedro Antonio Sanchez",
+      "monto": 399.00,
+      "tipo_movimiento": "ABONO",
+      "clasificacion": {
+        "tipo_transaccion": "INGRESO",
+        "cuenta_origen": "Ingresos ISP",
+        "cuenta_destino": "BBVA 5019",
+        "categoria": "Ingresos ISP",
+        "descripcion_procesada": "Pago cliente ISP - SPEI Banorte 0152005060 - Pedro Antonio Sanchez"
+      },
+      "logica_contable": {
+        "cargo": "BBVA 5019 (DEUDORA) +$399.00",
+        "abono": "Ingresos ISP (ACREEDORA) +$399.00"
+      }
+    },
+    {
+      "numero": 65,
+      "archivo": "movimientos (3).xlsx",
+      "fecha": "24/06/2025",
+      "descripcion_original": "SPEI ENVIADO STP          / 0058000175  646 0906250k",
+      "monto": 480.00,
+      "tipo_movimiento": "CARGO",
+      "clasificacion": {
+        "tipo_transaccion": "TRANSFERENCIA",
+        "cuenta_origen": "BBVA 5019",
+        "cuenta_destino": "TDB OPENBANK 9365",
+        "categoria": "Transferencias Entre Cuentas",
+        "descripcion_procesada": "Transferencia para gastos personales - SPEI STP 0058000175"
+      },
+      "logica_contable": {
+        "cargo": "TDB OPENBANK 9365 (DEUDORA) +$480.00",
+        "abono": "BBVA 5019 (DEUDORA) -$480.00"
+      }
+    }
+  ]
+}

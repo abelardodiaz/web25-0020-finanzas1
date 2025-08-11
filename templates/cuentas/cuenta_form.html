@@ -11,21 +11,48 @@
     
     <form method="post" class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow p-6">
         {% csrf_token %}
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {% for field in form %}
-            <div>
-                <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-                    {{ field.label }}
-                </label>
-                {{ field|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
-                {% if field.help_text %}
-                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">{{ field.help_text }}</p>
-                {% endif %}
-                {% for error in field.errors %}
-                <p class="mt-1 text-sm text-red-600 dark:text-red-500">{{ error }}</p>
-                {% endfor %}
+        
+        <!-- CAMPOS OBLIGATORIOS -->
+        <div class="mb-8">
+            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-200 mb-4 border-b border-gray-300 dark:border-gray-600 pb-2">
+                <i class="fas fa-exclamation-circle text-red-500 mr-2"></i>Campos Obligatorios
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% include 'cuentas/_field_wrapper.html' with field=form.nombre %}
+                
+                {% include 'cuentas/_field_wrapper.html' with field=form.tipo %}
+                
+                {% include 'cuentas/_field_wrapper.html' with field=form.grupo %}
+                
+                {% include 'cuentas/_field_wrapper.html' with field=form.naturaleza %}
+                
+                {% include 'cuentas/_field_wrapper.html' with field=form.medio_pago %}
             </div>
-            {% endfor %}
+        </div>
+        
+        <!-- CAMPOS OPCIONALES -->  
+        <div class="mb-6">
+            <h3 class="text-xl font-semibold text-gray-600 dark:text-gray-400 mb-4 border-b border-gray-300 dark:border-gray-600 pb-2">
+                <i class="fas fa-info-circle text-blue-500 mr-2"></i>Campos Opcionales
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {% include 'cuentas/_field_wrapper.html' with field=form.referencia %}
+                
+                {% include 'cuentas/_field_wrapper.html' with field=form.no_cliente %}
+                
+                {% include 'cuentas/_field_wrapper.html' with field=form.fecha_apertura %}
+                
+                {% include 'cuentas/_field_wrapper.html' with field=form.no_contrato %}
+                
+                {% include 'cuentas/_field_wrapper.html' with field=form.saldo_inicial %}
+                
+                {% include 'cuentas/_field_wrapper.html' with field=form.propietario %}
+            </div>
+            
+            <!-- Comentario en toda la fila -->
+            <div class="mt-4">
+                {% include 'cuentas/_field_wrapper.html' with field=form.ref_comentario %}
+            </div>
         </div>
         <div class="mt-6 flex space-x-3">
             <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center text-lg">

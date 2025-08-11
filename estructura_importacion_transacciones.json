@@ -1,0 +1,343 @@
+{
+  "version": "1.0",
+  "fecha_creacion": "2025-08-10",
+  "descripcion": "Estructura optimizada para importar transacciones desde archivos Excel de BBVA",
+  "fuente_datos": {
+    "archivos_analizados": [
+      "movimientos (1).xlsx",
+      "movimientos (2).xlsx", 
+      "movimientos (3).xlsx"
+    ],
+    "total_movimientos": 118,
+    "periodo_analizado": "2025-06-24 a 2025-08-09",
+    "cuenta_origen": "BBVA 5019"
+  },
+  "estructura_importacion": {
+    "metadata": {
+      "descripcion": "Información general del lote de importación",
+      "campos": {
+        "lote_id": {
+          "tipo": "string",
+          "descripcion": "Identificador único del lote (ej: BBVA5019_20250810_001)",
+          "requerido": true,
+          "ejemplo": "BBVA5019_20250810_001"
+        },
+        "fecha_importacion": {
+          "tipo": "datetime",
+          "descripcion": "Fecha y hora de la importación",
+          "requerido": true,
+          "ejemplo": "2025-08-10T15:30:00"
+        },
+        "usuario_importacion": {
+          "tipo": "string",
+          "descripcion": "Usuario que realiza la importación",
+          "requerido": false,
+          "ejemplo": "admin"
+        },
+        "archivos_procesados": {
+          "tipo": "array",
+          "descripcion": "Lista de archivos Excel procesados",
+          "requerido": true,
+          "ejemplo": ["movimientos (1).xlsx", "movimientos (2).xlsx"]
+        },
+        "cuenta_origen_excel": {
+          "tipo": "string",
+          "descripcion": "Cuenta de origen según el Excel (ej: BBVA 5019)",
+          "requerido": true,
+          "ejemplo": "BBVA 5019"
+        },
+        "estado_importacion": {
+          "tipo": "string",
+          "descripcion": "Estado del proceso: PENDIENTE, PROCESANDO, COMPLETADO, ERROR",
+          "requerido": true,
+          "valores_permitidos": ["PENDIENTE", "PROCESANDO", "COMPLETADO", "ERROR"],
+          "ejemplo": "COMPLETADO"
+        },
+        "resumen_importacion": {
+          "tipo": "object",
+          "descripcion": "Resumen de la importación",
+          "campos": {
+            "total_movimientos": "number",
+            "importados_exitosamente": "number", 
+            "errores": "number",
+            "duplicados_detectados": "number",
+            "nuevas_cuentas_creadas": "number",
+            "nuevas_categorias_creadas": "number"
+          }
+        }
+      }
+    },
+    "movimientos": {
+      "descripcion": "Array de movimientos a importar con datos enriquecidos",
+      "tipo": "array",
+      "item_estructura": {
+        "datos_excel_originales": {
+          "descripcion": "Datos tal como vienen del Excel",
+          "campos": {
+            "archivo_origen": {
+              "tipo": "string",
+              "descripcion": "Nombre del archivo Excel de origen",
+              "requerido": true,
+              "ejemplo": "movimientos (1).xlsx"
+            },
+            "numero_fila_excel": {
+              "tipo": "number",
+              "descripcion": "Número de fila en el Excel original",
+              "requerido": true,
+              "ejemplo": 4
+            },
+            "fecha_excel": {
+              "tipo": "string",
+              "descripcion": "Fecha tal como aparece en Excel",
+              "requerido": true,
+              "ejemplo": "09/08/2025"
+            },
+            "descripcion_excel": {
+              "tipo": "string", 
+              "descripcion": "Descripción completa del movimiento desde Excel",
+              "requerido": true,
+              "ejemplo": "SPEI RECIBIDOSANTANDER / 0194884469  014 2102921TRANSFERENCIA"
+            },
+            "cargo_excel": {
+              "tipo": "number",
+              "descripcion": "Monto de cargo (negativo) desde Excel",
+              "requerido": false,
+              "ejemplo": -200.00
+            },
+            "abono_excel": {
+              "tipo": "number",
+              "descripcion": "Monto de abono (positivo) desde Excel", 
+              "requerido": false,
+              "ejemplo": 270.00
+            },
+            "saldo_excel": {
+              "tipo": "number",
+              "descripcion": "Saldo después del movimiento según Excel",
+              "requerido": false,
+              "ejemplo": 15234.56
+            }
+          }
+        },
+        "datos_procesados": {
+          "descripcion": "Datos procesados y enriquecidos para Django",
+          "campos": {
+            "fecha_procesada": {
+              "tipo": "date",
+              "descripcion": "Fecha convertida a formato ISO",
+              "requerido": true,
+              "ejemplo": "2025-08-09"
+            },
+            "monto_calculado": {
+              "tipo": "decimal",
+              "descripcion": "Monto final calculado (positivo para ingresos, negativo para gastos)",
+              "requerido": true,
+              "ejemplo": 270.00
+            },
+            "tipo_movimiento": {
+              "tipo": "string",
+              "descripcion": "CARGO o ABONO según el Excel",
+              "requerido": true,
+              "valores_permitidos": ["CARGO", "ABONO"],
+              "ejemplo": "ABONO"
+            },
+            "descripcion_limpia": {
+              "tipo": "string",
+              "descripcion": "Descripción procesada y limpia",
+              "requerido": true,
+              "ejemplo": "Pago cliente ISP - SPEI Santander"
+            },
+            "hash_movimiento": {
+              "tipo": "string",
+              "descripcion": "Hash único para detectar duplicados",
+              "requerido": true,
+              "ejemplo": "sha256_hash_del_movimiento"
+            }
+          }
+        },
+        "clasificacion_contable": {
+          "descripcion": "Clasificación contable del movimiento",
+          "campos": {
+            "tipo_transaccion": {
+              "tipo": "string",
+              "descripcion": "Tipo de transacción contable",
+              "requerido": true,
+              "valores_permitidos": ["INGRESO", "GASTO", "TRANSFERENCIA"],
+              "ejemplo": "INGRESO"
+            },
+            "cuenta_origen": {
+              "tipo": "object",
+              "descripcion": "Cuenta de donde sale el dinero",
+              "requerido": true,
+              "campos": {
+                "nombre": "string",
+                "tipo_cuenta": "string", 
+                "naturaleza": "string",
+                "id_sistema": "number"
+              },
+              "ejemplo": {
+                "nombre": "Ingresos ISP",
+                "tipo_cuenta": "ING",
+                "naturaleza": "ACREEDORA", 
+                "id_sistema": 2
+              }
+            },
+            "cuenta_destino": {
+              "tipo": "object",
+              "descripcion": "Cuenta a donde llega el dinero",
+              "requerido": true,
+              "campos": {
+                "nombre": "string",
+                "tipo_cuenta": "string",
+                "naturaleza": "string", 
+                "id_sistema": "number"
+              },
+              "ejemplo": {
+                "nombre": "BBVA 5019",
+                "tipo_cuenta": "DEB",
+                "naturaleza": "DEUDORA",
+                "id_sistema": 1
+              }
+            },
+            "categoria": {
+              "tipo": "object",
+              "descripcion": "Categoría de la transacción",
+              "requerido": true,
+              "campos": {
+                "nombre": "string",
+                "tipo": "string",
+                "id_sistema": "number"
+              },
+              "ejemplo": {
+                "nombre": "Ingresos ISP",
+                "tipo": "NEGOCIO",
+                "id_sistema": 1
+              }
+            }
+          }
+        },
+        "logica_contable": {
+          "descripcion": "Lógica de doble partida aplicada",
+          "campos": {
+            "asiento_cargo": {
+              "tipo": "object",
+              "descripcion": "Cuenta que recibe el cargo",
+              "campos": {
+                "cuenta": "string",
+                "naturaleza": "string", 
+                "efecto": "string",
+                "monto": "number"
+              },
+              "ejemplo": {
+                "cuenta": "BBVA 5019",
+                "naturaleza": "DEUDORA",
+                "efecto": "AUMENTA",
+                "monto": 270.00
+              }
+            },
+            "asiento_abono": {
+              "tipo": "object", 
+              "descripcion": "Cuenta que recibe el abono",
+              "campos": {
+                "cuenta": "string",
+                "naturaleza": "string",
+                "efecto": "string", 
+                "monto": "number"
+              },
+              "ejemplo": {
+                "cuenta": "Ingresos ISP",
+                "naturaleza": "ACREEDORA",
+                "efecto": "AUMENTA",
+                "monto": 270.00
+              }
+            }
+          }
+        },
+        "estado_importacion": {
+          "descripcion": "Estado específico de este movimiento",
+          "campos": {
+            "estado": {
+              "tipo": "string",
+              "descripcion": "Estado del movimiento",
+              "valores_permitidos": ["PENDIENTE", "IMPORTADO", "ERROR", "DUPLICADO", "OMITIDO"],
+              "ejemplo": "IMPORTADO"
+            },
+            "errores": {
+              "tipo": "array",
+              "descripcion": "Lista de errores si los hay",
+              "ejemplo": []
+            },
+            "advertencias": {
+              "tipo": "array",
+              "descripcion": "Lista de advertencias",
+              "ejemplo": ["Cuenta destino creada automáticamente"]
+            },
+            "transaccion_id": {
+              "tipo": "number",
+              "descripcion": "ID de la transacción creada en Django",
+              "requerido": false,
+              "ejemplo": 123
+            }
+          }
+        }
+      }
+    },
+    "mapeos_automaticos": {
+      "descripcion": "Patrones para identificación automática",
+      "cuentas_por_patron": {
+        "descripcion": "Mapeo de patrones en descripción a cuentas",
+        "patrones": {
+          "SPEI.*SANTANDER.*0194884469": {
+            "cuenta_origen": "Ingresos ISP",
+            "tipo_transaccion": "INGRESO",
+            "categoria": "Ingresos ISP",
+            "confianza": 0.95
+          },
+          "SPEI.*BANORTE.*0065700028": {
+            "cuenta_destino": "TDB BANORTE 3172",
+            "tipo_transaccion": "TRANSFERENCIA",
+            "categoria": "Transferencias Entre Cuentas",
+            "confianza": 0.90
+          },
+          "PAGO.*TARJETA.*CREDITO": {
+            "tipo_transaccion": "TRANSFERENCIA",
+            "categoria": "Pagos de Tarjetas",
+            "confianza": 0.85
+          }
+        }
+      },
+      "montos_comunes": {
+        "descripcion": "Montos que se repiten y sus clasificaciones típicas",
+        "270.00": {
+          "descripcion_tipica": "Pago mensual ISP",
+          "cuenta_origen_probable": "Ingresos ISP",
+          "categoria_probable": "Ingresos ISP",
+          "confianza": 0.80
+        }
+      }
+    },
+    "validaciones": {
+      "descripcion": "Reglas de validación para la importación",
+      "reglas": {
+        "fecha_valida": "La fecha debe estar entre 2020-01-01 y fecha actual + 30 días",
+        "monto_no_cero": "El monto no puede ser cero",
+        "descripcion_minima": "La descripción debe tener al menos 10 caracteres",
+        "balance_contable": "Los asientos de cargo y abono deben sumar cero",
+        "cuenta_existente": "Las cuentas deben existir en el sistema o ser creables automáticamente"
+      }
+    }
+  },
+  "configuracion_importacion": {
+    "opciones_procesamiento": {
+      "crear_cuentas_automaticamente": true,
+      "crear_categorias_automaticamente": true,
+      "permitir_duplicados": false,
+      "validar_balance_contable": true,
+      "aplicar_mapeos_automaticos": true
+    },
+    "handling_errores": {
+      "continuar_si_error": true,
+      "generar_log_detallado": true,
+      "crear_backup_antes_importar": true
+    }
+  }
+}

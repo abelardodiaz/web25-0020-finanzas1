@@ -1135,10 +1135,12 @@ class CuentaDetailView(DetailView):
         context['saldo_inicial'] = saldo_inicial
         
         # Obtener movimientos paginados - v0.6.0 
-        movimientos_origen = cuenta.transacciones_origen.all()
-        movimientos_destino = cuenta.transacciones_destino.all()
-        # Combinar ambos querysets y ordenar por fecha
-        movimientos = movimientos_origen.union(movimientos_destino).order_by('-fecha')
+        # Fix: SQLite doesn't support ORDER BY in union queries
+        # Use Q objects to combine conditions instead of union
+        from django.db.models import Q
+        movimientos = Transaccion.objects.filter(
+            Q(cuenta_origen=cuenta) | Q(cuenta_destino=cuenta)
+        ).order_by('-fecha')
         paginator = Paginator(movimientos, self.paginate_by)
         page_number = self.request.GET.get('page')
         page_obj = paginator.get_page(page_number)

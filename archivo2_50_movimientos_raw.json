@@ -1,0 +1,405 @@
+{
+  "total": 50,
+  "movimientos": [
+    {
+      "numero": 1,
+      "fecha": "2025-07-30",
+      "descripcion_original": "SPEI ENVIADO BANAMEX      / 0076312440  002 2207250costco bnmx julio 28",
+      "monto": 2036.49,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 2,
+      "fecha": "2025-07-30",
+      "descripcion_original": "SPEI RECIBIDOBANCOPPEL    / 0141401703  137 9990008Yaris",
+      "monto": 3200.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 3,
+      "fecha": "2025-07-28",
+      "descripcion_original": "PAGO TARJETA DE CREDITO   /  2734443810     CUENTA:                  BMOV",
+      "monto": 10961.4,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 4,
+      "fecha": "2025-07-28",
+      "descripcion_original": "SPEI RECIBIDOBANORTE      / 0130134951  072 0250728Sin informaci n",
+      "monto": 6350.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 5,
+      "fecha": "2025-07-28",
+      "descripcion_original": "BANCO INVEX SA INST 13511 / DES051005PM6    pendiente",
+      "monto": 6908.66,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 6,
+      "fecha": "2025-07-28",
+      "descripcion_original": "SPEI RECIBIDOSPIN BY OXXO / 0127619554  728 0389310k",
+      "monto": 258.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 7,
+      "fecha": "2025-07-28",
+      "descripcion_original": "PAGO DE PRESTAMO          / 9810848652      TOTAL DE RECIBO",
+      "monto": 14002.8,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 8,
+      "fecha": "2025-07-25",
+      "descripcion_original": "SPEI ENVIADO STP          / 0052319722  646 2207250k",
+      "monto": 500.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 9,
+      "fecha": "2025-07-24",
+      "descripcion_original": "TEF RECIBIDO BANK OF AMER / 3229935321  106 00000011043696473509",
+      "monto": 374.72,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 10,
+      "fecha": "2025-07-20",
+      "descripcion_original": "SPEI RECIBIDOMercado Pago / 0190782902  722 1238574MERCADO*PAGO",
+      "monto": 6094.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 11,
+      "fecha": "2025-07-20",
+      "descripcion_original": "SPEI RECIBIDOAZTECA       / 0190050210  127 5501950pago del mes de julio cruz",
+      "monto": 270.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 12,
+      "fecha": "2025-07-21",
+      "descripcion_original": "LIVERPOOL POR INTERNET    / ******0287      RFC: DLI 931201MI9 14:38 AUT: 765150",
+      "monto": 2040.4,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 13,
+      "fecha": "2025-07-21",
+      "descripcion_original": "D LOCAL*STARLINK          / ******0287      RFC: EME 200630JP1 01:08 AUT: 165554",
+      "monto": 1100.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 14,
+      "fecha": "2025-07-18",
+      "descripcion_original": "SPEI ENVIADO STP          / 0074463111  646 1207250ad",
+      "monto": 500.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 15,
+      "fecha": "2025-07-18",
+      "descripcion_original": "STRIPE *SYSCOM MX         / ******0287      RFC: SSC 840823JT3 10:33 AUT: 467028",
+      "monto": 293.82,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 16,
+      "fecha": "2025-07-18",
+      "descripcion_original": "SPEI RECIBIDOBANORTE      / 0182558252  072 0250718Pedro Antonio Sanchez Sanchez",
+      "monto": 399.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 17,
+      "fecha": "2025-07-18",
+      "descripcion_original": "SPEI RECIBIDOSPIN BY OXXO / 0181442188  728 0919388k",
+      "monto": 8560.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 18,
+      "fecha": "2025-07-17",
+      "descripcion_original": "STRIPE *SYSCOM MX         / ******0287      RFC: SSC 840823JT3 18:22 AUT: 097287",
+      "monto": 628.6,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 19,
+      "fecha": "2025-07-17",
+      "descripcion_original": "PAGO CUENTA DE TERCERO    /  0072819561     BNET    0468469393 pago",
+      "monto": 400.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 20,
+      "fecha": "2025-07-16",
+      "descripcion_original": "SISTEMAS Y SERVICIOS      / GUIA:2111649    REF:5390392              CIE:0669911",
+      "monto": 765.77,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 21,
+      "fecha": "2025-07-15",
+      "descripcion_original": "SPEI RECIBIDOHSBC         / 0165258183  021 0123456Internet Lourdes alvarado",
+      "monto": 270.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 22,
+      "fecha": "2025-07-15",
+      "descripcion_original": "SPEI RECIBIDOHSBC         / 0165252000  021 0123456Internet marisol alvarado",
+      "monto": 270.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 23,
+      "fecha": "2025-07-15",
+      "descripcion_original": "SPEI ENVIADO STP          / 0056793919  646 0906250comida",
+      "monto": 435.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 24,
+      "fecha": "2025-07-15",
+      "descripcion_original": "PAGO CUENTA DE TERCERO    /  0074280869     BNET    0194446569 paraTCBanoete",
+      "monto": 5833.32,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 25,
+      "fecha": "2025-07-15",
+      "descripcion_original": "PAGO CUENTA DE TERCERO    /  0026149481     BNET    2914335600 abel",
+      "monto": 4000.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 26,
+      "fecha": "2025-07-15",
+      "descripcion_original": "SPEI ENVIADO BANORTE      / 0054907843  072 0906250k",
+      "monto": 5835.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 27,
+      "fecha": "2025-07-14",
+      "descripcion_original": "SPEI ENVIADO BAJIO        / 0099064105  030 09062504",
+      "monto": 65.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 28,
+      "fecha": "2025-07-13",
+      "descripcion_original": "SPEI RECIBIDOAZTECA       / 0149630874  127 5501950julio 2025 pinot 132",
+      "monto": 270.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 29,
+      "fecha": "2025-12-07",
+      "descripcion_original": "SPEI RECIBIDOBANORTE      / 0147497664  072 0250712av higueras 249",
+      "monto": 270.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 30,
+      "fecha": "2025-12-07",
+      "descripcion_original": "SPEI RECIBIDOAZTECA       / 0145831657  127 5501950pago del mes de junio cruz",
+      "monto": 270.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 31,
+      "fecha": "2025-11-07",
+      "descripcion_original": "SPEI ENVIADO BANAMEX      / 0086553911  002 0906250julio 2025",
+      "monto": 8500.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 32,
+      "fecha": "2025-11-07",
+      "descripcion_original": "RETIRO SIN TARJETA QR     / ******4662",
+      "monto": 500.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 33,
+      "fecha": "2025-10-07",
+      "descripcion_original": "SPEI ENVIADO SANTANDER    / 0083751678  014 0906250c142",
+      "monto": 800.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 34,
+      "fecha": "2025-10-07",
+      "descripcion_original": "PAGO CUENTA DE TERCERO    /  0017653263     BNET    1506914864 jul 2025",
+      "monto": 500.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 35,
+      "fecha": "2025-10-07",
+      "descripcion_original": "SPEI RECIBIDOAZTECA       / 0133716599  127 5501950pago internet",
+      "monto": 270.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 36,
+      "fecha": "2025-10-07",
+      "descripcion_original": "SPEI RECIBIDOSANTANDER    / 0132945181  014 3985282TRANSFERENCIA",
+      "monto": 270.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 37,
+      "fecha": "2025-10-07",
+      "descripcion_original": "SPEI RECIBIDOBANCOPPEL    / 0132927829  137 5041039Av higueras 215",
+      "monto": 270.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 38,
+      "fecha": "2025-09-07",
+      "descripcion_original": "PAGO CUENTA DE TERCERO    /  0035016043     BNET    0194446569 traspaso",
+      "monto": 19639.54,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 39,
+      "fecha": "2025-09-07",
+      "descripcion_original": "IVA COM SERV BCA INTERNET / IVA COM SERV BC",
+      "monto": 0.8,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 40,
+      "fecha": "2025-09-07",
+      "descripcion_original": "SERV BANCA INTERNET       / OPS SERV BCA IN",
+      "monto": 5.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 41,
+      "fecha": "2025-08-07",
+      "descripcion_original": "SPEI ENVIADO BANORTE      / 0074757497  072 0906250k",
+      "monto": 41680.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 42,
+      "fecha": "2025-08-07",
+      "descripcion_original": "SPEI RECIBIDOCONSUBANCO   / 0126852430  140 1847433K",
+      "monto": 366.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 43,
+      "fecha": "2025-08-07",
+      "descripcion_original": "SPEI RECIBIDOSPIN BY OXXO / 0126848795  728 0667421k",
+      "monto": 40.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 44,
+      "fecha": "2025-08-07",
+      "descripcion_original": "PAGO CUENTA DE TERCERO    /  0049634135     BNET    0194446569 Prestamo",
+      "monto": 22000.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 45,
+      "fecha": "2025-05-07",
+      "descripcion_original": "SPEI RECIBIDOSANTANDER    / 0113433647  014 9048460TRANSFERENCIA A ABELARDO INTER",
+      "monto": 270.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 46,
+      "fecha": "2025-04-07",
+      "descripcion_original": "SPEI RECIBIDOBANORTE      / 0105556429  072 0250704pago",
+      "monto": 270.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 47,
+      "fecha": "2025-04-07",
+      "descripcion_original": "SAT                       / GUIA:6211617    REF:04254ITE630046581229 CIE:0844985",
+      "monto": 1682.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 48,
+      "fecha": "2025-03-07",
+      "descripcion_original": "SPEI RECIBIDOSANTANDER    / 0100128207  014 44364050307",
+      "monto": 19720.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 49,
+      "fecha": "2025-02-07",
+      "descripcion_original": "PAGO CUENTA DE TERCERO    /  0011778300     BNET    2767356773 depos junio 2025",
+      "monto": 670.0,
+      "tipo_movimiento": "ABONO",
+      "archivo": "movimientos (2).xlsx"
+    },
+    {
+      "numero": 50,
+      "fecha": "2025-01-07",
+      "descripcion_original": "SPEI ENVIADO Mercado Pago / 0091397656  722 0906250ok",
+      "monto": 6200.0,
+      "tipo_movimiento": "CARGO",
+      "archivo": "movimientos (2).xlsx"
+    }
+  ]
+}

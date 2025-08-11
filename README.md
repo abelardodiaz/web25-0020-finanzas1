@@ -4,6 +4,39 @@
 
 ## 📅 Historial de Cambios
 
+## 🗓️ Versión 0.8.2 - 11 de Agosto, 2025
+
+### ✨ **Sistema de Transacciones Completamente Renovado**
+- 🎯 **Formularios inteligentes:** Ahora solo eliges "Transferir a otra cuenta" o "Gasto/Ingreso por categoría" y el sistema muestra solo los campos necesarios
+- 📝 **Preguntas más claras:** En lugar de términos técnicos, ahora ves "¿De qué cuenta sale el dinero?" y "¿Hacia dónde va?"  
+- ✅ **Validación instantánea:** El sistema verifica tu información antes de guardar y te avisa si falta algo
+- 🔄 **Tipos automáticos:** Ya no necesitas seleccionar si es gasto, ingreso o transferencia - el sistema lo detecta solo
+
+### 🏦 **Vista Contable Profesional**
+- 👁️ **Dos formas de ver:** Puedes alternar entre vista simple (como siempre) y vista contable avanzada con columnas de Cargo y Abono
+- 💰 **Flujo de dinero claro:** En la vista avanzada puedes seguir exactamente cómo se mueve cada peso entre tus cuentas
+- 🎨 **Colores intuitivos:** Verde cuando el saldo aumenta, rojo cuando disminuye (según el tipo de cuenta)
+
+### 📊 **Análisis Inteligente de Archivos Excel**
+- 🔍 **Procesamiento de movimientos bancarios:** Sistema capaz de analizar cientos de transacciones desde archivos Excel
+- 📋 **Reportes de vista previa:** Antes de importar cualquier dato, ves un resumen completo con estadísticas y alertas
+- ✅ **Validación automática:** El sistema verifica fechas, montos y clasificaciones antes de permitir la importación
+- 🎯 **Control total:** Puedes revisar y ajustar cada movimiento antes de que entre a tu sistema
+
+### 🔧 **Mejoras y Correcciones**
+- ✅ **Formularios más intuitivos:** Los campos aparecen y desaparecen según lo que necesites
+- ✅ **Filtros corregidos:** Buscar transacciones por cuenta ahora funciona correctamente
+- ✅ **Formulario de cuentas mejorado:** Mejor organización y más fácil de usar
+- ✅ **Errores técnicos solucionados:** Varias pantallas que daban error ahora funcionan perfectamente
+
+### 📈 **Beneficios para ti**
+- **Captura más rápida:** Los nuevos formularios son 3 veces más rápidos de completar
+- **Menos errores:** La validación automática previene información incorrecta
+- **Mayor control:** Puedes ver tus finanzas tanto de forma simple como profesional
+- **Importación masiva:** Procesa archivos con cientos de movimientos bancarios de forma segura
+
+---
+
 ## 🗓️ Versión 0.8.1 - 10 de Agosto, 2025
 
 ### ✨ **Perfeccionamiento del Sistema BBVA** 

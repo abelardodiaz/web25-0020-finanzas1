@@ -10,6 +10,11 @@
             Transacciones
         </h1>
         <div class="flex items-center space-x-4">
+            <!-- Botón para cambiar vista -->
+            <button id="toggleView" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center text-lg">
+                <i class="fas fa-exchange-alt mr-2"></i>
+                <span id="toggleText">Vista Partidas</span>
+            </button>
             <a href="{% url 'core:transacciones_create' %}" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md flex items-center text-lg">
                 <i class="fas fa-plus-circle mr-2"></i>Nueva Transacción
             </a>
@@ -38,8 +43,8 @@
         </div>
     </form>
 
-    <!-- Tabla de transacciones - fondos más suaves -->
-    <div class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow overflow-hidden"> <!-- Cambiado bg-white a bg-gray-50 -->
+    <!-- VISTA SIMPLIFICADA (Por defecto) -->
+    <div id="vistaSimplificada" class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow overflow-hidden">
         <div class="overflow-x-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-lg">
                 <thead class="bg-gray-100 dark:bg-gray-700"> <!-- Cambiado bg-gray-50 a bg-gray-100 -->
@@ -58,19 +63,27 @@
                     <tr class="bg-gray-100 dark:bg-gray-700"> <!-- Cambiado bg-gray-50 a bg-gray-100 -->
                         <td colspan="7" class="px-3 py-2 text-base"> <!-- Ajustado colspan de 8 a 7 -->
                             <div class="flex items-center">
-                                <span class="bg-gray-300 dark:bg-gray-600 text-gray-800 dark:text-gray-200 text-sm px-2 py-1 rounded mr-2" title="{{ grupo.uuid }}"> <!-- Cambiado bg-gray-200 a bg-gray-300 -->
-                                    <i class="fas fa-link mr-1"></i> Grupo
-                                </span>
-                                {% if grupo.ajuste %}
-                                <span class="bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-100 text-xs px-2 py-1 rounded mr-2">
-                                    <i class="fas fa-cog mr-1"></i> Ajuste
-                                </span>
-                                {% endif %}
-                                {% if grupo.transferencia %}
-                                <span class="bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 text-xs px-2 py-1 rounded">
-                                    <i class="fas fa-exchange-alt mr-1"></i> Transferencia
-                                </span>
-                                {% endif %}
+                                {% with t=grupo.transacciones.0 %}
+                                    {% if t.tipo == "INGRESO" %}
+                                    <span class="bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-100 text-sm px-2 py-1 rounded mr-2">
+                                        <i class="fas fa-arrow-down mr-1"></i> Ingreso
+                                    </span>
+                                    {% elif t.tipo == "GASTO" %}
+                                    <span class="bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-100 text-sm px-2 py-1 rounded mr-2">
+                                        <i class="fas fa-arrow-up mr-1"></i> Gasto
+                                    </span>
+                                    {% elif t.tipo == "TRANSFERENCIA" %}
+                                    <span class="bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-100 text-sm px-2 py-1 rounded mr-2">
+                                        <i class="fas fa-exchange-alt mr-1"></i> Transferencia
+                                    </span>
+                                    {% endif %}
+                                    
+                                    {% if t.ajuste %}
+                                    <span class="bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-100 text-xs px-2 py-1 rounded mr-2">
+                                        <i class="fas fa-cog mr-1"></i> Ajuste
+                                    </span>
+                                    {% endif %}
+                                {% endwith %}
                             </div>
                         </td>
                     </tr>
@@ -87,23 +100,33 @@
                             {{ t.descripcion }}
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-lg text-gray-700 dark:text-gray-200 hidden sm:table-cell">
-                            {{ t.medio_pago.nombre }}
+                            {% if t.tipo == "INGRESO" %}
+                                <div>
+                                    <span class="text-green-600 dark:text-green-400">↓ {{ t.cuenta_destino.nombre }}</span>
+                                    <br>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400">← {{ t.cuenta_origen.nombre }}</span>
+                                </div>
+                            {% elif t.tipo == "TRANSFERENCIA" %}
+                                <div>
+                                    <span class="text-red-600 dark:text-red-400">{{ t.cuenta_origen.nombre }} →</span>
+                                    <br>
+                                    <span class="text-xs text-green-600 dark:text-green-400">→ {{ t.cuenta_destino.nombre }}</span>
+                                </div>
+                            {% else %}
+                                {{ t.cuenta_origen.nombre }}
+                            {% endif %}
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-lg text-gray-700 dark:text-gray-200 hidden lg:table-cell">
                             {{ t.categoria }}
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-lg text-right font-medium">
-                            {% if t.medio_pago.naturaleza == "DEUDORA" and t.monto > 0 %}
-                                ${{ t.monto|floatformat:2 }}
-                            {% elif t.medio_pago.naturaleza == "ACREEDORA" and t.monto > 0 %}
-                                ${{ t.monto|floatformat:2 }}
+                            {% if t.tipo == "GASTO" or t.tipo == "TRANSFERENCIA" %}
+                                <span class="text-gray-900 dark:text-gray-100">${{ t.monto|floatformat:2 }}</span>
                             {% endif %}
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-lg text-right font-medium">
-                            {% if t.medio_pago.naturaleza == "DEUDORA" and t.monto < 0 %}
-                                ${{ t.monto|absolute|floatformat:2 }}
-                            {% elif t.medio_pago.naturaleza == "ACREEDORA" and t.monto < 0 %}
-                                ${{ t.monto|absolute|floatformat:2 }}
+                            {% if t.tipo == "INGRESO" %}
+                                <span class="text-gray-900 dark:text-gray-100">${{ t.monto|floatformat:2 }}</span>
                             {% endif %}
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap text-lg text-right font-medium">
@@ -163,13 +186,101 @@
         </nav>
     </div>
     {% endif %}
+    
+    <!-- VISTA DE PARTIDAS (Oculta por defecto) -->
+    <div id="vistaPartidas" class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow overflow-hidden" style="display: none;">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-lg">
+                <thead class="bg-gray-100 dark:bg-gray-700">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
+                        <th class="px-4 py-3 text-left text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Descripción</th>
+                        <th class="px-4 py-3 text-left text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Cuenta</th>
+                        <th class="px-4 py-3 text-right text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Cargo</th>
+                        <th class="px-4 py-3 text-right text-lg font-medium text-gray-700 dark:text-gray-300 uppercase tracking-wider">Abono</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-gray-50 dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    {% for grupo in grupos %}
+                        {% with t=grupo.transacciones.0 %}
+                        {% if t.asiento_contable %}
+                            {% for partida in t.asiento_contable.partidas.all %}
+                            <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                                <td class="px-4 py-3 whitespace-nowrap text-lg text-gray-700 dark:text-gray-200">
+                                    {{ t.fecha|short_date_es }}
+                                </td>
+                                <td class="px-4 py-3 text-lg text-gray-700 dark:text-gray-200">
+                                    {{ t.descripcion }}
+                                </td>
+                                <td class="px-4 py-3 text-lg text-gray-700 dark:text-gray-200">
+                                    <span class="font-medium">{{ partida.cuenta.nombre }}</span>
+                                    <span class="text-xs text-gray-500 dark:text-gray-400 ml-1">({{ partida.cuenta.naturaleza }})</span>
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg text-right font-medium">
+                                    {% if partida.debito %}
+                                        {% if partida.cuenta.naturaleza == "DEUDORA" %}
+                                            <span class="text-gray-900 dark:text-gray-100">+${{ partida.debito|floatformat:2 }}</span>
+                                        {% else %}
+                                            <span class="text-gray-900 dark:text-gray-100">-${{ partida.debito|floatformat:2 }}</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                                <td class="px-4 py-3 whitespace-nowrap text-lg text-right font-medium">
+                                    {% if partida.credito %}
+                                        {% if partida.cuenta.naturaleza == "ACREEDORA" %}
+                                            <span class="text-gray-900 dark:text-gray-100">+${{ partida.credito|floatformat:2 }}</span>
+                                        {% else %}
+                                            <span class="text-gray-900 dark:text-gray-100">-${{ partida.credito|floatformat:2 }}</span>
+                                        {% endif %}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Setear valor actual del select
+    // Toggle entre vista simplificada y partidas
     document.addEventListener('DOMContentLoaded', () => {
+        const toggleBtn = document.getElementById('toggleView');
+        const toggleText = document.getElementById('toggleText');
+        const vistaSimplificada = document.getElementById('vistaSimplificada');
+        const vistaPartidas = document.getElementById('vistaPartidas');
+        
+        // Recuperar estado guardado
+        const savedView = localStorage.getItem('vistaTransacciones') || 'simplificada';
+        
+        if (savedView === 'partidas') {
+            vistaSimplificada.style.display = 'none';
+            vistaPartidas.style.display = 'block';
+            toggleText.textContent = 'Vista Simplificada';
+        }
+        
+        toggleBtn.addEventListener('click', () => {
+            if (vistaSimplificada.style.display !== 'none') {
+                // Cambiar a vista partidas
+                vistaSimplificada.style.display = 'none';
+                vistaPartidas.style.display = 'block';
+                toggleText.textContent = 'Vista Simplificada';
+                localStorage.setItem('vistaTransacciones', 'partidas');
+            } else {
+                // Cambiar a vista simplificada
+                vistaSimplificada.style.display = 'block';
+                vistaPartidas.style.display = 'none';
+                toggleText.textContent = 'Vista Partidas';
+                localStorage.setItem('vistaTransacciones', 'simplificada');
+            }
+        });
+        
+        // Setear valor actual del select de paginación
         const urlParams = new URLSearchParams(window.location.search);
         const currentItems = urlParams.get('paginate_by') || '10';
         document.getElementById('items-per-page').value = currentItems;

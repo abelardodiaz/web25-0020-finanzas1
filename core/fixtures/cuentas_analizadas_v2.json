@@ -1,0 +1,524 @@
+[
+  {
+    "model": "core.tipocuenta",
+    "pk": 1,
+    "fields": {
+      "codigo": "DEB",
+      "nombre": "Cuenta de Débito",
+      "grupo": "DEB"
+    }
+  },
+  {
+    "model": "core.tipocuenta",
+    "pk": 2,
+    "fields": {
+      "codigo": "CRE",
+      "nombre": "Cuenta de Crédito",
+      "grupo": "CRE"
+    }
+  },
+  {
+    "model": "core.tipocuenta",
+    "pk": 3,
+    "fields": {
+      "codigo": "ING",
+      "nombre": "Cuenta de Ingresos",
+      "grupo": "ING"
+    }
+  },
+  {
+    "model": "core.tipocuenta",
+    "pk": 4,
+    "fields": {
+      "codigo": "SER",
+      "nombre": "Servicios/Gastos/Proveedores",
+      "grupo": "SER"
+    }
+  },
+  {
+    "model": "core.tipocuenta",
+    "pk": 5,
+    "fields": {
+      "codigo": "GAS",
+      "nombre": "Gastos",
+      "grupo": "SER"
+    }
+  },
+  {
+    "model": "core.tipocuenta",
+    "pk": 6,
+    "fields": {
+      "codigo": "VAR",
+      "nombre": "Varios",
+      "grupo": "SER"
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 1,
+    "fields": {
+      "nombre": "BBVA 5019",
+      "tipo": 1,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "5019",
+      "ref_comentario": "Cuenta de débito BBVA principal",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 2,
+    "fields": {
+      "nombre": "Ingresos ISP",
+      "tipo": 3,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "ISP001",
+      "ref_comentario": "Ingresos por servicios de ISP",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 3,
+    "fields": {
+      "nombre": "TDB BANORTE 3172",
+      "tipo": 1,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "3172",
+      "ref_comentario": "Tarjeta de débito Banorte terminada en 3172",
+      "no_cliente": "ADS",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "ADS",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 4,
+    "fields": {
+      "nombre": "TDC BANAMEX PREMIERE 865",
+      "tipo": 2,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "865",
+      "ref_comentario": "Tarjeta de crédito Banamex Premiere terminada en 865",
+      "no_cliente": "ADS",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "ADS",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 5,
+    "fields": {
+      "nombre": "TDC BANORTE CLASICA 5257",
+      "tipo": 2,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "5257",
+      "ref_comentario": "Tarjeta de crédito Banorte Clásica terminada en 5257",
+      "no_cliente": "ADS",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "ADS",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 6,
+    "fields": {
+      "nombre": "INGRESOS RENTA CASA 142",
+      "tipo": 3,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "CASA142",
+      "ref_comentario": "Ingresos por renta de casa 142",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 7,
+    "fields": {
+      "nombre": "TDB OPENBANK 9365",
+      "tipo": 1,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "9365",
+      "ref_comentario": "Cuenta de débito TDB OpenBank terminada en 9365",
+      "no_cliente": "ADS",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "ADS",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 8,
+    "fields": {
+      "nombre": "TDB MPAGO 6007",
+      "tipo": 1,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "6007",
+      "ref_comentario": "Cuenta de débito Mercado Pago terminada en 6007",
+      "no_cliente": "ADS",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "ADS",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 9,
+    "fields": {
+      "nombre": "PRESTAMOS REFIN25",
+      "tipo": 4,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "REFIN25",
+      "ref_comentario": "Préstamos recibidos refinanciamiento 2025",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 10,
+    "fields": {
+      "nombre": "TDB UBER PRO CONSUBANCO",
+      "tipo": 3,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "UBER001",
+      "ref_comentario": "Ingresos Uber Pro vía Consubanco",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 11,
+    "fields": {
+      "nombre": "TDC BANAMEX COSTCO 783",
+      "tipo": 2,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "783",
+      "ref_comentario": "Tarjeta de crédito Banamex Costco terminada en 783",
+      "no_cliente": "ADS",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "ADS",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 12,
+    "fields": {
+      "nombre": "Ingresos Renta Yaris",
+      "tipo": 3,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "YARIS001",
+      "ref_comentario": "Ingresos por renta de servicios Yaris",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 13,
+    "fields": {
+      "nombre": "TDC BBVA PLATINO 3358",
+      "tipo": 2,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "3358",
+      "ref_comentario": "Tarjeta de crédito BBVA Platino terminada en 3358",
+      "no_cliente": "ADS",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "ADS",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 14,
+    "fields": {
+      "nombre": "TDC INVEX CERO 5616",
+      "tipo": 2,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "5616",
+      "ref_comentario": "Tarjeta de crédito Invex Cero terminada en 5616",
+      "no_cliente": "ADS",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "ADS",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 15,
+    "fields": {
+      "nombre": "TDB SPIN OXXO 2113",
+      "tipo": 1,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "2113",
+      "ref_comentario": "Cuenta de débito SPIN by OXXO terminada en 2113",
+      "no_cliente": "ADS",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "ADS",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 16,
+    "fields": {
+      "nombre": "CREDITO HIPOTECA CASA 142",
+      "tipo": 4,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "HIP142",
+      "ref_comentario": "Crédito hipotecario de la casa 142",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 17,
+    "fields": {
+      "nombre": "TDC LIVERPOOL I300005028 9045",
+      "tipo": 2,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "9045",
+      "ref_comentario": "Tarjeta de crédito Liverpool terminada en 9045",
+      "no_cliente": "ADS",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "ADS",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 18,
+    "fields": {
+      "nombre": "STARLINK RINCON1",
+      "tipo": 4,
+      "moneda": "MXN",
+      "naturaleza": "ACREEDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "STARLINK1",
+      "ref_comentario": "Servicio de internet satelital Starlink - Rincón 1",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 19,
+    "fields": {
+      "nombre": "COMPRAS PROYECTO 180 FIBRA",
+      "tipo": 5,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "PROY180",
+      "ref_comentario": "Gastos de compras para proyecto 180 fibra",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 20,
+    "fields": {
+      "nombre": "SIN CLASIFICAR",
+      "tipo": 6,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "SIN_CLAS",
+      "ref_comentario": "Cuenta temporal para movimientos sin clasificar",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 21,
+    "fields": {
+      "nombre": "Compra comida en la calle",
+      "tipo": 5,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "COMIDA001",
+      "ref_comentario": "Gastos en comida y alimentos en la calle",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 22,
+    "fields": {
+      "nombre": "RENTA DE CASA 170",
+      "tipo": 5,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "RENTA170",
+      "ref_comentario": "Gastos de renta de casa 170",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 23,
+    "fields": {
+      "nombre": "CTA DEBITO EFECTIVO",
+      "tipo": 1,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "EFECTIVO",
+      "ref_comentario": "Cuenta de efectivo en mano",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": true
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 24,
+    "fields": {
+      "nombre": "COTO 4 AC COLONOS SANTANDER MTTO Y MULTAS",
+      "tipo": 5,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "COTO4",
+      "ref_comentario": "Gastos de mantenimiento y multas AC colonos Santander coto 4",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 25,
+    "fields": {
+      "nombre": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS",
+      "tipo": 5,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "AZOTEA001",
+      "ref_comentario": "Gastos de renta de azotea Siquiem / Sanfrancisco Asis",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  },
+  {
+    "model": "core.cuenta",
+    "pk": 26,
+    "fields": {
+      "nombre": "Comisiones Bancarias",
+      "tipo": 5,
+      "moneda": "MXN",
+      "naturaleza": "DEUDORA",
+      "saldo_inicial": "0.00",
+      "referencia": "COMISIONES",
+      "ref_comentario": "Gastos por comisiones e intereses bancarios",
+      "no_cliente": "",
+      "fecha_apertura": null,
+      "no_contrato": "",
+      "propietario": "",
+      "medio_pago": false
+    }
+  }
+]

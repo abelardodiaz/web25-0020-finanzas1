@@ -94,6 +94,18 @@ class Cuenta(models.Model):
         verbose_name="Saldo Inicial"
     )
 
+    # Campos adicionales identificados en el análisis
+    propietario = models.CharField(
+        max_length=50,
+        blank=True,
+        help_text="Propietario de la cuenta (ej: ADS, empresa, etc.)"
+    )
+    
+    medio_pago = models.BooleanField(
+        default=False,
+        help_text="Indica si esta cuenta puede usarse como medio de pago"
+    )
+
     objects = CuentaManager()
 
     class Meta:
@@ -132,29 +144,55 @@ class Cuenta(models.Model):
 
     # Método legacy mantenido por compatibilidad
     def saldo_legacy(self):
-        """Método anterior basado en transacciones unificadas"""
+        """Método anterior basado en transacciones unificadas
+        
+        IMPORTANTE - Lógica contable:
+        - Para cuentas DEUDORAS (como cuentas de débito):
+          * entradas (cuenta_destino) = CARGOS contables → aumentan saldo
+          * salidas (cuenta_origen) = ABONOS contables → disminuyen saldo
+        - Para cuentas ACREEDORAS (como tarjetas de crédito):
+          * entradas (cuenta_destino) = ABONOS contables → aumentan saldo
+          * salidas (cuenta_origen) = CARGOS contables → disminuyen saldo
+        """
         salidas = self.transacciones_origen.aggregate(
             total=models.Sum("monto"))["total"] or Decimal("0.00")
         entradas = self.transacciones_destino.aggregate(
             total=models.Sum("monto"))["total"] or Decimal("0.00")
         
         if self.naturaleza == "DEUDORA":
+            # entradas son CARGOS (aumentan), salidas son ABONOS (disminuyen)
             return self.saldo_inicial + entradas - salidas
         else:  # ACREEDORA
+            # salidas son CARGOS (disminuyen), entradas son ABONOS (aumentan)
             return self.saldo_inicial + salidas - entradas
 
     def aplicar_cargo(self, monto):
         """
-        Devuelve el monto con el signo correcto según naturaleza.
-        Cargo ➜ + en deudoras / - en acreedoras
+        Aplica un CARGO contable según la naturaleza de la cuenta.
+        
+        CARGO contable:
+        - En cuentas DEUDORAS (débito, activos): AUMENTA el saldo (+)
+        - En cuentas ACREEDORAS (crédito, pasivos): DISMINUYE el saldo (-)
+        
+        Ejemplos:
+        - CARGO a cuenta débito BBVA: +$100 (aumenta el activo)
+        - CARGO a tarjeta de crédito: -$100 (disminuye la deuda)
         """
         return monto if self.naturaleza == "DEUDORA" else -monto
 
     def aplicar_abono(self, monto):
         """
-        Abono ➜ - en deudoras / + en acreedoras
+        Aplica un ABONO contable según la naturaleza de la cuenta.
+        
+        ABONO contable:
+        - En cuentas DEUDORAS (débito, activos): DISMINUYE el saldo (-)
+        - En cuentas ACREEDORAS (crédito, pasivos): AUMENTA el saldo (+)
+        
+        Ejemplos:
+        - ABONO a cuenta débito BBVA: -$100 (disminuye el activo)
+        - ABONO a tarjeta de crédito: +$100 (aumenta la deuda)
         """
-        return -monto if self.naturaleza == "DEUDORA" else monto    #Helpers para saber si un movimiento es cargo o abono
+        return -monto if self.naturaleza == "DEUDORA" else monto
         
 
 class CategoriaTipo(models.TextChoices):
@@ -164,18 +202,23 @@ class CategoriaTipo(models.TextChoices):
     TERCEROS  = "TERCEROS", _("Terceros")
 
 class Categoria(models.Model):
-    nombre    = models.CharField(max_length=100)
-    tipo      = models.CharField(
+    nombre       = models.CharField(max_length=100)
+    tipo         = models.CharField(
         max_length=10,
         choices=CategoriaTipo.choices,
         default=CategoriaTipo.PERSONAL,
     )
-    padre     = models.ForeignKey(
+    padre        = models.ForeignKey(
         'self',
         null=True,
         blank=True,
         on_delete=models.RESTRICT,
         related_name="subcategorias",
+    )
+    descripcion  = models.TextField(
+        max_length=200,
+        blank=True,
+        help_text="Descripción detallada de la categoría"
     )
 
     class Meta:
@@ -283,6 +326,12 @@ class Transaccion(models.Model):
     
     conciliado = models.BooleanField(default=False)
     
+    # Campo para ajustes (operaciones de 1 solo movimiento)
+    ajuste = models.BooleanField(
+        default=False,
+        help_text="Si es True, crea solo 1 asiento contable sin contrapartida automática"
+    )
+    
     # Nuevo campo de estado
     estado = models.CharField(
         max_length=12,
@@ -358,10 +407,23 @@ class Transaccion(models.Model):
 
     def save(self, *args, **kwargs):
         """Inferir tipo y generar asientos contables automáticamente"""
-        # Inferir tipo automáticamente
-        if self.cuenta_destino:
-            self.tipo = TransaccionTipo.TRANSFERENCIA
+        # Inferir tipo automáticamente basado en el tipo de cuenta_origen
+        if self.cuenta_origen and self.cuenta_origen.tipo.codigo == 'ING':
+            # Si viene de una cuenta de ingresos, es un INGRESO
+            self.tipo = TransaccionTipo.INGRESO
+        elif self.cuenta_origen and self.cuenta_destino:
+            # Si hay ambas cuentas, verificar si es transferencia o pago
+            origen_es_banco = self.cuenta_origen.tipo.codigo in ['DEB', 'CRE']
+            destino_es_banco = self.cuenta_destino.tipo.codigo in ['DEB', 'CRE']
+            
+            if origen_es_banco and destino_es_banco:
+                self.tipo = TransaccionTipo.TRANSFERENCIA
+            elif origen_es_banco and self.cuenta_destino.tipo.codigo in ['CRE', 'SER']:
+                self.tipo = TransaccionTipo.GASTO  # Pago de tarjeta/servicio
+            else:
+                self.tipo = TransaccionTipo.TRANSFERENCIA
         elif self.categoria:
+            # Fallback a categoría
             if self.categoria.tipo in ['PERSONAL', 'NEGOCIO']:
                 self.tipo = TransaccionTipo.GASTO
             else:
@@ -379,22 +441,27 @@ class Transaccion(models.Model):
             self._crear_asiento_contable()
 
     def _crear_asiento_contable(self):
-        """Crea automáticamente el asiento contable de doble partida"""
+        """Crea automáticamente el asiento contable de doble partida o ajuste simple"""
         with transaction.atomic():
             # Crear el asiento principal
             asiento = AsientoContable.objects.create(
                 fecha=self.fecha,
-                descripcion=self.descripcion,
+                descripcion=self.descripcion + (" - AJUSTE" if self.ajuste else ""),
                 transaccion_origen=self,
                 estado=self.estado
             )
             
-            if self.tipo == TransaccionTipo.TRANSFERENCIA:
-                self._crear_partidas_transferencia(asiento)
-            elif self.tipo == TransaccionTipo.GASTO:
-                self._crear_partidas_gasto(asiento)
-            elif self.tipo == TransaccionTipo.INGRESO:
-                self._crear_partidas_ingreso(asiento)
+            if self.ajuste:
+                # AJUSTE: Crear solo 1 partida sin contrapartida
+                self._crear_partida_ajuste(asiento)
+            else:
+                # DOBLE PARTIDA NORMAL
+                if self.tipo == TransaccionTipo.TRANSFERENCIA:
+                    self._crear_partidas_transferencia(asiento)
+                elif self.tipo == TransaccionTipo.GASTO:
+                    self._crear_partidas_gasto(asiento)
+                elif self.tipo == TransaccionTipo.INGRESO:
+                    self._crear_partidas_ingreso(asiento)
 
     def _crear_partidas_transferencia(self, asiento):
         """Crear partidas para transferencia entre cuentas"""
@@ -461,6 +528,35 @@ class Transaccion(models.Model):
             descripcion=f"Ingreso: {self.descripcion}",
             transaccion_referencia=self
         )
+
+    def _crear_partida_ajuste(self, asiento):
+        """Crear una sola partida para ajustes (sin contrapartida)"""
+        # Para ajustes, usar la cuenta_destino como la cuenta a ajustar
+        cuenta_ajuste = self.cuenta_destino or self.cuenta_origen
+        
+        if not cuenta_ajuste:
+            raise models.ValidationError("Para ajustes debe especificar cuenta_destino o cuenta_origen")
+        
+        # Determinar si es débito o crédito según la naturaleza de la cuenta
+        # y si el tipo de transacción es GASTO (débito) o INGRESO (crédito)
+        if self.tipo == TransaccionTipo.GASTO:
+            # Ajuste de gasto - siempre débito
+            PartidaContable.objects.create(
+                asiento=asiento,
+                cuenta=cuenta_ajuste,
+                debito=self.monto,
+                descripcion=f"Ajuste: {self.descripcion}",
+                transaccion_referencia=self
+            )
+        else:
+            # Ajuste de ingreso - siempre crédito
+            PartidaContable.objects.create(
+                asiento=asiento,
+                cuenta=cuenta_ajuste,
+                credito=self.monto,
+                descripcion=f"Ajuste: {self.descripcion}",
+                transaccion_referencia=self
+            )
 
     def _obtener_cuenta_gastos(self):
         """Obtiene o crea cuenta de gastos para la categoría"""

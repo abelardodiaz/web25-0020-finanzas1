@@ -1,0 +1,80 @@
+{
+  "movimientos (1).xlsx": {
+    "columnas": [
+      "Cuenta: 0469455019",
+      "Unnamed: 1",
+      "Unnamed: 2",
+      "Unnamed: 3",
+      "Unnamed: 4"
+    ],
+    "total_filas": 17,
+    "sample_data": [
+      {
+        "Cuenta: 0469455019": "DETALLE DE MOVIMIENTOS",
+        "Unnamed: 1": NaN,
+        "Unnamed: 2": NaN,
+        "Unnamed: 3": NaN,
+        "Unnamed: 4": NaN
+      },
+      {
+        "Cuenta: 0469455019": NaN,
+        "Unnamed: 1": NaN,
+        "Unnamed: 2": NaN,
+        "Unnamed: 3": NaN,
+        "Unnamed: 4": NaN
+      }
+    ]
+  },
+  "movimientos (2).xlsx": {
+    "columnas": [
+      "Cuenta: 0469455019",
+      "Unnamed: 1",
+      "Unnamed: 2",
+      "Unnamed: 3",
+      "Unnamed: 4"
+    ],
+    "total_filas": 55,
+    "sample_data": [
+      {
+        "Cuenta: 0469455019": "DETALLE DE MOVIMIENTOS",
+        "Unnamed: 1": NaN,
+        "Unnamed: 2": NaN,
+        "Unnamed: 3": NaN,
+        "Unnamed: 4": NaN
+      },
+      {
+        "Cuenta: 0469455019": NaN,
+        "Unnamed: 1": NaN,
+        "Unnamed: 2": NaN,
+        "Unnamed: 3": NaN,
+        "Unnamed: 4": NaN
+      }
+    ]
+  },
+  "movimientos (3).xlsx": {
+    "columnas": [
+      "Cuenta: 0469455019",
+      "Unnamed: 1",
+      "Unnamed: 2",
+      "Unnamed: 3",
+      "Unnamed: 4"
+    ],
+    "total_filas": 55,
+    "sample_data": [
+      {
+        "Cuenta: 0469455019": "DETALLE DE MOVIMIENTOS",
+        "Unnamed: 1": NaN,
+        "Unnamed: 2": NaN,
+        "Unnamed: 3": NaN,
+        "Unnamed: 4": NaN
+      },
+      {
+        "Cuenta: 0469455019": NaN,
+        "Unnamed: 1": NaN,
+        "Unnamed: 2": NaN,
+        "Unnamed: 3": NaN,
+        "Unnamed: 4": NaN
+      }
+    ]
+  }
+}

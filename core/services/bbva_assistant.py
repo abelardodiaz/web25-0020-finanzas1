@@ -532,7 +532,8 @@ class AsistenteBBVA:
                 
                 # Crear transacción con doble entrada
                 if mov.es_gasto:
-                    # CARGO: Sale dinero de BBVA hacia otra cuenta
+                    # ABONO contable: Sale dinero de BBVA (disminuye cuenta DEUDORA)
+                    # Nota: El banco lo llama "CARGO" pero contablemente es ABONO
                     transaccion = Transaccion.objects.create(
                         monto=mov.monto_calculado,
                         fecha=mov.fecha_original,
@@ -546,7 +547,8 @@ class AsistenteBBVA:
                         estado=TransaccionEstado.LIQUIDADA
                     )
                 else:
-                    # ABONO: Entra dinero a BBVA desde otra cuenta
+                    # CARGO contable: Entra dinero a BBVA (aumenta cuenta DEUDORA)
+                    # Nota: El banco lo llama "ABONO" pero contablemente es CARGO
                     transaccion = Transaccion.objects.create(
                         monto=mov.monto_calculado,
                         fecha=mov.fecha_original,

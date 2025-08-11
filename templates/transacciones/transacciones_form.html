@@ -1,90 +1,144 @@
-<!-- file: templates/trasacciones/tr_nueva.html -->
 {% extends "base.html" %}
 {% load widget_tweaks %}
-{% block title %}{% if object %}Editar{% else %}Nuevo{% endif %} Movimiento – Finanzas{% endblock %}
+{% block title %}{% if object %}Editar{% else %}Nueva{% endif %} Transacción{% endblock %}
+
 {% block content %}
 <div class="container mx-auto px-4 py-6">
     <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-200 mb-6">
-        {% if object %}Editar{% else %}Nuevo{% endif %} Movimiento
+        {% if object %}Editar{% else %}Nueva{% endif %} Transacción
     </h1>
     
     <div class="bg-gray-50 dark:bg-gray-800 rounded-lg shadow p-6">
         <form method="post" novalidate id="transaccion-form">
             {% csrf_token %}
             
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Campos básicos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <!-- Monto -->
                 <div>
                     <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {{ form.monto.label }}
                     </label>
                     {{ form.monto|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                    {% if form.monto.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.monto.errors.0 }}</p>
+                    {% endif %}
                 </div>
                 
-                <div>
-                    <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ form.tipo.label }}
-                    </label>
-                    {{ form.tipo|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
-                </div>
-                
+                <!-- Fecha -->
                 <div>
                     <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {{ form.fecha.label }}
                     </label>
                     {{ form.fecha|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                    {% if form.fecha.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.fecha.errors.0 }}</p>
+                    {% endif %}
                 </div>
-                
-                <div>
+            </div>
+            
+            <!-- Descripción -->
+            <div class="mb-6">
+                <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {{ form.descripcion.label }}
+                </label>
+                {{ form.descripcion|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                {% if form.descripcion.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.descripcion.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Cuenta Origen -->
+            <div class="mb-6">
+                <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {{ form.cuenta_origen.label }}
+                </label>
+                {{ form.cuenta_origen|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                {% if form.cuenta_origen.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.cuenta_origen.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Tipo de destino (Radio buttons) -->
+            <div class="mb-6">
+                <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {{ form.destino_tipo.label }}
+                </label>
+                <div class="space-y-2">
+                    {% for radio in form.destino_tipo %}
+                        <label class="flex items-center">
+                            {{ radio.tag }}
+                            <span class="ml-2 text-lg text-gray-700 dark:text-gray-300">{{ radio.choice_label }}</span>
+                        </label>
+                    {% endfor %}
+                </div>
+                {% if form.destino_tipo.errors %}
+                    <p class="text-red-500 text-sm mt-1">{{ form.destino_tipo.errors.0 }}</p>
+                {% endif %}
+            </div>
+            
+            <!-- Campos condicionales -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <!-- Cuenta Destino (para transferencias) -->
+                <div id="cuenta_destino_div">
                     <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ form.descripcion.label }}
+                        {{ form.cuenta_destino.label }}
                     </label>
-                    {{ form.descripcion|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                    {{ form.cuenta_destino|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                    {% if form.cuenta_destino.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.cuenta_destino.errors.0 }}</p>
+                    {% endif %}
                 </div>
                 
-                <div id="row-servicio">
-                    <label id="lbl-servicio" class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ form.cuenta_servicio.label }}
-                    </label>
-                    <div class="flex items-center space-x-2">
-                        {{ form.cuenta_servicio|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
-                        <button type="button" class="px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded text-sm" id="refresh-cuentas" title="Actualizar cuentas de servicio">↻</button>
-                    </div>
-                </div>
-                
-                <div>
+                <!-- Categoría (para gastos/ingresos) -->
+                <div id="categoria_div">
                     <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
                         {{ form.categoria.label }}
                     </label>
-                    <div class="flex items-center space-x-2">
-                        {{ form.categoria|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
-                        <button type="button" class="px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded text-sm" id="refresh-categorias" title="Actualizar categorías">↻</button>
-                    </div>
-                </div>
-                
-                <div id="row-mediopago">
-                    <label id="lbl-mediopago" for="id_medio_pago" class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        {{ form.medio_pago.label }}
-                    </label>
-                    <div class="flex items-center space-x-2">
-                        {{ form.medio_pago|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
-                        <button type="button" class="px-3 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded text-sm" id="refresh-medios" title="Actualizar medios de pago">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                    </div>
+                    {{ form.categoria|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                    {% if form.categoria.errors %}
+                        <p class="text-red-500 text-sm mt-1">{{ form.categoria.errors.0 }}</p>
+                    {% endif %}
                 </div>
             </div>
             
-            <div class="mt-6 mb-4">
+            <!-- Período (opcional) -->
+            <div class="mb-6">
+                <label class="block text-lg font-medium text-gray-700 dark:text-gray-300 mb-2">
+                    {{ form.periodo.label }}
+                    <span class="text-sm text-gray-500">(opcional)</span>
+                </label>
+                {{ form.periodo|add_class:"text-lg py-2 px-3 w-full rounded border border-gray-300 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" }}
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{{ form.periodo.help_text }}</p>
+            </div>
+            
+            <!-- Checkboxes -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <!-- Ajuste -->
                 <div class="flex items-start space-x-2">
                     {{ form.ajuste|add_class:"mt-1" }}
                     <div>
-                        <label for="id_ajuste" class="text-lg font-medium text-gray-700 dark:text-gray-300">{{ form.ajuste.label }}</label>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Marcar solo si deseas registrar un único movimiento (ajuste manual).</p>
+                        <label for="id_ajuste" class="text-lg font-medium text-gray-700 dark:text-gray-300">
+                            {{ form.ajuste.label }}
+                        </label>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ form.ajuste.help_text }}</p>
+                    </div>
+                </div>
+                
+                <!-- Conciliado -->
+                <div class="flex items-start space-x-2">
+                    {{ form.conciliado|add_class:"mt-1" }}
+                    <div>
+                        <label for="id_conciliado" class="text-lg font-medium text-gray-700 dark:text-gray-300">
+                            {{ form.conciliado.label }}
+                        </label>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">{{ form.conciliado.help_text }}</p>
                     </div>
                 </div>
             </div>
             
-            <div class="flex space-x-4 mt-6">
+            <!-- Botones -->
+            <div class="flex space-x-4 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
                 <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md flex items-center text-lg">
                     <i class="fas fa-save mr-2"></i>Guardar
                 </button>
@@ -94,159 +148,76 @@
             </div>
         </form>
     </div>
-    
-    <!-- Aviso / previsualización de partida doble -->
-    <div id="preview-doble" class="mt-4 bg-blue-50 dark:bg-blue-900 border border-blue-200 dark:border-blue-700 text-blue-800 dark:text-blue-200 p-4 rounded-md hidden">
-        <strong class="font-semibold">Se crearán dos movimientos:</strong>
-        <ul class="mt-2 list-disc list-inside">
-            <li id="prev-cargo"></li>
-            <li id="prev-abono"></li>
-        </ul>
-    </div>
 </div>
+{% endblock %}
 
+{% block extra_js %}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  function actualizarCampo(url, selectId) {
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        const select = document.getElementById(selectId);
-        if (!select) return;
-        const valorActual = select.value;
-        select.innerHTML = '';
-        const optVacio = document.createElement('option');
-        optVacio.value = '';
-        optVacio.textContent = '---------';
-        select.appendChild(optVacio);
-        data.forEach(item => {
-          const opt = document.createElement('option');
-          opt.value = item.id;
-          opt.textContent = item.text;
-          opt.dataset.naturaleza = item.naturaleza;  // Guardar la naturaleza
-          select.appendChild(opt);
-        });
-        // intenta mantener la selección previa si sigue existiendo
-        select.value = valorActual;
-      });
-  }
-  document.getElementById('refresh-cuentas').addEventListener('click', function() {
-    actualizarCampo('{% url "core:refresh_cuentas" %}', 'id_cuenta_servicio');
-  });
-  document.getElementById('refresh-categorias').addEventListener('click', function() {
-    actualizarCampo('{% url "core:refresh_categorias" %}', 'id_categoria');
-  });
-
-  // Añadir manejador para medios de pago
-  document.getElementById('refresh-medios').addEventListener('click', function() {
-    actualizarCampo('{% url "core:refresh_medios_pago" %}', 'id_medio_pago');
-  });
-
-  // ==== Vista previa de doble movimiento ====
-  const selServicio = document.getElementById('id_cuenta_servicio');
-  const selPago     = document.getElementById('id_medio_pago');
-  const inpMonto    = document.getElementById('id_monto');
-  const chkAjuste   = document.getElementById('id_ajuste');
-  const boxPrev     = document.getElementById('preview-doble');
-  const liCargo     = document.getElementById('prev-cargo');
-  const liAbono     = document.getElementById('prev-abono');
-
-  function actualizarPreview() {
-    const servOpt = selServicio.options[selServicio.selectedIndex];
-    const pagoOpt = selPago.options[selPago.selectedIndex];
+    // Obtener elementos
+    const destinoTipoRadios = document.querySelectorAll('input[name="destino_tipo"]');
+    const cuentaDestinoDiv = document.getElementById('cuenta_destino_div');
+    const categoriaDiv = document.getElementById('categoria_div');
     
-    // Usar valor absoluto para el monto
-    const monto = Math.abs(parseFloat(inpMonto.value)) || 0;
-    
-    const camposValidos = servOpt && pagoOpt && monto > 0 && 
-                          selServicio.value !== selPago.value;
-    
-    if (chkAjuste.checked || !camposValidos) {
-      boxPrev.classList.add('hidden');
-      return;
+    // Función para mostrar/ocultar campos según el tipo de destino
+    function toggleFields() {
+        const selectedValue = document.querySelector('input[name="destino_tipo"]:checked')?.value;
+        
+        if (selectedValue === 'cuenta') {
+            // Mostrar cuenta destino, ocultar categoría
+            cuentaDestinoDiv.style.display = 'block';
+            categoriaDiv.style.display = 'none';
+            // Limpiar categoría
+            document.getElementById('id_categoria').value = '';
+        } else if (selectedValue === 'categoria') {
+            // Mostrar categoría, ocultar cuenta destino
+            cuentaDestinoDiv.style.display = 'none';
+            categoriaDiv.style.display = 'block';
+            // Limpiar cuenta destino
+            document.getElementById('id_cuenta_destino').value = '';
+        }
     }
-
-    // Determinar etiquetas según el tipo de operación
-    const tipoOp = selTipo.value;
-    let txtPago, txtServ;
-
-    if (tipoOp === 'GASTO') {
-      // Dinero sale de la cuenta de pago → Abono / entra al servicio → Cargo
-      txtPago = 'Abono';
-      txtServ = 'Cargo';
-    } else if (tipoOp === 'INGRESO') {
-      // Dinero entra a la cuenta de pago → Cargo / sale del servicio (o cuenta contraparte) → Abono
-      txtPago = 'Cargo';
-      txtServ = 'Abono';
-    } else if (tipoOp === 'TRANSFERENCIA') {
-      // Etiquetas dependen de la naturaleza de cada cuenta
-      const natPago = pagoOpt.dataset.naturaleza;
-      const natServ = servOpt.dataset.naturaleza;
-
-      // Origen
-      txtPago = (natPago === 'DEUDORA') ? 'Abono' : 'Cargo';
-      // Destino
-      txtServ = (natServ === 'DEUDORA') ? 'Cargo' : 'Abono';
-    } else {
-      // Fallback genérico
-      txtPago = 'Cargo';
-      txtServ = 'Abono';
-    }
- 
-    // Asignación correcta:
-    liCargo.textContent = `${txtPago} en ${pagoOpt.text}: $${monto.toFixed(2)}`;
-    liAbono.textContent = `${txtServ} en ${servOpt.text}: $${monto.toFixed(2)}`;
     
-    boxPrev.classList.remove('hidden');
-  }
-
-  [selServicio, selPago, inpMonto, chkAjuste].forEach(el => {
-    if (el) el.addEventListener('change', actualizarPreview);
-    if (el) el.addEventListener('input', actualizarPreview);
-  });
-
-  // inicializar al cargar
-  actualizarPreview();
-
-  // === Toggle campos según tipo ====
-  const selTipo = document.getElementById('id_tipo');
-  const rowServ = document.getElementById('row-servicio');
-  const rowPago = document.getElementById('row-mediopago');
-  const lblServ = document.getElementById('lbl-servicio');
-  const lblPago = document.getElementById('lbl-mediopago');
-
-  function toggleTipo() {
-    const v = selTipo.value;
-    if (v === 'TRANSFERENCIA') {
-      rowServ.hidden = false;
-      rowPago.hidden = false;
-      lblServ.textContent = 'Cuenta destino';
-      lblPago.textContent = 'Cuenta origen';
-      actualizarCampo('{% url "core:refresh_medios_pago" %}', 'id_cuenta_servicio');
-    } else if (v === 'AJUSTE') {
-      rowServ.hidden = true;
-      rowPago.hidden = false;
-      lblPago.textContent = 'Cuenta';
-      // Para ajustes mostramos igualmente medios de pago por consistencia
-      actualizarCampo('{% url "core:refresh_medios_pago" %}', 'id_cuenta_servicio');
-    } else {
-      // GASTO o INGRESO
-      rowServ.hidden = false;
-      rowPago.hidden = false;
-      lblServ.textContent = 'Servicio / Proveedor';
-      lblPago.textContent = 'Cuenta de pago';
-      actualizarCampo('{% url "core:refresh_cuentas" %}', 'id_cuenta_servicio');
-    }
-  }
-
-  if (selTipo) {
-    selTipo.addEventListener('change', () => { toggleTipo(); actualizarPreview(); });
-    toggleTipo();
-  }
-
-  // Recargar naturalezas al abrir el formulario
-  actualizarCampo('{% url "core:refresh_cuentas" %}', 'id_cuenta_servicio');
-  actualizarCampo('{% url "core:refresh_medios_pago" %}', 'id_medio_pago');
+    // Agregar listeners a los radio buttons
+    destinoTipoRadios.forEach(radio => {
+        radio.addEventListener('change', toggleFields);
+    });
+    
+    // Ejecutar al cargar la página
+    toggleFields();
+    
+    // Validación del formulario
+    const form = document.getElementById('transaccion-form');
+    form.addEventListener('submit', function(e) {
+        const monto = document.getElementById('id_monto').value;
+        const fecha = document.getElementById('id_fecha').value;
+        const descripcion = document.getElementById('id_descripcion').value;
+        const cuentaOrigen = document.getElementById('id_cuenta_origen').value;
+        
+        if (!monto || !fecha || !descripcion || !cuentaOrigen) {
+            e.preventDefault();
+            alert('Por favor complete todos los campos obligatorios');
+            return false;
+        }
+        
+        // Verificar que se haya seleccionado destino
+        const selectedValue = document.querySelector('input[name="destino_tipo"]:checked')?.value;
+        if (selectedValue === 'cuenta') {
+            const cuentaDestino = document.getElementById('id_cuenta_destino').value;
+            if (!cuentaDestino) {
+                e.preventDefault();
+                alert('Por favor seleccione la cuenta destino');
+                return false;
+            }
+        } else if (selectedValue === 'categoria') {
+            const categoria = document.getElementById('id_categoria').value;
+            if (!categoria) {
+                e.preventDefault();
+                alert('Por favor seleccione una categoría');
+                return false;
+            }
+        }
+    });
 });
 </script>
 {% endblock %}
