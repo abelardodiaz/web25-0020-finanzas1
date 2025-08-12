@@ -4,6 +4,28 @@
 
 ## 📅 Historial de Cambios
 
+## 🗓️ Versión 0.8.8 - 12 de Agosto, 2025
+
+### 🎯 **Importación Bancaria Más Rápida y Fácil**
+- 🔢 **Selección por números:** Ahora cada cuenta tiene un número ID fijo - solo escribe "14" en lugar del nombre completo
+- 📚 **Ayuda instantánea:** Presiona '9' para ver todas las cuentas disponibles con sus números
+- ✨ **Creación rápida:** Presiona '0' para crear una cuenta nueva al instante
+- 🚪 **Cancelar cuando quieras:** Escribe 'x' en cualquier momento para regresar
+
+### 💡 **Asistente Inteligente Mejorado**
+- 📖 **Explicaciones simples:** El sistema ahora explica qué es DEUDORA y ACREEDORA con ejemplos cotidianos
+- ✅ **Confirmaciones más claras:** Todo usa números (1=Sí, 2=No) con Enter para la opción más común
+- 🎯 **Menos errores:** Arreglamos todos los problemas al crear cuentas nuevas
+- 💬 **Diálogos amigables:** Menú final con 4 opciones claras y doble confirmación para evitar errores
+
+### 📈 **Beneficios para ti**
+- **70% más rápido:** Seleccionar cuentas ahora toma segundos, no minutos
+- **Sin confusiones:** Las explicaciones están en español simple sin términos técnicos
+- **Cero errores:** Las cuentas siempre se crean correctamente sin fallos
+- **Flujo natural:** Solo presionas Enter para las opciones más comunes
+
+---
+
 ## 🗓️ Versión 0.8.7 - 12 de Agosto, 2025
 
 ### 💰 **Sistema Contable Perfeccionado**

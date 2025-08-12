@@ -485,7 +485,7 @@ class ImportadorBBVA:
         
         print(f"\n{Colors.OKCYAN}¿Los campos son correctos?{Colors.ENDC}")
         print("1) ✅ Sí, todo correcto")
-        print("2) 🏦 Editar solo cuenta destino")  
+        print("2) 🏦 Editar solo cuenta vinculada")  
         print("3) ✏️  Editar todos los campos")
         
         opcion_campos = input(f"{Colors.OKCYAN}Seleccione (1/2/3) [Enter=1]: {Colors.ENDC}").strip() or '1'
@@ -493,11 +493,127 @@ class ImportadorBBVA:
         movimiento_editado = movimiento.copy()
         
         if opcion_campos == '2':
-            # Solo editar cuenta destino
+            # Solo editar cuenta destino/vinculada
             cuenta_destino_actual = movimiento.get('cuenta_destino', '')
-            nueva_cuenta = input(f"\n{Colors.OKCYAN}Cuenta Destino [{cuenta_destino_actual}]: {Colors.ENDC}").strip()
-            if nueva_cuenta:
-                movimiento_editado['cuenta_destino'] = nueva_cuenta
+            
+            while True:
+                print(f"\n{Colors.OKCYAN}Ingresa cuenta vinculada (nombre/número/9=ayuda/x=cancelar):{Colors.ENDC}")
+                nueva_cuenta = input(f"Cuenta Destino [{cuenta_destino_actual}]: ").strip().lower()
+                
+                # Cancelar y regresar
+                if nueva_cuenta == 'x':
+                    print(f"{Colors.WARNING}Cancelado, regresando...{Colors.ENDC}")
+                    break
+                
+                # Si presiona 9 o es un número, mostrar lista
+                elif nueva_cuenta == '9' or (nueva_cuenta.isdigit() and nueva_cuenta != '0'):
+                    opcion_num = int(nueva_cuenta)
+                    
+                    # Mostrar lista de cuentas disponibles
+                    print(f"\n{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+                    print(f"{Colors.BOLD}📚 CUENTAS DISPONIBLES{Colors.ENDC}")
+                    print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}\n")
+                    
+                    try:
+                        from core.models import Cuenta
+                        cuentas = Cuenta.objects.all().order_by('id')
+                        
+                        if cuentas.exists():
+                            # Crear diccionario ID -> nombre para búsqueda rápida
+                            cuentas_dict = {}
+                            
+                            # Mostrar en 3 columnas con IDs
+                            cuentas_list = list(cuentas)
+                            num_cuentas = len(cuentas_list)
+                            columnas = 3
+                            
+                            # Calcular filas necesarias
+                            filas = (num_cuentas + columnas - 1) // columnas
+                            
+                            for i in range(filas):
+                                fila = []
+                                for j in range(columnas):
+                                    idx = i + j * filas
+                                    if idx < num_cuentas:
+                                        cuenta = cuentas_list[idx]
+                                        cuentas_dict[cuenta.id] = cuenta.nombre
+                                        # Formato: [ID] Nombre (truncado a 18 chars)
+                                        nombre_truncado = cuenta.nombre[:18]
+                                        fila.append(f"[{cuenta.id:3}] {nombre_truncado:<18}")
+                                print("  " + " | ".join(fila))
+                            
+                            print(f"\n{Colors.OKGREEN}Total: {num_cuentas} cuentas{Colors.ENDC}")
+                            print(f"{Colors.WARNING}[  0] → Crear nueva cuenta{Colors.ENDC}")
+                            print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+                            
+                            # Si ya seleccionó un número válido distinto de 9
+                            if opcion_num != 9 and opcion_num > 0 and opcion_num in cuentas_dict:
+                                nombre_seleccionado = cuentas_dict[opcion_num]
+                                print(f"\n{Colors.OKGREEN}✓ Seleccionaste: {nombre_seleccionado}{Colors.ENDC}")
+                                movimiento_editado['cuenta_destino'] = nombre_seleccionado
+                                break
+                            
+                            # Después de mostrar la lista, preguntar de nuevo
+                            print(f"\n{Colors.BOLD}OPCIONES:{Colors.ENDC}")
+                            print("• Escribe el NOMBRE de la cuenta nueva")
+                            print("• Escribe el NÚMERO de la cuenta que eliges")
+                            print("• Escribe '0' para crear cuenta nueva")
+                            print("• Escribe '9' para ver la lista otra vez")
+                            print("• Escribe 'x' para cancelar")
+                            
+                            seleccion = input(f"\n{Colors.OKCYAN}Tu elección: {Colors.ENDC}").strip().lower()
+                            
+                            if seleccion == 'x':
+                                print(f"{Colors.WARNING}Cancelado{Colors.ENDC}")
+                                break
+                            elif seleccion == '9':
+                                continue  # Mostrar lista otra vez
+                            elif seleccion == '0':
+                                nombre_nueva = input("Nombre de la nueva cuenta: ").strip()
+                                if nombre_nueva:
+                                    movimiento_editado['cuenta_destino'] = nombre_nueva
+                                    break
+                            elif seleccion.isdigit():
+                                id_seleccionado = int(seleccion)
+                                if id_seleccionado in cuentas_dict:
+                                    nombre_seleccionado = cuentas_dict[id_seleccionado]
+                                    print(f"{Colors.OKGREEN}✓ Seleccionaste: {nombre_seleccionado}{Colors.ENDC}")
+                                    movimiento_editado['cuenta_destino'] = nombre_seleccionado
+                                    break
+                                else:
+                                    print(f"{Colors.FAIL}ID no válido{Colors.ENDC}")
+                                    continue
+                            else:
+                                # Asumimos que escribió un nombre de cuenta
+                                movimiento_editado['cuenta_destino'] = seleccion
+                                break
+                        else:
+                            print(f"{Colors.WARNING}No hay cuentas registradas{Colors.ENDC}")
+                            nombre_nueva = input("Nombre de la nueva cuenta: ").strip()
+                            if nombre_nueva:
+                                movimiento_editado['cuenta_destino'] = nombre_nueva
+                                break
+                            
+                    except Exception as e:
+                        print(f"{Colors.FAIL}Error al obtener cuentas: {e}{Colors.ENDC}")
+                        continue
+                    
+                # Si escribió '0' para crear nueva
+                elif nueva_cuenta == '0':
+                    nombre_nueva = input("Nombre de la nueva cuenta: ").strip()
+                    if nombre_nueva:
+                        movimiento_editado['cuenta_destino'] = nombre_nueva
+                        break
+                        
+                # Si escribió un nombre directamente (no es número ni comandos especiales)
+                elif nueva_cuenta and not nueva_cuenta.isdigit():
+                    # Capitalizar primera letra para consistencia
+                    movimiento_editado['cuenta_destino'] = nueva_cuenta.title()
+                    break
+                    
+                # Si presionó Enter (mantener actual)
+                elif not nueva_cuenta:
+                    break
                 
         elif opcion_campos == '3':
             # Editar todos los campos
@@ -541,30 +657,77 @@ class ImportadorBBVA:
             
             # PASO 4: Confirmar guardado
             while True:
-                confirmacion = input(f"\n{Colors.WARNING}¿Confirmar y guardar? (s/n/exit): {Colors.ENDC}").lower()
+                print(f"\n{Colors.WARNING}¿Qué deseas hacer?{Colors.ENDC}")
+                print("1) 💾 Guardar transacción")
+                print("2) ✏️  Editar nuevamente")  
+                print("3) 🚪 Salir del importador")
+                print("4) ❓ Ayuda")
                 
-                if confirmacion == 's':
-                    # Propagar ID de actualización si existe
-                    if 'transaccion_id_actualizar' in movimiento:
-                        transaccion['transaccion_id_actualizar'] = movimiento['transaccion_id_actualizar']
+                opcion = input(f"{Colors.OKCYAN}Seleccione (1/2/3/4) [Enter=1]: {Colors.ENDC}").strip() or '1'
+                
+                if opcion == '1':
+                    # Doble confirmación para guardar
+                    print(f"\n{Colors.WARNING}⚠️  CONFIRMACIÓN FINAL{Colors.ENDC}")
+                    print(f"Estás a punto de guardar esta transacción en la base de datos.")
+                    confirmar_final = input(f"{Colors.WARNING}¿Confirmar guardado? (1=Sí, 2=No) [Enter=1]: {Colors.ENDC}").strip() or '1'
                     
-                    if not self.test_mode:
-                        self.guardar_movimiento(transaccion)
-                    self.procesados += 1
-                    
-                    # Registrar feedback en memoria si hubo revisión de IA
-                    if feedback_clasificacion and self.memoria_sistema:
-                        self.registrar_feedback_memoria(movimiento_editado, feedback_clasificacion)
-                    
-                    print(f"{Colors.OKGREEN}✓ Movimiento guardado{Colors.ENDC}")
-                    return 'ok'
-                    
-                elif confirmacion == 'n':
+                    if confirmar_final == '1':
+                        # Propagar ID de actualización si existe
+                        if 'transaccion_id_actualizar' in movimiento:
+                            transaccion['transaccion_id_actualizar'] = movimiento['transaccion_id_actualizar']
+                        
+                        if not self.test_mode:
+                            self.guardar_movimiento(transaccion)
+                        self.procesados += 1
+                        
+                        # Registrar feedback en memoria si hubo revisión de IA
+                        if feedback_clasificacion and self.memoria_sistema:
+                            self.registrar_feedback_memoria(movimiento_editado, feedback_clasificacion)
+                        
+                        print(f"{Colors.OKGREEN}✓ Movimiento guardado exitosamente{Colors.ENDC}")
+                        return 'ok'
+                    else:
+                        print(f"{Colors.WARNING}Guardado cancelado, regresando al menú...{Colors.ENDC}")
+                        continue  # Vuelve a mostrar las 4 opciones
+                        
+                elif opcion == '2':
                     print(f"{Colors.WARNING}Re-editando movimiento...{Colors.ENDC}")
                     return self.procesar_movimiento_interactivo(movimiento, numero)
                     
-                elif confirmacion == 'exit':
-                    return 'exit'
+                elif opcion == '3':
+                    print(f"\n{Colors.WARNING}¿Seguro que deseas salir?{Colors.ENDC}")
+                    confirmar_salir = input(f"1=Sí salir, 2=No, continuar [Enter=2]: ").strip() or '2'
+                    if confirmar_salir == '1':
+                        return 'exit'
+                    else:
+                        continue  # Vuelve a mostrar las 4 opciones
+                        
+                elif opcion == '4':
+                    # Mostrar ayuda
+                    print(f"\n{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+                    print(f"{Colors.BOLD}📚 AYUDA - Opciones disponibles{Colors.ENDC}")
+                    print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+                    print(f"\n{Colors.OKGREEN}1) Guardar transacción:{Colors.ENDC}")
+                    print("   • Guarda el movimiento en la base de datos")
+                    print("   • Requiere confirmación adicional por seguridad")
+                    print("   • Una vez guardado, continúa con el siguiente movimiento")
+                    
+                    print(f"\n{Colors.WARNING}2) Editar nuevamente:{Colors.ENDC}")
+                    print("   • Te regresa al inicio de este movimiento")
+                    print("   • Puedes cambiar cualquier campo")
+                    print("   • Útil si detectaste un error")
+                    
+                    print(f"\n{Colors.FAIL}3) Salir del importador:{Colors.ENDC}")
+                    print("   • Termina el proceso de importación")
+                    print("   • Los movimientos ya guardados permanecen")
+                    print("   • Puedes continuar después desde donde quedaste")
+                    
+                    print(f"\n{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+                    input(f"\n{Colors.OKCYAN}Presiona Enter para continuar...{Colors.ENDC}")
+                    # Después de la ayuda, vuelve a mostrar las opciones
+                    
+                else:
+                    print(f"{Colors.FAIL}Opción inválida. Por favor selecciona 1, 2, 3 o 4{Colors.ENDC}")
                     
         except Exception as e:
             self.errores += 1
@@ -656,7 +819,7 @@ class ImportadorBBVA:
         """Crea una nueva cuenta con asistente interactivo"""
         try:
             print(f"\n{Colors.WARNING}⚠️  Cuenta '{nombre}' no existe{Colors.ENDC}")
-            confirmar = input(f"¿Crear nueva cuenta? (1=Sí, 2=No): ").strip()
+            confirmar = input(f"¿Crear nueva cuenta? (1=Sí, 2=No) [Enter=1]: ").strip() or '1'
             
             if confirmar != '1':
                 print(f"{Colors.WARNING}Cuenta no creada{Colors.ENDC}")
@@ -685,16 +848,54 @@ class ImportadorBBVA:
                 tipo_default = 'DEB'
             
             # Naturaleza simplificada
-            print(f"\nNaturaleza (default: {naturaleza_default}):")
-            print("1) DEUDORA")
-            print("2) ACREEDORA")
-            nat_opcion = input("Seleccione 1/2 [Enter=default]: ").strip()
-            if nat_opcion == '2':
-                naturaleza = 'ACREEDORA'
-            elif nat_opcion == '1':
-                naturaleza = 'DEUDORA'
-            else:
-                naturaleza = naturaleza_default
+            while True:
+                print(f"\nNaturaleza (default: {naturaleza_default}):")
+                print("1) DEUDORA")
+                print("2) ACREEDORA")
+                print("3) ❓ Ayuda - ¿Qué significa esto?")
+                nat_opcion = input("Seleccione 1/2/3 [Enter=default]: ").strip()
+                
+                if nat_opcion == '3':
+                    # Mostrar ayuda sobre naturalezas
+                    print(f"\n{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+                    print(f"{Colors.BOLD}📚 NATURALEZA DE LAS CUENTAS - Explicación Simple{Colors.ENDC}")
+                    print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+                    
+                    print(f"\n{Colors.OKGREEN}DEUDORA (Lo que tienes o gastas):{Colors.ENDC}")
+                    print("📌 Cuentas donde TIENES dinero o GASTAS dinero")
+                    print("   • Cuentas de banco (débito)")
+                    print("   • Efectivo")
+                    print("   • Gastos (comida, renta, servicios)")
+                    print("   • Lo que otros te deben")
+                    print("   ➡️  Aumentan cuando ENTRA dinero o GASTAS")
+                    
+                    print(f"\n{Colors.WARNING}ACREEDORA (Lo que debes o ganas):{Colors.ENDC}")
+                    print("📌 Cuentas donde DEBES dinero o GANAS dinero")
+                    print("   • Tarjetas de crédito")
+                    print("   • Préstamos e hipotecas")
+                    print("   • Ingresos (sueldo, rentas)")
+                    print("   • Lo que debes a otros")
+                    print("   ➡️  Aumentan cuando DEBES más o GANAS dinero")
+                    
+                    print(f"\n{Colors.BOLD}💡 REGLA SIMPLE:{Colors.ENDC}")
+                    print("• ¿Es dinero que TIENES? → DEUDORA")
+                    print("• ¿Es dinero que DEBES? → ACREEDORA")
+                    print("• ¿Es un GASTO? → DEUDORA")
+                    print("• ¿Es un INGRESO? → ACREEDORA")
+                    
+                    print(f"\n{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+                    input(f"\n{Colors.OKCYAN}Presiona Enter para continuar...{Colors.ENDC}")
+                    continue  # Volver a mostrar las opciones
+                    
+                elif nat_opcion == '2':
+                    naturaleza = 'ACREEDORA'
+                    break
+                elif nat_opcion == '1':
+                    naturaleza = 'DEUDORA'
+                    break
+                else:
+                    naturaleza = naturaleza_default
+                    break
             
             # Tipo de cuenta simplificado
             print(f"\nTipo (default: {tipo_default}):")
@@ -712,29 +913,37 @@ class ImportadorBBVA:
                 print(f"{Colors.WARNING}Tipo no encontrado, usando DEB{Colors.ENDC}")
                 tipo = TipoCuenta.objects.get(codigo='DEB')
             
-            # Medio de pago (default inteligente según tipo)
-            default_medio_pago = '1' if tipo_codigo in ['DEB', 'CRE'] else '2'
-            print(f"\n¿Es medio de pago? (default: {'Sí' if default_medio_pago == '1' else 'No'}):")
+            # Medio de pago (default siempre No)
+            default_medio_pago = '2'  # Siempre default a No
+            print(f"\n¿Es medio de pago? (default: No):")
             print("1) Sí")
             print("2) No")
-            medio_opcion = input("Seleccione 1/2 [Enter=default]: ").strip()
+            medio_opcion = input("Seleccione 1/2 [Enter=default]: ").strip().lower()
+            
+            # Manejar diferentes formas de responder (1, 2, si, no, yes, NO, etc.)
             if medio_opcion == '':
                 es_medio_pago = (default_medio_pago == '1')
+            elif medio_opcion in ['1', 's', 'si', 'sí', 'yes', 'y']:
+                es_medio_pago = True
+            elif medio_opcion in ['2', 'n', 'no', '0']:
+                es_medio_pago = False
             else:
-                es_medio_pago = (medio_opcion == '1')
+                # Si no entendemos la respuesta, usar el default
+                print(f"{Colors.WARNING}Respuesta no reconocida, usando default{Colors.ENDC}")
+                es_medio_pago = (default_medio_pago == '1')
             
             # Referencia/Número de cuenta (opcional, simplificado)
             referencia = input("\nReferencia bancaria [Enter=omitir]: ").strip()
             
-            # Crear la cuenta
+            # Crear la cuenta - usar string vacío si no hay referencia para evitar NULL constraint
             cuenta = Cuenta.objects.create(
                 nombre=nombre,
                 tipo=tipo,
                 naturaleza=naturaleza,
-                medio_pago=es_medio_pago,
+                medio_pago=es_medio_pago,  # Campo correcto es medio_pago
                 moneda='MXN',
                 saldo_inicial=0,
-                referencia=referencia if referencia else None
+                referencia=referencia if referencia else ''  # String vacío en lugar de None
             )
             
             print(f"{Colors.OKGREEN}✓ Nueva cuenta creada exitosamente!{Colors.ENDC}")
@@ -763,9 +972,9 @@ class ImportadorBBVA:
             return categoria
         except Categoria.DoesNotExist:
             print(f"{Colors.WARNING}¡Esa categoría se va a crear, confírmala!: {nombre_categoria}{Colors.ENDC}")
-            confirmar = input("¿Crear categoría? (s/n): ").lower()
+            confirmar = input("¿Crear categoría? (1=Sí, 2=No) [Enter=1]: ").strip() or '1'
             
-            if confirmar == 's':
+            if confirmar == '1':
                 return self.crear_nueva_categoria(nombre_categoria)
             return None
     
