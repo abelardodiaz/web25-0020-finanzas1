@@ -4,6 +4,36 @@
 
 ## 📅 Historial de Cambios
 
+## 🗓️ Versión 0.8.13 - 12 de Agosto, 2025
+
+### 🛡️ **Sistema Más Robusto y Confiable**
+- ✅ **Error crítico corregido:** Solucionamos un problema que causaba que el programa se cerrara inesperadamente al revisar movimientos
+- 🔍 **Vista previa mejorada:** Ahora puedes revisar todos tus movimientos sin interrupciones antes de importarlos
+- 💪 **Mayor estabilidad:** El sistema maneja mejor los datos inconsistentes y previene errores
+
+### 👁️ **Nueva Opción: Revisar Antes de Importar**
+- 📋 **Lista visual mejorada:** Ve todos tus movimientos en un formato de dos líneas más claro:
+  - Primera línea: Número, fecha, tipo y categoría
+  - Segunda línea: Monto, cuenta vinculada y descripción
+- ✏️ **Edición fácil:** Escribe el número del movimiento para editarlo antes de importar
+- 🚀 **Navegación rápida:** Comando 'todos' para ver movimientos paginados, 'listo' para continuar
+
+### 🔧 **Opciones Flexibles Durante Importación**
+- 🛠️ **Edición sobre la marcha:** Si encuentra una categoría que no existe, ahora puedes:
+  - Crear la categoría nueva
+  - Seleccionar una existente
+  - **¡NUEVO!** Editar todos los campos del movimiento problemático
+- 📋 **Contexto completo:** Siempre ves los detalles del movimiento antes de tomar decisiones
+- 🔄 **Sin interrupciones:** Corriges el problema desde el mismo lugar donde lo encontraste
+
+### 📈 **Beneficios para ti**
+- **Importación sin sorpresas:** Revisa y corrige todo antes de que entre a tu sistema
+- **Cero errores:** El sistema ya no se cierra por datos inesperados
+- **Mayor control:** Decides exactamente qué se importa y cómo se clasifica
+- **Flujo intuitivo:** Numeras para seleccionar, Enter para continuar, 'todos' para ver más
+
+---
+
 ## 🗓️ Versión 0.8.9 - 12 de Agosto, 2025
 
 ### 🎨 **Todo el Sistema Ahora Funciona Igual**

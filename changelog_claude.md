@@ -1,5 +1,90 @@
 # 📝 CHANGELOG CLAUDE - WEB25-0020-FINANZAS1
 
+## 🗓️ 12 de Agosto, 2025 - v0.8.13 - Robustez y Estabilidad en Visualización 🛡️
+
+### 🛡️ **CORRECCIÓN CRÍTICA DE ESTABILIDAD** `HIGH IMPACT`
+#### 🐛 **TypeError en Visualización de Movimientos Corregido**
+- **🐛 PROBLEMA:** `TypeError: 'NoneType' object is not subscriptable` en `scripts_cli/importar_movimientos_bbva.py:419`
+- **✅ SOLUCIÓN:** `scripts_cli/importar_movimientos_bbva.py:394-436` - Validación robusta de datos
+  - **Validación de cuenta_vinculada:** Verificación exhaustiva de valores None/vacíos
+  - **Manejo de tipos mixtos:** Soporte para objetos Cuenta y strings
+  - **Truncado seguro:** Prevención de errores en slicing de strings
+  - **Fallback robusto:** Valor por defecto '-' cuando no hay cuenta vinculada
+  - 🎯 **Impact:** Eliminación completa de crashes en vista de revisión de movimientos
+
+#### 🔧 **Mejoras de Robustez Implementadas**
+- **📝 Líneas 401-414:** Lógica defensiva para manejo de cuenta_vinculada
+  ```python
+  # Antes: cuenta_vinculada[:15] (crash si None)
+  # Después: Validación completa + fallback seguro
+  ```
+- **🛠️ Gestión de objetos Django:** Extracción segura de nombres de modelos
+- **🎯 Experiencia sin interrupciones:** Usuario puede revisar todos los movimientos sin crashes
+
+---
+
+## 🗓️ 12 de Agosto, 2025 - v0.8.12 - Visualización Mejorada de Movimientos 🎨
+
+### 🎨 **REDISEÑO VISUAL DE LISTA DE MOVIMIENTOS** `MEDIUM IMPACT`
+#### 📊 **Formato de Dos Líneas con Espaciado**
+- **✨ MEJORADO:** `scripts_cli/importar_movimientos_bbva.py:394-421` - Nuevo formato visual
+  - **Primera línea:** `[ID] Fecha | Tipo | Categoría`
+  - **Segunda línea:** `Monto | Cta: vinculada | Descripción (20 chars)`
+  - **Interlineado:** Línea vacía entre cada movimiento para mejor legibilidad
+  - **Colores dinámicos:** Rojo para gastos, verde para ingresos, cyan para transferencias
+  - **Paginación reducida:** 10 movimientos por página (antes 20) por el nuevo formato
+  - 🎯 **Impact:** Información más completa y legible de un vistazo
+
+---
+
+## 🗓️ 12 de Agosto, 2025 - v0.8.11 - Edición Flexible y Revisión Pre-Importación 🛠️
+
+### 🚀 **NUEVA FUNCIONALIDAD: REVISIÓN PRE-IMPORTACIÓN** `HIGH IMPACT`
+#### 👁️ **Opción de Revisar/Editar Movimientos Antes de Importar**
+- **✨ NUEVO:** `scripts_cli/importar_movimientos_bbva.py:345-459` - Sistema de revisión completo
+  - **Nueva opción 3 en menú principal:** "👁️ Revisar/editar movimientos antes de importar"
+  - **Vista de lista mejorada:** Formato de dos líneas con toda la información relevante
+  - **Edición individual:** Seleccionar cualquier movimiento por número para editarlo
+  - **Navegación paginada:** Comando 'todos' para ver todos los movimientos con paginación
+  - **Flujo continuo:** Después de editar, regresa al menú principal
+  - 🎯 **Beneficio:** Permite corregir errores de clasificación ANTES de comenzar importación
+
+#### ✏️ **Edición Durante Categoría Inexistente**
+- **🔧 MEJORADO:** `scripts_cli/importar_movimientos_bbva.py:1122-1170` - Opción de editar
+  - **Nueva opción 3:** "✏️ Editar campos del movimiento" cuando categoría no existe
+  - **Contexto completo:** Muestra movimiento antes de ofrecer opciones
+  - **Actualización dinámica:** Si cambia la categoría, intenta obtenerla nuevamente
+  - **Reciclaje de código:** Usa función `editar_campos()` existente
+  - 🎯 **Impact:** No más interrupciones, puede corregir el problema desde el mismo lugar
+
+---
+
+## 🗓️ 12 de Agosto, 2025 - v0.8.10 - Contexto Visual en Importación Automática 👁️
+
+### 🎯 **MEJORA CRÍTICA DE UX** `HIGH IMPACT`
+#### 👁️ **Contexto de Movimiento en Creación de Categorías/Cuentas**
+- **🐛 PROBLEMA:** Al usar importación automática (opción 2), cuando encontraba categorías o cuentas inexistentes, no mostraba el movimiento
+- **✅ SOLUCIÓN:** `scripts_cli/importar_movimientos_bbva.py` - Mostrar contexto completo
+  - **Línea 1100-1114:** `verificar_crear_categoria()` ahora acepta parámetro `movimiento`
+  - **Línea 941-961:** `verificar_crear_cuenta()` y `crear_nueva_cuenta()` con contexto
+  - **Líneas 1307-1316:** `aplicar_reglas_contables()` pasa movimiento a verificadores
+  - 🎯 **Impact:** Usuario puede tomar decisiones informadas sin adivinar contexto
+
+#### 📋 **Mejora Visual**
+```python
+# Ahora muestra:
+⚠️  Categoría 'Transferencia SPEI' no existe
+
+Contexto del movimiento:
+┌────────────┬────────────┬─────────────┬───────────────────────────────────────
+│ Fecha      │ Tipo       │ Monto       │ Descripción
+├────────────┼────────────┼─────────────┼───────────────────────────────────────
+│ 2025-07-28 │ TRANSFEREN │ $6,350.00   │ SPEI RECIBIDOBANORTE / 0130134951
+└────────────┴────────────┴─────────────┴───────────────────────────────────────
+```
+
+---
+
 ## 🗓️ 12 de Agosto, 2025 - v0.8.9 - Sistema de Ayuda Universal y Coherencia Total 🎯
 
 ### 🔄 **RECICLAJE DE CÓDIGO MASIVO** `HIGH IMPACT`

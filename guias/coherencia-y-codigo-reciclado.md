@@ -97,9 +97,11 @@ def verificar_crear_categoria(self, nombre_categoria):
 
 ### 3.2 Vista Previa Contable
 `mostrar_vista_previa_contable()` se usa en:
-- Verificación de campos
+- Verificación de campos (con IDs de cuentas)
 - Después de correcciones
 - Antes de guardar
+- **MEJORADO**: Ahora muestra IDs de cuentas `[14] Comisiones e Intereses Ba`
+- **AYUDA**: Incluye tip para usar opción 2 con sistema de ayuda (9)
 
 ### 3.3 Formato de Columnas
 ```python
@@ -258,7 +260,7 @@ Siempre el mismo patrón:
 | `verificar_crear_categoria()` | Verificación y creación de categorías | 3+ lugares |
 | `verificar_crear_cuenta()` | Verificación y creación de cuentas | 3+ lugares |
 | `mostrar_movimiento_tabla()` | Visualización tabular de movimiento | 3+ lugares |
-| `mostrar_vista_previa_contable()` | Vista previa de asientos contables | 3+ lugares |
+| `mostrar_vista_previa_contable()` | Vista previa con IDs de cuentas | 3+ lugares |
 | `_mostrar_categorias_en_columnas()` | Helper para visualización en columnas | 2+ lugares |
 
 ## Conclusión
