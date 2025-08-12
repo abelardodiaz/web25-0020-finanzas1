@@ -458,11 +458,18 @@ class ImportadorBBVA:
         feedback_clasificacion = None
         if 'decision_ia' in movimiento and movimiento['decision_ia']:
             feedback_clasificacion = self.revisar_clasificacion_ia(movimiento)
+            
+            # Si el usuario eligió salir desde la clasificación IA
+            if feedback_clasificacion == 'exit':
+                return 'exit'
         
         # Si hubo feedback sobre clasificación IA, aplicarlo
-        if feedback_clasificacion and feedback_clasificacion.get('accion') == 'correccion':
+        if feedback_clasificacion and isinstance(feedback_clasificacion, dict) and feedback_clasificacion.get('accion') == 'correccion':
             movimiento['tipo'] = feedback_clasificacion['clasificacion_correcta']['tipo']
             movimiento['categoria'] = feedback_clasificacion['clasificacion_correcta']['categoria']
+            # Si se corrigió la cuenta vinculada (para transferencias)
+            if feedback_clasificacion['clasificacion_correcta'].get('cuenta_vinculada'):
+                movimiento['cuenta_destino'] = feedback_clasificacion['clasificacion_correcta']['cuenta_vinculada']
         
         # PASO 2: ¿Los campos son correctos?
         print(f"\n{Colors.HEADER}{'='*60}{Colors.ENDC}")
@@ -784,24 +791,140 @@ class ImportadorBBVA:
         
         for campo, nombre in campos_editables:
             valor_actual = movimiento_editado.get(campo, '')
-            nuevo_valor = input(f"{nombre} [{valor_actual}]: ").strip()
             
-            if nuevo_valor:
-                if campo == 'monto':
-                    try:
-                        movimiento_editado[campo] = float(nuevo_valor.replace(',', '').replace('$', ''))
-                    except ValueError:
-                        print(f"{Colors.FAIL}Monto inválido, manteniendo valor original{Colors.ENDC}")
-                else:
+            # Para categorías, ofrecer sistema de ayuda
+            if campo == 'categoria':
+                print(f"\n{Colors.OKCYAN}Categoría (nombre/número/9=ayuda/x=mantener):{Colors.ENDC}")
+                nuevo_valor = input(f"{nombre} [{valor_actual}]: ").strip()
+                
+                if nuevo_valor == '9' or (nuevo_valor.isdigit() and nuevo_valor != '0'):
+                    # Mostrar lista de categorías
+                    categoria_seleccionada = self.seleccionar_categoria_con_ayuda()
+                    if categoria_seleccionada:
+                        movimiento_editado[campo] = categoria_seleccionada.nombre
+                elif nuevo_valor and nuevo_valor != 'x':
                     movimiento_editado[campo] = nuevo_valor
+                    self.verificar_crear_categoria(nuevo_valor)
                     
-                    # Verificar si necesita crear nueva cuenta/categoría
-                    if campo in ['cuenta_origen', 'cuenta_destino']:
-                        self.verificar_crear_cuenta(nuevo_valor)
-                    elif campo == 'categoria':
-                        self.verificar_crear_categoria(nuevo_valor)
+            # Para cuentas (origen y destino), ofrecer sistema de ayuda
+            elif campo in ['cuenta_origen', 'cuenta_destino']:
+                campo_display = 'Cuenta Vinculada' if campo == 'cuenta_destino' else nombre
+                print(f"\n{Colors.OKCYAN}{campo_display} (nombre/número/9=ayuda/x=mantener):{Colors.ENDC}")
+                nuevo_valor = input(f"{nombre} [{valor_actual}]: ").strip()
+                
+                if nuevo_valor == '9' or (nuevo_valor.isdigit() and nuevo_valor != '0'):
+                    # Mostrar lista de cuentas con selección
+                    cuenta_seleccionada = self.seleccionar_cuenta_con_ayuda()
+                    if cuenta_seleccionada:
+                        movimiento_editado[campo] = cuenta_seleccionada
+                elif nuevo_valor == '0':
+                    # Crear nueva cuenta
+                    nombre_nueva = input("Nombre de la nueva cuenta: ").strip()
+                    if nombre_nueva:
+                        movimiento_editado[campo] = nombre_nueva
+                        self.verificar_crear_cuenta(nombre_nueva)
+                elif nuevo_valor and nuevo_valor != 'x':
+                    movimiento_editado[campo] = nuevo_valor
+                    self.verificar_crear_cuenta(nuevo_valor)
+                    
+            else:
+                nuevo_valor = input(f"{nombre} [{valor_actual}]: ").strip()
+                
+                if nuevo_valor:
+                    if campo == 'monto':
+                        try:
+                            movimiento_editado[campo] = float(nuevo_valor.replace(',', '').replace('$', ''))
+                        except ValueError:
+                            print(f"{Colors.FAIL}Monto inválido, manteniendo valor original{Colors.ENDC}")
+                    else:
+                        movimiento_editado[campo] = nuevo_valor
         
         return movimiento_editado
+    
+    def seleccionar_cuenta_con_ayuda(self):
+        """Muestra lista de cuentas con IDs para selección rápida (versión reutilizable)"""
+        try:
+            print(f"\n{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+            print(f"{Colors.BOLD}📚 CUENTAS DISPONIBLES{Colors.ENDC}")
+            print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}\n")
+            
+            from core.models import Cuenta
+            cuentas = Cuenta.objects.all().order_by('id')
+            
+            if not cuentas.exists():
+                print(f"{Colors.WARNING}No hay cuentas registradas{Colors.ENDC}")
+                nombre_nueva = input("Nombre de la nueva cuenta: ").strip()
+                if nombre_nueva:
+                    self.verificar_crear_cuenta(nombre_nueva)
+                    return nombre_nueva
+                return None
+            
+            # Crear diccionario ID -> cuenta
+            cuentas_dict = {}
+            cuentas_list = list(cuentas)
+            
+            # Mostrar en 3 columnas con IDs
+            num_cuentas = len(cuentas_list)
+            columnas = 3
+            filas = (num_cuentas + columnas - 1) // columnas
+            
+            for i in range(filas):
+                fila = []
+                for j in range(columnas):
+                    idx = i + j * filas
+                    if idx < num_cuentas:
+                        cuenta = cuentas_list[idx]
+                        cuentas_dict[cuenta.id] = cuenta.nombre
+                        # Formato: [ID] Nombre (truncado a 18 chars)
+                        nombre_truncado = cuenta.nombre[:18]
+                        fila.append(f"[{cuenta.id:3}] {nombre_truncado:<18}")
+                print("  " + " | ".join(fila))
+            
+            print(f"\n{Colors.OKGREEN}Total: {num_cuentas} cuentas{Colors.ENDC}")
+            print(f"{Colors.WARNING}[  0] → Crear nueva cuenta{Colors.ENDC}")
+            print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+            
+            # Solicitar selección
+            while True:
+                print(f"\n{Colors.BOLD}OPCIONES:{Colors.ENDC}")
+                print("• Escribe el NÚMERO de la cuenta que eliges")
+                print("• Escribe '0' para crear nueva cuenta")
+                print("• Escribe '9' para ver la lista otra vez")
+                print("• Escribe 'x' para cancelar")
+                
+                seleccion = input(f"\n{Colors.OKCYAN}Tu elección: {Colors.ENDC}").strip().lower()
+                
+                if seleccion == 'x':
+                    print(f"{Colors.WARNING}Cancelado{Colors.ENDC}")
+                    return None
+                    
+                elif seleccion == '9':
+                    # Mostrar lista otra vez (recursivo)
+                    return self.seleccionar_cuenta_con_ayuda()
+                    
+                elif seleccion == '0':
+                    nombre_nueva = input("Nombre de la nueva cuenta: ").strip()
+                    if nombre_nueva:
+                        self.verificar_crear_cuenta(nombre_nueva)
+                        return nombre_nueva
+                    continue
+                    
+                elif seleccion.isdigit():
+                    id_seleccionado = int(seleccion)
+                    if id_seleccionado in cuentas_dict:
+                        nombre_seleccionado = cuentas_dict[id_seleccionado]
+                        print(f"{Colors.OKGREEN}✓ Seleccionaste: {nombre_seleccionado}{Colors.ENDC}")
+                        return nombre_seleccionado
+                    else:
+                        print(f"{Colors.FAIL}ID no válido{Colors.ENDC}")
+                        continue
+                else:
+                    # Asumimos que escribió un nombre de cuenta
+                    return seleccion
+                    
+        except Exception as e:
+            print(f"{Colors.FAIL}Error al mostrar cuentas: {e}{Colors.ENDC}")
+            return None
     
     def verificar_crear_cuenta(self, nombre_cuenta):
         """Verifica si existe la cuenta y la crea si es necesario"""
@@ -963,7 +1086,7 @@ class ImportadorBBVA:
             return None
     
     def verificar_crear_categoria(self, nombre_categoria):
-        """Verifica si existe la categoría y la crea si es necesario"""
+        """Verifica si existe la categoría y la crea si es necesario con sistema de ayuda"""
         if not nombre_categoria:
             return None
             
@@ -971,23 +1094,173 @@ class ImportadorBBVA:
             categoria = Categoria.objects.get(nombre=nombre_categoria)
             return categoria
         except Categoria.DoesNotExist:
-            print(f"{Colors.WARNING}¡Esa categoría se va a crear, confírmala!: {nombre_categoria}{Colors.ENDC}")
-            confirmar = input("¿Crear categoría? (1=Sí, 2=No) [Enter=1]: ").strip() or '1'
+            print(f"{Colors.WARNING}⚠️  Categoría '{nombre_categoria}' no existe{Colors.ENDC}")
             
-            if confirmar == '1':
-                return self.crear_nueva_categoria(nombre_categoria)
+            while True:
+                print(f"\n{Colors.OKCYAN}Opciones disponibles:{Colors.ENDC}")
+                print("1) Crear nueva categoría")
+                print("2) Seleccionar categoría existente")
+                print("9) Ver lista de categorías")
+                print("x) Cancelar")
+                
+                opcion = input(f"{Colors.OKCYAN}Seleccione (1/2/9/x) [Enter=1]: {Colors.ENDC}").strip().lower() or '1'
+                
+                if opcion == 'x':
+                    print(f"{Colors.WARNING}Cancelado{Colors.ENDC}")
+                    return None
+                    
+                elif opcion == '1':
+                    return self.crear_nueva_categoria(nombre_categoria)
+                    
+                elif opcion == '2' or opcion == '9':
+                    # Mostrar lista de categorías
+                    categoria_seleccionada = self.seleccionar_categoria_con_ayuda()
+                    if categoria_seleccionada:
+                        return categoria_seleccionada
+                    # Si no seleccionó ninguna, volver al menú
+                    continue
+                    
+                else:
+                    print(f"{Colors.FAIL}Opción no válida{Colors.ENDC}")
+                    continue
+    
+    def seleccionar_categoria_con_ayuda(self):
+        """Muestra lista de categorías con IDs para selección rápida"""
+        try:
+            print(f"\n{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+            print(f"{Colors.BOLD}📁 CATEGORÍAS DISPONIBLES{Colors.ENDC}")
+            print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}\n")
+            
+            from core.models import Categoria
+            categorias = Categoria.objects.all().order_by('tipo', 'nombre')
+            
+            if not categorias.exists():
+                print(f"{Colors.WARNING}No hay categorías registradas{Colors.ENDC}")
+                nombre_nueva = input("Nombre de la nueva categoría: ").strip()
+                if nombre_nueva:
+                    return self.crear_nueva_categoria(nombre_nueva)
+                return None
+            
+            # Crear diccionario ID -> categoría
+            categorias_dict = {}
+            
+            # Separar por tipo
+            personales = []
+            negocio = []
+            
+            for cat in categorias:
+                categorias_dict[cat.id] = cat
+                if cat.tipo == 'personal':
+                    personales.append(cat)
+                else:
+                    negocio.append(cat)
+            
+            # Mostrar categorías personales
+            if personales:
+                print(f"{Colors.OKGREEN}📊 CATEGORÍAS PERSONALES:{Colors.ENDC}")
+                self._mostrar_categorias_en_columnas(personales)
+            
+            # Mostrar categorías de negocio
+            if negocio:
+                print(f"\n{Colors.OKBLUE}💼 CATEGORÍAS DE NEGOCIO:{Colors.ENDC}")
+                self._mostrar_categorias_en_columnas(negocio)
+            
+            print(f"\n{Colors.OKGREEN}Total: {len(categorias)} categorías{Colors.ENDC}")
+            print(f"{Colors.WARNING}[  0] → Crear nueva categoría{Colors.ENDC}")
+            print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+            
+            # Solicitar selección
+            while True:
+                print(f"\n{Colors.BOLD}OPCIONES:{Colors.ENDC}")
+                print("• Escribe el NÚMERO de la categoría que eliges")
+                print("• Escribe '0' para crear nueva categoría")
+                print("• Escribe '9' para ver la lista otra vez")
+                print("• Escribe 'x' para cancelar")
+                
+                seleccion = input(f"\n{Colors.OKCYAN}Tu elección: {Colors.ENDC}").strip().lower()
+                
+                if seleccion == 'x':
+                    print(f"{Colors.WARNING}Cancelado{Colors.ENDC}")
+                    return None
+                    
+                elif seleccion == '9':
+                    # Mostrar lista otra vez
+                    return self.seleccionar_categoria_con_ayuda()
+                    
+                elif seleccion == '0':
+                    nombre_nueva = input("Nombre de la nueva categoría: ").strip()
+                    if nombre_nueva:
+                        return self.crear_nueva_categoria(nombre_nueva)
+                    continue
+                    
+                elif seleccion.isdigit():
+                    id_seleccionado = int(seleccion)
+                    if id_seleccionado in categorias_dict:
+                        categoria_seleccionada = categorias_dict[id_seleccionado]
+                        print(f"{Colors.OKGREEN}✓ Seleccionaste: {categoria_seleccionada.nombre}{Colors.ENDC}")
+                        return categoria_seleccionada
+                    else:
+                        print(f"{Colors.FAIL}ID no válido{Colors.ENDC}")
+                        continue
+                else:
+                    print(f"{Colors.FAIL}Opción no válida{Colors.ENDC}")
+                    continue
+                    
+        except Exception as e:
+            print(f"{Colors.FAIL}Error al mostrar categorías: {e}{Colors.ENDC}")
             return None
     
+    def _mostrar_categorias_en_columnas(self, categorias_list):
+        """Helper para mostrar categorías en columnas"""
+        num_categorias = len(categorias_list)
+        columnas = 2  # Usar 2 columnas para categorías (nombres más largos)
+        filas = (num_categorias + columnas - 1) // columnas
+        
+        for i in range(filas):
+            fila = []
+            for j in range(columnas):
+                idx = i + j * filas
+                if idx < num_categorias:
+                    cat = categorias_list[idx]
+                    # Formato: [ID] Nombre (truncado a 25 chars para categorías)
+                    nombre_truncado = cat.nombre[:25]
+                    fila.append(f"[{cat.id:3}] {nombre_truncado:<25}")
+            print("  " + " | ".join(fila))
+    
     def crear_nueva_categoria(self, nombre):
-        """Crea una nueva categoría"""
+        """Crea una nueva categoría con asistente mejorado"""
         try:
+            print(f"\n{Colors.OKCYAN}═══ Nueva Categoría: {nombre} ═══{Colors.ENDC}")
+            
+            # Determinar tipo basado en el nombre
+            nombre_lower = nombre.lower()
+            if any(word in nombre_lower for word in ['negocio', 'empresa', 'proyecto', 'cliente']):
+                tipo_default = 'negocio'
+            else:
+                tipo_default = 'personal'
+            
+            print(f"\nTipo de categoría (default: {tipo_default.title()}):")
+            print("1) Personal")
+            print("2) Negocio")
+            tipo_opcion = input("Seleccione (1/2) [Enter=default]: ").strip()
+            
+            if tipo_opcion == '2':
+                tipo = 'negocio'
+            elif tipo_opcion == '1':
+                tipo = 'personal'
+            else:
+                tipo = tipo_default
+            
             categoria = Categoria.objects.create(
                 nombre=nombre,
-                tipo='personal'
+                tipo=tipo
             )
             
-            print(f"{Colors.OKGREEN}¡Nueva categoría creada!: {nombre}{Colors.ENDC}")
-            logger.info(f"Categoría creada: {nombre}")
+            print(f"{Colors.OKGREEN}✓ Nueva categoría creada exitosamente!{Colors.ENDC}")
+            print(f"  Nombre: {categoria.nombre}")
+            print(f"  Tipo: {tipo.title()}")
+            
+            logger.info(f"Categoría creada: {nombre} - Tipo: {tipo}")
             return categoria
             
         except Exception as e:
@@ -1182,9 +1455,10 @@ class ImportadorBBVA:
         print("1) ✅ Sí, es correcta")
         print("2) ❌ No, necesita corrección")
         print("3) ⏭️  Omitir (usar clasificación manual)")
+        print("4) 🚪 Salir del importador")
         
         while True:
-            opcion = input(f"\n{Colors.OKCYAN}Seleccione opción (1/2/3): {Colors.ENDC}").strip()
+            opcion = input(f"\n{Colors.OKCYAN}Seleccione opción (1/2/3/4): {Colors.ENDC}").strip()
             
             if opcion == '1':
                 # Confirmación
@@ -1198,59 +1472,81 @@ class ImportadorBBVA:
                 }
                 
             elif opcion == '2':
-                # Corrección
-                print(f"\n{Colors.WARNING}Ingrese la clasificación correcta:{Colors.ENDC}")
+                # Corrección con sistema de ayuda mejorado
+                print(f"\n{Colors.WARNING}Corregir clasificación:{Colors.ENDC}")
                 
-                # Seleccionar tipo correcto
-                print("\nTipo de transacción:")
-                print("1) GASTO")
-                print("2) INGRESO")
-                print("3) TRANSFERENCIA")
+                # PASO 1: Seleccionar tipo correcto
+                print(f"\n{Colors.OKCYAN}1️⃣ TIPO DE TRANSACCIÓN{Colors.ENDC}")
+                print("1) 💸 GASTO")
+                print("2) 💰 INGRESO") 
+                print("3) 🔄 TRANSFERENCIA")
                 
-                tipo_opcion = input(f"{Colors.OKCYAN}Seleccione tipo (1/2/3): {Colors.ENDC}").strip()
-                tipo_map = {'1': 'GASTO', '2': 'INGRESO', '3': 'TRANSFERENCIA'}
-                tipo_correcto = tipo_map.get(tipo_opcion, decision_ia.get('tipo'))
+                tipo_actual = decision_ia.get('tipo', 'GASTO')
+                tipo_opcion = input(f"{Colors.OKCYAN}Seleccione tipo (1/2/3) [Enter={tipo_actual}]: {Colors.ENDC}").strip()
                 
-                # Mostrar categorías existentes
-                from core.models import Categoria
-                categorias = list(Categoria.objects.all().order_by('nombre').values_list('nombre', flat=True))
+                if not tipo_opcion:
+                    tipo_correcto = tipo_actual
+                else:
+                    tipo_map = {'1': 'GASTO', '2': 'INGRESO', '3': 'TRANSFERENCIA'}
+                    tipo_correcto = tipo_map.get(tipo_opcion, tipo_actual)
                 
-                if categorias:
-                    print(f"\n{Colors.OKBLUE}📁 Categorías existentes:{Colors.ENDC}")
-                    # Mostrar en 4 columnas
-                    columnas = 4
-                    for i in range(0, len(categorias), columnas):
-                        fila = categorias[i:i+columnas]
-                        for j, cat in enumerate(fila):
-                            print(f"{i+j+1:3}) {cat:<30}", end="")
-                        print()
+                # PASO 2: Seleccionar categoría con sistema de ayuda
+                print(f"\n{Colors.OKCYAN}2️⃣ CATEGORÍA (nombre/número/9=ayuda):{Colors.ENDC}")
+                categoria_actual = decision_ia.get('categoria') or movimiento.get('categoria', 'SIN CLASIFICAR')
+                print(f"Categoría actual: {categoria_actual}")
                 
-                # Ingresar categoría correcta
-                categoria_actual = decision_ia.get('categoria') or movimiento.get('categoria', 'N/A')
-                print(f"\n{Colors.OKCYAN}Categoría (número de lista, nueva categoría, o Enter para '{categoria_actual}'):{Colors.ENDC}")
-                categoria_input = input(">>> ").strip()
+                categoria_input = input(f"{Colors.OKCYAN}Nueva categoría [Enter=mantener, 9=ver lista]: {Colors.ENDC}").strip()
                 
                 if not categoria_input:
                     categoria_correcta = categoria_actual
-                elif categoria_input.isdigit():
-                    idx = int(categoria_input) - 1
-                    if 0 <= idx < len(categorias):
-                        categoria_correcta = categorias[idx]
+                elif categoria_input == '9' or (categoria_input.isdigit() and categoria_input != '0'):
+                    # Usar el sistema de ayuda existente
+                    categoria_seleccionada = self.seleccionar_categoria_con_ayuda()
+                    if categoria_seleccionada:
+                        categoria_correcta = categoria_seleccionada.nombre
                     else:
                         categoria_correcta = categoria_actual
                 else:
+                    # Texto directo ingresado
                     categoria_correcta = categoria_input
+                    # Verificar si necesita crear la categoría
+                    self.verificar_crear_categoria(categoria_correcta)
                 
-                print(f"{Colors.OKGREEN}✓ Corrección registrada{Colors.ENDC}")
+                # PASO 3: Si es TRANSFERENCIA, seleccionar cuenta vinculada
+                cuenta_vinculada = None
+                if tipo_correcto == 'TRANSFERENCIA':
+                    print(f"\n{Colors.OKCYAN}3️⃣ CUENTA VINCULADA (para transferencia):{Colors.ENDC}")
+                    print("Como es una transferencia, necesitamos la cuenta destino.")
+                    
+                    cuenta_input = input(f"{Colors.OKCYAN}Cuenta (nombre/número/9=ayuda): {Colors.ENDC}").strip()
+                    
+                    if cuenta_input == '9' or (cuenta_input.isdigit() and cuenta_input != '0'):
+                        # Usar el sistema de ayuda de cuentas
+                        cuenta_seleccionada = self.seleccionar_cuenta_con_ayuda()
+                        if cuenta_seleccionada:
+                            cuenta_vinculada = cuenta_seleccionada
+                    elif cuenta_input:
+                        cuenta_vinculada = cuenta_input
+                        # Verificar si necesita crear la cuenta
+                        self.verificar_crear_cuenta(cuenta_vinculada)
+                
+                print(f"\n{Colors.OKGREEN}✓ Corrección registrada:{Colors.ENDC}")
+                print(f"  Tipo: {tipo_correcto}")
+                print(f"  Categoría: {categoria_correcta}")
+                if cuenta_vinculada:
+                    print(f"  Cuenta vinculada: {cuenta_vinculada}")
+                
                 return {
                     'accion': 'correccion',
                     'clasificacion_original': {
                         'tipo': decision_ia.get('tipo'),
-                        'categoria': decision_ia.get('categoria')
+                        'categoria': decision_ia.get('categoria'),
+                        'cuenta_vinculada': decision_ia.get('cuenta_vinculada')
                     },
                     'clasificacion_correcta': {
                         'tipo': tipo_correcto,
-                        'categoria': categoria_correcta
+                        'categoria': categoria_correcta,
+                        'cuenta_vinculada': cuenta_vinculada
                     },
                     'nota': f"Corregido por usuario"
                 }
@@ -1259,8 +1555,27 @@ class ImportadorBBVA:
                 # Omitir
                 print(f"{Colors.WARNING}⏭️  Clasificación IA omitida{Colors.ENDC}")
                 return None
+                
+            elif opcion == '4':
+                # Salir del importador
+                print(f"\n{Colors.WARNING}¿Seguro que deseas salir?{Colors.ENDC}")
+                print("Los movimientos ya procesados se mantienen guardados.")
+                print("Podrás continuar después desde donde quedaste.")
+                confirmar_salir = input(f"\n1=Sí salir, 2=No, continuar [Enter=2]: ").strip() or '2'
+                if confirmar_salir == '1':
+                    return 'exit'
+                else:
+                    print(f"{Colors.OKCYAN}Continuando con la importación...{Colors.ENDC}")
+                    # Volver a mostrar las opciones
+                    print(f"\n{Colors.WARNING}¿La clasificación de la IA es correcta?{Colors.ENDC}")
+                    print("1) ✅ Sí, es correcta")
+                    print("2) ❌ No, necesita corrección")
+                    print("3) ⏭️  Omitir (usar clasificación manual)")
+                    print("4) 🚪 Salir del importador")
+                    continue
+                    
             else:
-                print(f"{Colors.FAIL}Opción inválida{Colors.ENDC}")
+                print(f"{Colors.FAIL}Opción inválida. Por favor selecciona 1, 2, 3 o 4{Colors.ENDC}")
     
     def registrar_feedback_memoria(self, movimiento, feedback):
         """Registra el feedback del usuario en el sistema de memoria"""

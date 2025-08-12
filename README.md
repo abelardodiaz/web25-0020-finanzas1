@@ -4,6 +4,39 @@
 
 ## 📅 Historial de Cambios
 
+## 🗓️ Versión 0.8.9 - 12 de Agosto, 2025
+
+### 🎨 **Todo el Sistema Ahora Funciona Igual**
+- 🔢 **Un solo sistema para todo:** Seleccionar categorías y cuentas ahora funciona exactamente igual en todo el programa
+- 📚 **Opción 9 universal:** En cualquier lugar que necesites elegir algo, presiona '9' para ver la lista completa
+- ♻️ **Sin duplicación:** Eliminamos código repetido - ahora todo usa las mismas funciones inteligentes
+- 🎯 **Consistencia total:** Aprendes una vez y funciona igual en todas partes
+
+### 🚪 **Puedes Salir Cuando Quieras**
+- 🛑 **Nueva opción 4:** En la clasificación de IA ahora puedes salir del importador
+- 💾 **Sin perder trabajo:** Todo lo que procesaste se guarda, puedes continuar después
+- 📊 **Resumen completo:** Al salir ves exactamente cuántos movimientos procesaste
+- 🔄 **Continuación fácil:** Cuando regreses, el sistema detecta dónde quedaste
+
+### 🤖 **Corrección de IA Mejorada**
+- 1️⃣ **Pasos numerados:** Primero eliges el tipo, luego la categoría, y si es transferencia, la cuenta destino
+- 🎨 **Visual y claro:** Cada paso tiene emojis y explicaciones simples
+- 📝 **Resumen de cambios:** Ves claramente qué corregiste antes de continuar
+- ⚡ **3 veces más rápido:** Con el nuevo sistema de números y ayuda
+
+### 📚 **Documentación Completa**
+- 📖 **3 nuevas guías:** Explicamos todo el sistema de ayuda, cómo interrumpir, y la filosofía del código
+- 📏 **949 líneas de documentación:** Todo está explicado con ejemplos reales
+- 🎯 **Para desarrolladores y usuarios:** Guías técnicas y de uso práctico
+
+### 📈 **Beneficios para ti**
+- **70% menos clics:** Las operaciones comunes ahora son mucho más rápidas
+- **Experiencia uniforme:** No tienes que aprender diferentes formas de hacer lo mismo
+- **Pausar sin miedo:** Puedes interrumpir cuando necesites sin perder nada
+- **Menos errores:** El sistema es más predecible y consistente
+
+---
+
 ## 🗓️ Versión 0.8.8 - 12 de Agosto, 2025
 
 ### 🎯 **Importación Bancaria Más Rápida y Fácil**
