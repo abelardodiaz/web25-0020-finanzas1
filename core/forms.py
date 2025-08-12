@@ -257,8 +257,8 @@ class PeriodoForm(forms.ModelForm):
         
         if not self.cuenta:
             self.fields['cuenta'].queryset = Cuenta.objects.filter(
-                tipo__codigo__in=('TDC', 'SERV', 'DEB', 'EFE')
-            )
+                medio_pago=True
+            ).order_by('nombre')
         else:
             # Set grupo based on account type
             self.fields['grupo'].initial = self.cuenta.tipo.grupo

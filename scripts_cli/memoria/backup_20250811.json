@@ -1,0 +1,57 @@
+{
+  "version": "2.0",
+  "fecha_creacion": "2025-08-11T11:54:29.317976",
+  "ultima_actualizacion": "2025-08-11T12:08:17.843449",
+  "total_transacciones_aprendidas": 2,
+  "total_patrones_detectados": 1,
+  "patrones_detectados": {
+    "referencias_bancarias": {
+      "0076312440": {
+        "id": "0076312440",
+        "frecuencia": 3,
+        "primera_deteccion": "2025-08-11T11:54:29.318045",
+        "ultima_aparicion": "2025-08-11T12:08:17.843295",
+        "clasificacion": {
+          "tipo": "TRANSFERENCIA",
+          "categoria": "Pagos de Tarjetas",
+          "cuenta_vinculada": "TDC BANAMEX COSTCO 783"
+        },
+        "confianza": 0.89,
+        "ejemplos": [
+          {
+            "fecha": "2025-08-11",
+            "descripcion": "SPEI ENVIADO BANAMEX / 0076312440 costco",
+            "monto": -2036.49,
+            "referencia": "0076312440"
+          },
+          {
+            "fecha": "2025-08-11",
+            "descripcion": "SPEI ENVIADO BANAMEX / 0076312440 costco julio",
+            "monto": -2036.49,
+            "referencia": "0076312440"
+          },
+          {
+            "fecha": "2025-08-11",
+            "descripcion": "SPEI ENVIADO BANAMEX / 0076312440 costco julio",
+            "monto": -2036.49,
+            "referencia": "0076312440"
+          }
+        ],
+        "descripcion_comun": "SPEI ENVIADO BANAMEX / 0076312440 costco",
+        "montos_observados": [
+          -2036.49
+        ]
+      }
+    },
+    "montos_exactos": {},
+    "rangos_monto": {},
+    "patrones_temporales": {},
+    "descripciones_frecuentes": {},
+    "combinaciones": {}
+  },
+  "estadisticas": {
+    "precision_actual": 0.0,
+    "patrones_mas_usados": [],
+    "ultimos_aprendizajes": []
+  }
+}

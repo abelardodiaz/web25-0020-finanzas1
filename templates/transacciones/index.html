@@ -153,35 +153,76 @@
         </div>
     </div>
 
-    <!-- Paginación (solo al final) -->
-    {% if is_paginated %}
-    <div class="mt-6 flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-4">
-        <!-- Removed the "Mostrar" dropdown form -->
+    <!-- Selector de cantidad por página -->
+    <div class="mt-6 flex justify-center">
+        <form method="get" class="flex items-center">
+            <!-- Preservar todos los filtros existentes -->
+            {% for field in filter.form %}
+                {% if field.value %}
+                    <input type="hidden" name="{{ field.name }}" value="{{ field.value }}">
+                {% endif %}
+            {% endfor %}
+            
+            <label for="paginate_by" class="text-lg mr-2 text-gray-700 dark:text-gray-300">Mostrar:</label>
+            <select name="paginate_by" id="paginate_by" class="text-lg rounded border-gray-300 py-1 px-2 bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200" onchange="this.form.submit()">
+                <option value="25" {% if paginate_by == 25 %}selected{% endif %}>25</option>
+                <option value="50" {% if paginate_by == 50 %}selected{% endif %}>50</option>
+                <option value="100" {% if paginate_by == 100 %}selected{% endif %}>100</option>
+                <option value="0" {% if paginate_by == 0 %}selected{% endif %}>Todas</option>
+            </select>
+        </form>
+    </div>
+
+    <!-- Paginación - Siempre mostrar información de página -->
+    {% if transacciones %}
+    <div class="mt-4 flex justify-center">
         <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-            {% if page_obj.has_previous %}
-            <a href="?page=1" class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+            {% if is_paginated and page_obj.has_previous %}
+            <a href="?page=1{% for field in filter.form %}{% if field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}{% if request.GET.paginate_by %}&paginate_by={{ request.GET.paginate_by }}{% endif %}" class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <span class="sr-only">Primera</span>
                 <i class="fas fa-angle-double-left"></i>
             </a>
-            <a href="?page={{ page_obj.previous_page_number }}" class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <a href="?page={{ page_obj.previous_page_number }}{% for field in filter.form %}{% if field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}{% if request.GET.paginate_by %}&paginate_by={{ request.GET.paginate_by }}{% endif %}" class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <span class="sr-only">Anterior</span>
                 <i class="fas fa-chevron-left"></i>
             </a>
+            {% else %}
+            <span class="relative inline-flex items-center px-3 py-2 rounded-l-md border border-gray-300 bg-gray-100 dark:bg-gray-600 text-base font-medium text-gray-400 dark:text-gray-500 cursor-not-allowed">
+                <span class="sr-only">Primera</span>
+                <i class="fas fa-angle-double-left"></i>
+            </span>
+            <span class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-100 dark:bg-gray-600 text-base font-medium text-gray-400 dark:text-gray-500 cursor-not-allowed">
+                <span class="sr-only">Anterior</span>
+                <i class="fas fa-chevron-left"></i>
+            </span>
             {% endif %}
             
             <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-lg font-medium text-gray-700 dark:text-gray-300">
-                Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                {% if is_paginated %}
+                    Página {{ page_obj.number }} de {{ page_obj.paginator.num_pages }}
+                {% else %}
+                    Página 1 de 1
+                {% endif %}
             </span>
             
-            {% if page_obj.has_next %}
-            <a href="?page={{ page_obj.next_page_number }}" class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+            {% if is_paginated and page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% for field in filter.form %}{% if field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}{% if request.GET.paginate_by %}&paginate_by={{ request.GET.paginate_by }}{% endif %}" class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-50 dark:bg-gray-800 text-lg font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <span class="sr-only">Siguiente</span>
                 <i class="fas fa-chevron-right"></i>
             </a>
-            <a href="?page={{ page_obj.paginator.num_pages }}" class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+            <a href="?page={{ page_obj.paginator.num_pages }}{% for field in filter.form %}{% if field.value %}&{{ field.name }}={{ field.value }}{% endif %}{% endfor %}{% if request.GET.paginate_by %}&paginate_by={{ request.GET.paginate_by }}{% endif %}" class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-gray-50 dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                 <span class="sr-only">Última</span>
                 <i class="fas fa-angle-double-right"></i>
             </a>
+            {% else %}
+            <span class="relative inline-flex items-center px-3 py-2 border border-gray-300 bg-gray-100 dark:bg-gray-600 text-lg font-medium text-gray-400 dark:text-gray-500 cursor-not-allowed">
+                <span class="sr-only">Siguiente</span>
+                <i class="fas fa-chevron-right"></i>
+            </span>
+            <span class="relative inline-flex items-center px-3 py-2 rounded-r-md border border-gray-300 bg-gray-100 dark:bg-gray-600 text-base font-medium text-gray-400 dark:text-gray-500 cursor-not-allowed">
+                <span class="sr-only">Última</span>
+                <i class="fas fa-angle-double-right"></i>
+            </span>
             {% endif %}
         </nav>
     </div>
@@ -282,8 +323,11 @@
         
         // Setear valor actual del select de paginación
         const urlParams = new URLSearchParams(window.location.search);
-        const currentItems = urlParams.get('paginate_by') || '10';
-        document.getElementById('items-per-page').value = currentItems;
+        const currentItems = urlParams.get('paginate_by') || '50';
+        const paginateSelect = document.getElementById('paginate_by');
+        if (paginateSelect) {
+            paginateSelect.value = currentItems;
+        }
     });
 </script>
 {% endblock %}

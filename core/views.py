@@ -169,6 +169,20 @@ class CuentaListView(ListView):
     context_object_name = 'cuentas'
     paginate_by = 10
     
+    def get_paginate_by(self, queryset):
+        """Determinar el número de elementos por página basado en el parámetro GET"""
+        paginate_by = self.request.GET.get('paginate_by', str(self.paginate_by))
+        try:
+            paginate_by_int = int(paginate_by)
+            if paginate_by_int <= 0:
+                # Si es 0 o menor, mostrar todas (sin paginación)
+                return None
+            else:
+                return paginate_by_int
+        except (ValueError, TypeError):
+            # Si hay error, usar valor por defecto
+            return self.paginate_by
+    
     def get_queryset(self):
         queryset = super().get_queryset()
         
@@ -208,10 +222,16 @@ class CuentaListView(ListView):
         context['selected_activa'] = self.request.GET.get('activa', '')
         context['search_query'] = self.request.GET.get('nombre', '')
         
-        # Obtener y guardar el valor de paginación
-        paginate_by = self.request.GET.get('paginate_by', self.paginate_by)
-        context['paginate_by'] = int(paginate_by)
-        self.paginate_by = paginate_by
+        # Obtener el valor de paginación para el template
+        paginate_by = self.request.GET.get('paginate_by', str(self.paginate_by))
+        try:
+            paginate_by_int = int(paginate_by)
+            if paginate_by_int <= 0:
+                context['paginate_by'] = 0
+            else:
+                context['paginate_by'] = paginate_by_int
+        except (ValueError, TypeError):
+            context['paginate_by'] = self.paginate_by
         
         return context
 
@@ -271,6 +291,20 @@ class TransaccionListView(FilterView):
     context_object_name = "transacciones"
     paginate_by         = 50
     ordering            = ["-fecha"]
+    
+    def get_paginate_by(self, queryset):
+        """Determinar el número de elementos por página basado en el parámetro GET"""
+        paginate_by = self.request.GET.get('paginate_by', str(self.paginate_by))
+        try:
+            paginate_by_int = int(paginate_by)
+            if paginate_by_int <= 0:
+                # Si es 0 o menor, mostrar todas (sin paginación)
+                return None
+            else:
+                return paginate_by_int
+        except (ValueError, TypeError):
+            # Si hay error, usar valor por defecto
+            return self.paginate_by
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -305,6 +339,17 @@ class TransaccionListView(FilterView):
         context['requieren_atencion'] = [
             t for t in transacciones if t.requiere_atencion
         ]
+        
+        # Obtener el valor de paginación para el template
+        paginate_by = self.request.GET.get('paginate_by', str(self.paginate_by))
+        try:
+            paginate_by_int = int(paginate_by)
+            if paginate_by_int <= 0:
+                context['paginate_by'] = 0
+            else:
+                context['paginate_by'] = paginate_by_int
+        except (ValueError, TypeError):
+            context['paginate_by'] = self.paginate_by
         
         return context
 
@@ -570,11 +615,9 @@ class PeriodoCreateView(CreateView):
         if "cuenta_pk" in kwargs:
             try:
                 self.cuenta = Cuenta.objects.get(pk=kwargs["cuenta_pk"])
-                # Usamos los códigos reales DEB y EFE
-                TIPOS_PERMITIDOS = ("TDC", "SERV", "DEB", "EFE")  # → puedes moverlo a settings o constants.py
-
-                if self.cuenta.tipo.codigo not in TIPOS_PERMITIDOS:
-                    raise Http404("Tipo de cuenta no válido para periodos")
+                # Verificar que sea una cuenta de medio de pago
+                if not self.cuenta.medio_pago:
+                    raise Http404("Esta cuenta no es un medio de pago válido para periodos")
             except Cuenta.DoesNotExist:
                 raise Http404("Cuenta no existe")
         else:
@@ -637,8 +680,8 @@ class PeriodoCreateView(CreateView):
         # Add accounts with group data for template
         if not self.cuenta:
             cuentas = Cuenta.objects.filter(
-                tipo__codigo__in=('TDC','SERV','DEB','EFE')
-            )
+                medio_pago=True
+            ).order_by('nombre')
             context['cuentas'] = cuentas
         return context
     
@@ -753,7 +796,7 @@ class PeriodoUpdateView(UpdateView):
         # Para que el template muestre el <select>, eliminamos 'cuenta'
         ctx["cuenta"] = None
         # Lista de cuentas disponibles para el selector
-        ctx["cuentas"] = Cuenta.objects.filter(tipo__codigo__in=("TDC","SERV","DEB","EFE"))
+        ctx["cuentas"] = Cuenta.objects.filter(medio_pago=True).order_by('nombre')
         return ctx
 
     def form_valid(self, form):
