@@ -7,6 +7,7 @@ import os
 import sys
 import json
 import logging
+import glob
 from datetime import datetime
 from decimal import Decimal
 from pathlib import Path
@@ -55,8 +56,11 @@ class ImportadorBBVA:
         self.movimientos = []
         self.procesados = 0
         self.errores = 0
+        self.duplicados = 0
+        self.omitidos = 0
         self.log_operaciones = []
         self.memoria_sistema = None  # Se inicializará después
+        self.modo_duplicados = None  # 'omitir', 'sobrescribir', 'preguntar'
         
     def iniciar(self):
         """Flujo principal del importador"""
@@ -85,6 +89,9 @@ class ImportadorBBVA:
         
         # Mostrar resumen
         self.mostrar_resumen_inicial()
+        
+        # Verificar duplicados
+        self.verificar_duplicados_iniciales()
         
         # Preguntar por procesamiento masivo
         modo_masivo = self.preguntar_modo_masivo()
@@ -127,10 +134,9 @@ class ImportadorBBVA:
                 nombre="TDB BBVA 5019",
                 tipo=tipo_deb,
                 naturaleza='DEUDORA',
-                medio_pago=True,
+                es_medio_pago=True,
                 moneda='MXN',
-                saldo_inicial=0,
-                activa=True
+                saldo_inicial=0
             )
             print(f"{Colors.OKGREEN}✓ Cuenta creada exitosamente{Colors.ENDC}")
             return True
@@ -140,13 +146,64 @@ class ImportadorBBVA:
     
     def cargar_datos(self):
         """Carga el archivo JSON con los movimientos"""
-        archivo_default = "archivo2_50_movimientos_final.json"
-        print(f"{Colors.OKBLUE}Archivo predeterminado: {archivo_default}{Colors.ENDC}")
+        # Buscar archivos JSON disponibles
+        json_files = []
         
-        archivo_path = input("¿Usar otro archivo? (ruta absoluta o Enter para default): ").strip()
+        # Buscar en directorio actual
+        for file in glob.glob("*.json"):
+            json_files.append(file)
         
-        if not archivo_path:
-            archivo_path = archivo_default
+        # Buscar en scripts_cli/output/
+        output_dir = "scripts_cli/output"
+        if os.path.exists(output_dir):
+            for file in glob.glob(f"{output_dir}/*.json"):
+                json_files.append(file)
+        
+        if not json_files:
+            print(f"{Colors.FAIL}No se encontraron archivos JSON{Colors.ENDC}")
+            return False
+        
+        # Ordenar por fecha de modificación (más reciente primero)
+        json_files.sort(key=lambda x: os.path.getmtime(x), reverse=True)
+        
+        print(f"{Colors.HEADER}📁 Archivos JSON disponibles:{Colors.ENDC}")
+        print(f"{Colors.HEADER}{'='*60}{Colors.ENDC}")
+        
+        for i, file in enumerate(json_files, 1):
+            file_time = datetime.fromtimestamp(os.path.getmtime(file))
+            file_size = os.path.getsize(file) / 1024  # KB
+            
+            if i == 1:  # Más reciente
+                print(f"{Colors.OKGREEN}[{i}] {file}{Colors.ENDC} {Colors.BOLD}← MÁS RECIENTE{Colors.ENDC}")
+                print(f"    📅 {file_time.strftime('%d/%m/%Y %H:%M:%S')} | 📦 {file_size:.1f} KB")
+            else:
+                print(f"{Colors.OKCYAN}[{i}] {file}{Colors.ENDC}")
+                print(f"    📅 {file_time.strftime('%d/%m/%Y %H:%M:%S')} | 📦 {file_size:.1f} KB")
+        
+        print(f"{Colors.HEADER}{'='*60}{Colors.ENDC}")
+        
+        while True:
+            try:
+                opcion = input(f"\n{Colors.OKCYAN}Seleccione archivo [1-{len(json_files)}] o ruta absoluta: {Colors.ENDC}").strip()
+                
+                if not opcion:  # Enter = usar el más reciente
+                    archivo_path = json_files[0]
+                    break
+                elif opcion.isdigit():
+                    idx = int(opcion) - 1
+                    if 0 <= idx < len(json_files):
+                        archivo_path = json_files[idx]
+                        break
+                    else:
+                        print(f"{Colors.WARNING}Número fuera de rango{Colors.ENDC}")
+                elif os.path.exists(opcion):
+                    archivo_path = opcion
+                    break
+                else:
+                    print(f"{Colors.WARNING}Archivo no encontrado: {opcion}{Colors.ENDC}")
+            except (ValueError, KeyboardInterrupt):
+                print(f"{Colors.WARNING}Opción inválida{Colors.ENDC}")
+                continue
         
         try:
             with open(archivo_path, 'r', encoding='utf-8') as f:
@@ -173,6 +230,88 @@ class ImportadorBBVA:
             print(f"{Colors.FAIL}✗ Error inesperado: {e}{Colors.ENDC}")
             logger.error(f"Error inesperado: {e}")
             return False
+    
+    def verificar_duplicados_iniciales(self):
+        """Verifica si hay transacciones duplicadas en la BD"""
+        duplicados_encontrados = []
+        
+        print(f"\n{Colors.OKBLUE}🔍 Verificando duplicados...{Colors.ENDC}")
+        
+        for mov in self.movimientos:
+            fecha = mov.get('fecha')
+            monto = mov.get('monto')
+            ref_bancaria = mov.get('referencia_bancaria', '')
+            descripcion = mov.get('descripcion', '')[:50]
+            
+            # Buscar duplicados por fecha + monto + referencia
+            query = Transaccion.objects.filter(
+                fecha=fecha,
+                monto=Decimal(str(monto))
+            )
+            
+            if ref_bancaria:
+                query = query.filter(referencia_bancaria=ref_bancaria)
+            
+            if query.exists():
+                duplicados_encontrados.append({
+                    'fecha': fecha,
+                    'monto': monto,
+                    'referencia': ref_bancaria,
+                    'descripcion': descripcion,
+                    'transaccion_id': query.first().id
+                })
+        
+        if duplicados_encontrados:
+            print(f"\n{Colors.WARNING}⚠️  Se encontraron {len(duplicados_encontrados)} posibles duplicados{Colors.ENDC}")
+            print(f"\n{Colors.OKCYAN}Primeros 5 duplicados:{Colors.ENDC}")
+            for dup in duplicados_encontrados[:5]:
+                print(f"  • {dup['fecha']} | ${dup['monto']:,.2f} | {dup['descripcion']}")
+            
+            print(f"\n{Colors.WARNING}¿Cómo manejar duplicados?{Colors.ENDC}")
+            print("1) Omitir duplicados (no importar)")
+            print("2) Sobrescribir duplicados (actualizar existentes)")
+            print("3) Preguntar para cada uno")
+            print("4) Importar de todos modos (puede crear duplicados)")
+            
+            while True:
+                opcion = input(f"\n{Colors.OKCYAN}Seleccione opción (1/2/3/4): {Colors.ENDC}").strip()
+                if opcion == '1':
+                    self.modo_duplicados = 'omitir'
+                    print(f"{Colors.OKGREEN}✓ Se omitirán los duplicados{Colors.ENDC}")
+                    break
+                elif opcion == '2':
+                    self.modo_duplicados = 'sobrescribir'
+                    print(f"{Colors.WARNING}⚠️  Se sobrescribirán los duplicados{Colors.ENDC}")
+                    break
+                elif opcion == '3':
+                    self.modo_duplicados = 'preguntar'
+                    print(f"{Colors.OKGREEN}✓ Se preguntará para cada duplicado{Colors.ENDC}")
+                    break
+                elif opcion == '4':
+                    self.modo_duplicados = None
+                    print(f"{Colors.WARNING}⚠️  Se importarán todos (puede crear duplicados){Colors.ENDC}")
+                    break
+                else:
+                    print(f"{Colors.FAIL}Opción inválida{Colors.ENDC}")
+        else:
+            print(f"{Colors.OKGREEN}✓ No se encontraron duplicados{Colors.ENDC}")
+            self.modo_duplicados = None
+    
+    def verificar_duplicado_individual(self, movimiento):
+        """Verifica si un movimiento específico es duplicado"""
+        fecha = movimiento.get('fecha')
+        monto = movimiento.get('monto')
+        ref_bancaria = movimiento.get('referencia_bancaria', '')
+        
+        query = Transaccion.objects.filter(
+            fecha=fecha,
+            monto=Decimal(str(monto))
+        )
+        
+        if ref_bancaria:
+            query = query.filter(referencia_bancaria=ref_bancaria)
+        
+        return query.first() if query.exists() else None
     
     def mostrar_resumen_inicial(self):
         """Muestra resumen de los movimientos cargados"""
@@ -245,6 +384,53 @@ class ImportadorBBVA:
     
     def procesar_movimiento_interactivo(self, movimiento, numero):
         """Procesa un movimiento de forma interactiva"""
+        # Verificar si es duplicado
+        transaccion_existente = self.verificar_duplicado_individual(movimiento)
+        
+        if transaccion_existente and self.modo_duplicados:
+            if self.modo_duplicados == 'omitir':
+                print(f"\n{Colors.WARNING}⏭️  Movimiento {numero} omitido (duplicado){Colors.ENDC}")
+                self.omitidos += 1
+                self.log_operaciones.append({
+                    'numero': numero,
+                    'fecha': movimiento.get('fecha'),
+                    'monto': movimiento.get('monto'),
+                    'estado': 'OMITIDO_DUPLICADO'
+                })
+                return 'omitido'
+            
+            elif self.modo_duplicados == 'preguntar':
+                print(f"\n{Colors.WARNING}⚠️  POSIBLE DUPLICADO DETECTADO{Colors.ENDC}")
+                print(f"ID existente: {transaccion_existente.id}")
+                print(f"Fecha: {transaccion_existente.fecha}")
+                print(f"Monto: ${transaccion_existente.monto:,.2f}")
+                print(f"Descripción: {transaccion_existente.descripcion[:50]}")
+                
+                print(f"\n{Colors.WARNING}¿Qué hacer con este duplicado?{Colors.ENDC}")
+                print("1) Omitir (no importar)")
+                print("2) Sobrescribir (actualizar existente)")
+                print("3) Importar de todos modos (crear duplicado)")
+                
+                while True:
+                    opcion_dup = input(f"{Colors.OKCYAN}Seleccione (1/2/3): {Colors.ENDC}").strip()
+                    if opcion_dup == '1':
+                        self.omitidos += 1
+                        print(f"{Colors.WARNING}⏭️  Movimiento omitido{Colors.ENDC}")
+                        return 'omitido'
+                    elif opcion_dup == '2':
+                        movimiento['transaccion_id_actualizar'] = transaccion_existente.id
+                        print(f"{Colors.WARNING}🔄 Se actualizará transacción existente{Colors.ENDC}")
+                        break
+                    elif opcion_dup == '3':
+                        print(f"{Colors.WARNING}⚠️  Se creará duplicado{Colors.ENDC}")
+                        break
+                    else:
+                        print(f"{Colors.FAIL}Opción inválida{Colors.ENDC}")
+            
+            elif self.modo_duplicados == 'sobrescribir':
+                movimiento['transaccion_id_actualizar'] = transaccion_existente.id
+                print(f"\n{Colors.WARNING}🔄 Actualizando transacción existente ID: {transaccion_existente.id}{Colors.ENDC}")
+        
         # Mostrar datos actuales
         self.mostrar_movimiento_tabla(movimiento)
         
@@ -278,6 +464,10 @@ class ImportadorBBVA:
                 confirmacion = input(f"\n{Colors.WARNING}¿Confirmar este movimiento? (s/n/exit): {Colors.ENDC}").lower()
                 
                 if confirmacion == 's':
+                    # Propagar ID de actualización si existe
+                    if 'transaccion_id_actualizar' in movimiento:
+                        transaccion['transaccion_id_actualizar'] = movimiento['transaccion_id_actualizar']
+                    
                     if not self.test_mode:
                         self.guardar_movimiento(transaccion)
                     self.procesados += 1
@@ -311,15 +501,22 @@ class ImportadorBBVA:
         print("+" + "-"*20 + "+" + "-"*35 + "+")
         
         # Solo mostrar campos que coinciden con el modelo de BD
+        # Manejar campos que podrían ser None
+        descripcion = movimiento.get('descripcion', '') or ''
+        cuenta_origen = movimiento.get('cuenta_origen', '') or ''
+        cuenta_destino = movimiento.get('cuenta_destino', '') or ''
+        categoria = movimiento.get('categoria', '') or ''
+        ref_bancaria = movimiento.get('referencia_bancaria', '') or ''
+        
         campos = [
             ('Fecha', movimiento.get('fecha', '')),
-            ('Descripción', movimiento.get('descripcion', '')[:33]),
+            ('Descripción', descripcion[:33]),
             ('Tipo', movimiento.get('tipo', '')),
             ('Monto', f"${movimiento.get('monto', 0):,.2f}"),
-            ('Cuenta Origen', movimiento.get('cuenta_origen', '')[:33]),
-            ('Cuenta Destino', movimiento.get('cuenta_destino', '')[:33]),
-            ('Categoría', movimiento.get('categoria', '')[:33]),
-            ('Ref. Bancaria', movimiento.get('referencia_bancaria', '')[:33])
+            ('Cuenta Origen', cuenta_origen[:33]),
+            ('Cuenta Destino', cuenta_destino[:33]),
+            ('Categoría', categoria[:33]),
+            ('Ref. Bancaria', ref_bancaria[:33])
         ]
         
         for campo, valor in campos:
@@ -372,30 +569,62 @@ class ImportadorBBVA:
             cuenta = Cuenta.objects.get(nombre=nombre_cuenta)
             return cuenta
         except Cuenta.DoesNotExist:
-            print(f"{Colors.WARNING}¡Esa cuenta se va a crear, confírmala!: {nombre_cuenta}{Colors.ENDC}")
-            confirmar = input("¿Crear cuenta? (s/n): ").lower()
-            
-            if confirmar == 's':
-                return self.crear_nueva_cuenta(nombre_cuenta)
-            return None
+            # Intentar crear nueva cuenta
+            return self.crear_nueva_cuenta(nombre_cuenta)
     
     def crear_nueva_cuenta(self, nombre):
         """Crea una nueva cuenta con asistente interactivo"""
         try:
-            print(f"\n{Colors.OKCYAN}═══ Creando nueva cuenta: {nombre} ═══{Colors.ENDC}")
+            print(f"\n{Colors.WARNING}⚠️  Cuenta '{nombre}' no existe{Colors.ENDC}")
+            confirmar = input(f"¿Crear nueva cuenta? (1=Sí, 2=No): ").strip()
             
-            # Asistente interactivo para configurar la cuenta
-            print(f"{Colors.WARNING}Configure los detalles de la cuenta:{Colors.ENDC}")
+            if confirmar != '1':
+                print(f"{Colors.WARNING}Cuenta no creada{Colors.ENDC}")
+                return None
             
-            # Naturaleza
-            naturaleza_default = 'ACREEDORA' if 'TDC' in nombre.upper() else 'DEUDORA'
-            naturaleza_input = input(f"Naturaleza [DEUDORA/ACREEDORA] (default: {naturaleza_default}): ").strip().upper()
-            naturaleza = naturaleza_input if naturaleza_input in ['DEUDORA', 'ACREEDORA'] else naturaleza_default
+            print(f"\n{Colors.OKCYAN}═══ Configuración: {nombre} ═══{Colors.ENDC}")
             
-            # Tipo de cuenta
-            print("Tipos disponibles: DEB (Débito), CRE (Crédito), SER (Servicios), ING (Ingresos)")
-            tipo_default = 'CRE' if 'TDC' in nombre.upper() else 'DEB'
-            tipo_codigo = input(f"Tipo de cuenta [DEB/CRE/SER/ING] (default: {tipo_default}): ").strip().upper() or tipo_default
+            # Determinar defaults inteligentes
+            nombre_upper = nombre.upper()
+            
+            # Default de naturaleza y tipo basado en el nombre
+            if 'TDC' in nombre_upper:
+                naturaleza_default = 'ACREEDORA'
+                tipo_default = 'CRE'
+            elif 'TDB' in nombre_upper or 'BANCO' in nombre_upper:
+                naturaleza_default = 'DEUDORA'
+                tipo_default = 'DEB'
+            elif 'INGRESO' in nombre_upper or 'RENTA' in nombre_upper:
+                naturaleza_default = 'ACREEDORA'
+                tipo_default = 'ING'
+            elif any(serv in nombre_upper for serv in ['CFE', 'TELMEX', 'IZZI', 'TOTALPLAY', 'GAS']):
+                naturaleza_default = 'ACREEDORA'
+                tipo_default = 'SER'
+            else:
+                naturaleza_default = 'DEUDORA'
+                tipo_default = 'DEB'
+            
+            # Naturaleza simplificada
+            print(f"\nNaturaleza (default: {naturaleza_default}):")
+            print("1) DEUDORA")
+            print("2) ACREEDORA")
+            nat_opcion = input("Seleccione 1/2 [Enter=default]: ").strip()
+            if nat_opcion == '2':
+                naturaleza = 'ACREEDORA'
+            elif nat_opcion == '1':
+                naturaleza = 'DEUDORA'
+            else:
+                naturaleza = naturaleza_default
+            
+            # Tipo de cuenta simplificado
+            print(f"\nTipo (default: {tipo_default}):")
+            print("1) DEB - Débito")
+            print("2) CRE - Crédito")
+            print("3) SER - Servicios")
+            print("4) ING - Ingresos")
+            tipo_opcion = input("Seleccione 1-4 [Enter=default]: ").strip()
+            tipo_map = {'1': 'DEB', '2': 'CRE', '3': 'SER', '4': 'ING'}
+            tipo_codigo = tipo_map.get(tipo_opcion, tipo_default) if tipo_opcion else tipo_default
             
             try:
                 tipo = TipoCuenta.objects.get(codigo=tipo_codigo)
@@ -403,21 +632,28 @@ class ImportadorBBVA:
                 print(f"{Colors.WARNING}Tipo no encontrado, usando DEB{Colors.ENDC}")
                 tipo = TipoCuenta.objects.get(codigo='DEB')
             
-            # Medio de pago
-            es_medio_pago = input("¿Es medio de pago? [s/n] (default: s): ").strip().lower() != 'n'
+            # Medio de pago (default inteligente según tipo)
+            default_medio_pago = '1' if tipo_codigo in ['DEB', 'CRE'] else '2'
+            print(f"\n¿Es medio de pago? (default: {'Sí' if default_medio_pago == '1' else 'No'}):")
+            print("1) Sí")
+            print("2) No")
+            medio_opcion = input("Seleccione 1/2 [Enter=default]: ").strip()
+            if medio_opcion == '':
+                es_medio_pago = (default_medio_pago == '1')
+            else:
+                es_medio_pago = (medio_opcion == '1')
             
-            # Referencia/Número de cuenta
-            referencia = input("Referencia/Número de cuenta (opcional): ").strip()
+            # Referencia/Número de cuenta (opcional, simplificado)
+            referencia = input("\nReferencia bancaria [Enter=omitir]: ").strip()
             
             # Crear la cuenta
             cuenta = Cuenta.objects.create(
                 nombre=nombre,
                 tipo=tipo,
                 naturaleza=naturaleza,
-                medio_pago=es_medio_pago,
+                es_medio_pago=es_medio_pago,
                 moneda='MXN',
                 saldo_inicial=0,
-                activa=True,
                 referencia=referencia if referencia else None
             )
             
@@ -458,8 +694,7 @@ class ImportadorBBVA:
         try:
             categoria = Categoria.objects.create(
                 nombre=nombre,
-                tipo='personal',
-                activa=True
+                tipo='personal'
             )
             
             print(f"{Colors.OKGREEN}¡Nueva categoría creada!: {nombre}{Colors.ENDC}")
@@ -547,19 +782,44 @@ class ImportadorBBVA:
     
     @transaction.atomic
     def guardar_movimiento(self, transaccion_data):
-        """Guarda el movimiento en la base de datos"""
+        """Guarda o actualiza el movimiento en la base de datos"""
         try:
-            transaccion = Transaccion.objects.create(**transaccion_data)
-            
-            self.log_operaciones.append({
-                'fecha': str(transaccion_data['fecha']),
-                'descripcion': transaccion_data['descripcion'],
-                'monto': float(transaccion_data['monto']),
-                'tipo': str(transaccion_data['tipo']),
-                'id_generado': transaccion.id
-            })
-            
-            logger.info(f"Transacción guardada: ID {transaccion.id}")
+            # Verificar si es actualización
+            if 'transaccion_id_actualizar' in transaccion_data:
+                transaccion_id = transaccion_data.pop('transaccion_id_actualizar')
+                transaccion = Transaccion.objects.get(id=transaccion_id)
+                
+                # Actualizar campos
+                for key, value in transaccion_data.items():
+                    setattr(transaccion, key, value)
+                transaccion.save()
+                
+                self.log_operaciones.append({
+                    'fecha': str(transaccion_data['fecha']),
+                    'descripcion': transaccion_data['descripcion'],
+                    'monto': float(transaccion_data['monto']),
+                    'tipo': str(transaccion_data['tipo']),
+                    'id_actualizado': transaccion.id,
+                    'estado': 'ACTUALIZADO'
+                })
+                
+                logger.info(f"Transacción actualizada: ID {transaccion.id}")
+                self.duplicados += 1
+                
+            else:
+                # Crear nueva transacción
+                transaccion = Transaccion.objects.create(**transaccion_data)
+                
+                self.log_operaciones.append({
+                    'fecha': str(transaccion_data['fecha']),
+                    'descripcion': transaccion_data['descripcion'],
+                    'monto': float(transaccion_data['monto']),
+                    'tipo': str(transaccion_data['tipo']),
+                    'id_generado': transaccion.id,
+                    'estado': 'CREADO'
+                })
+                
+                logger.info(f"Transacción guardada: ID {transaccion.id}")
             
         except Exception as e:
             logger.error(f"Error al guardar transacción: {e}")
@@ -571,8 +831,21 @@ class ImportadorBBVA:
         print(f"{Colors.BOLD}RESUMEN FINAL{Colors.ENDC}")
         print(f"{Colors.HEADER}{'='*60}{Colors.ENDC}")
         
-        print(f"  Movimientos procesados: {self.procesados}/{len(self.movimientos)}")
-        print(f"  Errores: {self.errores}")
+        print(f"  ✅ Movimientos procesados: {self.procesados}/{len(self.movimientos)}")
+        if self.duplicados > 0:
+            print(f"  🔄 Duplicados actualizados: {self.duplicados}")
+        if self.omitidos > 0:
+            print(f"  ⏭️  Duplicados omitidos: {self.omitidos}")
+        if self.errores > 0:
+            print(f"  ❌ Errores: {self.errores}")
+        
+        # Calcular totales
+        total_exitosos = self.procesados
+        total_no_procesados = self.errores + self.omitidos
+        
+        print(f"\n  📊 Total exitosos: {total_exitosos}")
+        if total_no_procesados > 0:
+            print(f"  📊 Total no procesados: {total_no_procesados}")
         
         if self.test_mode:
             print(f"\n{Colors.WARNING}MODO TEST - No se guardaron cambios{Colors.ENDC}")
@@ -591,11 +864,18 @@ class ImportadorBBVA:
         print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
         
         # Mostrar detalles de clasificación
-        print(f"\n📊 Tipo detectado: {Colors.BOLD}{decision_ia.get('tipo', 'N/A')}{Colors.ENDC}")
-        print(f"📁 Categoría: {Colors.BOLD}{decision_ia.get('categoria', 'N/A')}{Colors.ENDC}")
-        print(f"🏦 Cuenta vinculada: {Colors.BOLD}{decision_ia.get('cuenta_vinculada', 'N/A')}{Colors.ENDC}")
-        print(f"📝 Nota IA: {decision_ia.get('nota_ia', 'N/A')}")
-        print(f"🎯 Confianza: {Colors.BOLD}{decision_ia.get('confianza', 0)*100:.0f}%{Colors.ENDC}")
+        # Buscar los campos en decision_ia o en el movimiento directamente
+        tipo = decision_ia.get('tipo') or movimiento.get('tipo', 'N/A')
+        categoria = decision_ia.get('categoria') or movimiento.get('categoria', 'N/A')
+        cuenta_vinculada = decision_ia.get('cuenta_vinculada') or movimiento.get('cuenta_destino', 'N/A')
+        nota_ia = decision_ia.get('nota_ia', 'N/A')
+        confianza = decision_ia.get('confianza', 0)
+        
+        print(f"\n📊 Tipo detectado: {Colors.BOLD}{tipo}{Colors.ENDC}")
+        print(f"📁 Categoría: {Colors.BOLD}{categoria}{Colors.ENDC}")
+        print(f"🏦 Cuenta vinculada: {Colors.BOLD}{cuenta_vinculada}{Colors.ENDC}")
+        print(f"📝 Nota IA: {nota_ia}")
+        print(f"🎯 Confianza: {Colors.BOLD}{confianza*100:.0f}%{Colors.ENDC}")
         
         # Mostrar reglas aplicadas si existen
         reglas = decision_ia.get('reglas_aplicadas', [])

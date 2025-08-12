@@ -454,8 +454,8 @@ def main():
     )
     parser.add_argument(
         '--output', 
-        default='scripts_cli/output',
-        help='Directorio de salida para JSON (default: scripts_cli/output)'
+        default='output',
+        help='Directorio de salida para JSON (default: output)'
     )
     parser.add_argument(
         '--lote-size', 

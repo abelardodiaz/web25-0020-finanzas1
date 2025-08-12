@@ -4,6 +4,27 @@
 
 ## 📅 Historial de Cambios
 
+## 🗓️ Versión 0.8.6 - 12 de Agosto, 2025
+
+### 🎨 **Interfaz de Selección de Archivos Mejorada**
+- 📁 **Selector inteligente:** Al importar movimientos, ahora ves todos los archivos JSON disponibles en una lista numerada
+- ⏰ **Ordenamiento automático:** Los archivos se muestran por fecha, con el más reciente resaltado en verde
+- 📊 **Información detallada:** Cada archivo muestra su fecha de creación y tamaño para que sepas exactamente qué estás importando
+- 🎯 **Navegación fácil:** Selecciona por número (1, 2, 3...) o presiona Enter para usar el más reciente
+
+### 🧹 **Limpieza y Correcciones Importantes**
+- 🗄️ **Base de datos limpia:** Eliminamos las transacciones que se importaron automáticamente por error para que puedas hacerlo correctamente
+- 📅 **Fechas corregidas:** Arreglamos el formato de fechas en los archivos JSON (ya no verás errores de formato inválido)
+- ✅ **Consistencia perfecta:** La base de datos ahora tiene exactamente los mismos movimientos que tu archivo Excel original
+
+### 📈 **Beneficios para ti**
+- **Selección más fácil:** No más archivos predeterminados confusos, ahora eliges exactamente el archivo que quieres
+- **Información clara:** Sabes qué archivo es el más reciente y cuándo se creó
+- **Sistema limpio:** Base de datos alineada perfectamente con tus archivos originales
+- **Menos errores:** Formato de fechas corregido para importaciones sin problemas
+
+---
+
 ## 🗓️ Versión 0.8.5 - 12 de Agosto, 2025
 
 ### 🎓 **Sistema de Aprendizaje con Supervisión Humana**

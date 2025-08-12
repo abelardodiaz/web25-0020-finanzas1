@@ -1,5 +1,53 @@
 # 📝 CHANGELOG CLAUDE - WEB25-0020-FINANZAS1
 
+## 🗓️ 12 de Agosto, 2025 - v0.8.6 - Mejoras UX y Correcciones Post-Deploy 🎨
+
+### 🎨 **INTERFAZ DE USUARIO MEJORADA** `HIGH IMPACT`
+#### 📁 **Selector de Archivos Inteligente** 
+- **🚀 MEJORADO:** `scripts_cli/importar_movimientos_bbva.py:146-210` - Sistema de selección visual
+  - ✅ **Lista inteligente:** Muestra todos los JSON disponibles con metadatos completos
+  - ✅ **Ordenamiento por fecha:** Más reciente primero con indicador visual "← MÁS RECIENTE"
+  - ✅ **Información detallada:** Fecha/hora modificación + tamaño de archivo en KB
+  - ✅ **Navegación flexible:** Selección por número (1,2,3...) o Enter para el más reciente
+  - ✅ **Búsqueda dual:** Directorio actual + `scripts_cli/output/` automáticamente
+  - 📈 **Impact:** Eliminado archivo predeterminado hardcodeado, UX más intuitiva
+
+### 🔧 **CORRECCIONES CRÍTICAS** `HIGH IMPACT`
+#### 🗄️ **Limpieza de Base de Datos**
+- **🐛 RESUELTO:** Transacciones duplicadas y desalineadas con archivo Excel
+  - ✅ **Eliminadas:** 48 transacciones importadas automáticamente por error del script anterior
+  - ✅ **Verificación:** Eliminada transacción extra (ID 13) del 30/07 no presente en Excel
+  - ✅ **Consistencia:** BD ahora tiene exactamente 12 transacciones = 12 movimientos en Excel
+  - 📊 **Estado final:** movimientos1.xlsx (12 filas) ↔️ BD (12 transacciones) ✅
+
+#### 📅 **Formato de Fechas Corregido**
+- **🔧 FIXED:** `archivo2_50_movimientos_final.json` - Fechas mal formateadas
+  - ✅ **Corrección masiva:** `"202025-07-30"` → `"2025-07-30"` usando sed
+  - ✅ **Validación Django:** Error ValidationError resuelto completamente
+  - 📁 **Archivos afectados:** JSON con 50 movimientos ahora importable sin errores
+
+### 🧹 **REFINAMIENTO DEL SISTEMA** `MEDIUM IMPACT`
+#### 🎯 **Prevención de Errores de Usuario**
+- **📚 APRENDIZAJE:** Importación automática vs manual clarificada
+  - ✅ **Protocolo establecido:** Opción 1 (revisar individual) para entrenar IA correctamente
+  - ✅ **Documentación:** Usuario ahora sabe importancia de validación manual
+  - ✅ **Rollback limpio:** Procedimiento de eliminación masiva por rango de IDs
+
+#### 📊 **Verificación de Integridad**
+- **🔍 ANÁLISIS:** Excel vs BD comparación exhaustiva con `check_excel.py`
+  - ✅ **Script temporal:** Análisis detallado fila por fila del Excel
+  - ✅ **Detección automática:** Identificación de encabezados vs datos reales
+  - ✅ **Validación fechas:** Reconocimiento pattern `dd/mm/yyyy` en 12 movimientos válidos
+  - 📈 **Precisión:** 100% consistencia entre origen Excel y destino BD
+
+### 📈 **MÉTRICAS DE SESIÓN**
+- **📂 Archivos modificados:** 3 principales + 1 script temporal
+- **🗄️ BD Operations:** ~96 transacciones procesadas (48 import + 48 delete + cleanup)
+- **⏱️ Tiempo resolución:** Sistema completamente operativo y alineado
+- **🎯 UX mejorada:** De archivo hardcodeado a selector visual intuitivo
+
+---
+
 ## 🗓️ 12 de Agosto, 2025 - v0.8.5 - Sistema de Aprendizaje Supervisado con Feedback Humano 🎓
 
 ### 🤝 **VALIDACIÓN HUMANA INTEGRADA** `REVOLUTIONARY`

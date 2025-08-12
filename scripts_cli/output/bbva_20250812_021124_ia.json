@@ -1,0 +1,1071 @@
+{
+  "metadata": {
+    "lote_id": "BBVA_IA_20250812_021124",
+    "fecha_procesamiento": "2025-08-12T02:11:24.874447",
+    "archivo_origen": "movimientos2.xlsx",
+    "total_movimientos": 50,
+    "modo_test": false,
+    "estadisticas_ia": {
+      "movimientos_procesados": 50,
+      "movimientos_fallidos": 0,
+      "tiempo_total_segundos": 525.372863,
+      "tiempo_promedio_por_movimiento": 10.51,
+      "confianza_promedio": 0.93,
+      "lotes_procesados": 1
+    },
+    "version_procesador": "0.8.3"
+  },
+  "movimientos": [
+    {
+      "numero": 1,
+      "fecha": "2025-07-30",
+      "descripcion": "SPEI ENVIADO BANAMEX      / 0076312440  002 2207250costco bnmx julio 28",
+      "monto": -2036.49,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDC BANAMEX COSTCO 783",
+      "categoria": "Pagos de Tarjetas",
+      "referencia_bancaria": "0076312440",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento es un SPEI enviado a Banamex, relacionado con un pago a Costco, lo que sugiere un pago",
+        "reglas_aplicadas": [
+          "SPEI",
+          "TDC + nombre banco",
+          "monto negativo en cuenta BBVA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 2,
+      "fecha": "2025-07-30",
+      "descripcion": "SPEI RECIBIDOBANCOPPEL    / 0141401703  137 9990008Yaris",
+      "monto": 3200.0,
+      "tipo": "INGRESO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Ingresos Renta Yaris",
+      "referencia_bancaria": "0141401703",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un ingreso por renta del vehículo Yaris, identificado en la descripción.",
+        "reglas_aplicadas": [
+          "SPEI como transferencia entrante",
+          "Descripción coincide con cuenta conocida"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 3,
+      "fecha": "2025-07-28",
+      "descripcion": "PAGO TARJETA DE CREDITO   /  2734443810     CUENTA:                  BMOV",
+      "monto": -10961.4,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDC BBVA PLATINO 3358",
+      "categoria": "Pago Tarjeta Credito",
+      "referencia_bancaria": "2734443810",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde al pago de una tarjeta de crédito BBVA, identificada por el número de refe",
+        "reglas_aplicadas": [
+          "Si contiene \"TDC\" + nombre banco → Es pago de tarjeta de crédito",
+          "Si es monto negativo de cuenta BBVA → Generalmente gasto o transferencia saliente"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 4,
+      "fecha": "2025-07-28",
+      "descripcion": "SPEI RECIBIDOBANORTE      / 0130134951  072 0250728Sin informaci n",
+      "monto": 6350.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB BANORTE 3172",
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0130134951",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Movimiento identificado como transferencia SPEI recibida desde Banorte, posiblemente entre cuentas p",
+        "reglas_aplicadas": [
+          "SPEI",
+          "nombres de bancos"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 5,
+      "fecha": "2025-07-28",
+      "descripcion": "BANCO INVEX SA INST 13511 / DES051005PM6    pendiente",
+      "monto": -6908.66,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDC INVEX CERO 5616",
+      "categoria": "Pago Tarjeta Crédito",
+      "referencia_bancaria": "",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un pago de tarjeta de crédito de INVEX, detectado por el nombre del banc",
+        "reglas_aplicadas": [
+          "Si contiene 'TDC' + nombre banco → Es pago de tarjeta de crédito",
+          "Si es monto negativo de cuenta BBVA → Generalmente gasto o transferencia saliente"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 6,
+      "fecha": "2025-07-28",
+      "descripcion": "SPEI RECIBIDOSPIN BY OXXO / 0127619554  728 0389310k",
+      "monto": 258.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB SPIN OXXO 2113",
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0127619554",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Movimiento identificado como transferencia SPEI recibida desde OXXO, vinculada a la tarjeta de débit",
+        "reglas_aplicadas": [
+          "SPEI",
+          "TDB SPIN OXXO 2113"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 7,
+      "fecha": "2025-07-28",
+      "descripcion": "PAGO DE PRESTAMO          / 9810848652      TOTAL DE RECIBO",
+      "monto": -14002.8,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "PRESTAMOS REFIN25",
+      "categoria": "Pago de Prestamo",
+      "referencia_bancaria": "9810848652",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde al pago de un préstamo, identificado por la descripción 'PAGO DE PRESTAMO'",
+        "reglas_aplicadas": [
+          "monto negativo de cuenta BBVA",
+          "descripción contiene 'PAGO DE PRESTAMO'"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 8,
+      "fecha": "2025-07-25",
+      "descripcion": "SPEI ENVIADO STP          / 0052319722  646 2207250k",
+      "monto": -500.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0052319722",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.9,
+        "nota": "Movimiento identificado como transferencia SPEI enviada, pero no se detectó una cuenta destino espec",
+        "reglas_aplicadas": [
+          "SPEI",
+          "Monto negativo en cuenta BBVA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 9,
+      "fecha": "2025-07-24",
+      "descripcion": "TEF RECIBIDO BANK OF AMER / 3229935321  106 00000011043696473509",
+      "monto": 374.72,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB BANORTE 3172",
+      "categoria": "Transferencias Entre Cuentas",
+      "referencia_bancaria": "3229935321",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.9,
+        "nota": "El movimiento indica una transferencia recibida desde Bank of America, posiblemente entre cuentas pr",
+        "reglas_aplicadas": [
+          "Si contiene nombres de bancos → Es transferencia",
+          "Si es monto positivo a cuenta BBVA → Generalmente ingreso o transferencia entrante"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 10,
+      "fecha": "2025-07-20",
+      "descripcion": "SPEI RECIBIDOMercado Pago / 0190782902  722 1238574MERCADO*PAGO",
+      "monto": 6094.0,
+      "tipo": "INGRESO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB MPAGO 6007",
+      "categoria": "Ingresos Plataforma",
+      "referencia_bancaria": "0190782902",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Movimiento corresponde a un ingreso recibido desde Mercado Pago, probablemente por ventas o servicio",
+        "reglas_aplicadas": [
+          "SPEI RECIBIDO",
+          "Monto positivo a cuenta BBVA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 11,
+      "fecha": "2025-07-20",
+      "descripcion": "SPEI RECIBIDOAZTECA       / 0190050210  127 5501950pago del mes de julio cruz",
+      "monto": 270.0,
+      "tipo": "INGRESO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS",
+      "categoria": "Rentas",
+      "referencia_bancaria": "0190050210",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un ingreso por renta de la azotea, identificado por la descripción 'pago",
+        "reglas_aplicadas": [
+          "SPEI",
+          "monto positivo a cuenta BBVA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 12,
+      "fecha": "2025-07-21",
+      "descripcion": "LIVERPOOL POR INTERNET    / ******0287      RFC: DLI 931201MI9 14:38 AUT: 765150",
+      "monto": -2040.4,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDC LIVERPOOL I300005028 9045",
+      "categoria": "Compras en Tiendas",
+      "referencia_bancaria": "******0287",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a una compra en Liverpool, detectada por la descripción y la referencia a ",
+        "reglas_aplicadas": [
+          "Monto negativo en cuenta BBVA",
+          "Descripción contiene nombre de tienda",
+          "Referencia a TDC en cuentas conocidas"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 13,
+      "fecha": "2025-07-21",
+      "descripcion": "D LOCAL*STARLINK          / ******0287      RFC: EME 200630JP1 01:08 AUT: 165554",
+      "monto": -1100.0,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "STARLINK RINCON1",
+      "categoria": "Servicios Internet",
+      "referencia_bancaria": "******0287",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un pago por servicios de internet de Starlink, identificado por la descr",
+        "reglas_aplicadas": [
+          "Monto negativo en cuenta BBVA",
+          "Descripción coincide con servicio conocido"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 14,
+      "fecha": "2025-07-18",
+      "descripcion": "SPEI ENVIADO STP          / 0074463111  646 1207250ad",
+      "monto": -500.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0074463111",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a una transferencia SPEI enviada, pero no se especifica la cuenta destino ",
+        "reglas_aplicadas": [
+          "SPEI",
+          "monto negativo"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 15,
+      "fecha": "2025-07-18",
+      "descripcion": "STRIPE *SYSCOM MX         / ******0287      RFC: SSC 840823JT3 10:33 AUT: 467028",
+      "monto": -293.82,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Compras en línea",
+      "referencia_bancaria": "******0287",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un pago realizado a Stripe, probablemente por una compra en línea en SYS",
+        "reglas_aplicadas": [
+          "Monto negativo en cuenta BBVA",
+          "Descripción contiene proveedor de servicios"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 16,
+      "fecha": "2025-07-18",
+      "descripcion": "SPEI RECIBIDOBANORTE      / 0182558252  072 0250718Pedro Antonio Sanchez Sanchez",
+      "monto": 399.0,
+      "tipo": "INGRESO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Servicios Profesionales",
+      "referencia_bancaria": "0182558252",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un SPEI recibido de Banorte, probablemente un pago por servicios profesi",
+        "reglas_aplicadas": [
+          "SPEI",
+          "Monto positivo"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 17,
+      "fecha": "2025-07-18",
+      "descripcion": "SPEI RECIBIDOSPIN BY OXXO / 0181442188  728 0919388k",
+      "monto": 8560.0,
+      "tipo": "INGRESO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Ingresos Renta Yaris",
+      "referencia_bancaria": "0181442188",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.85,
+        "nota": "El movimiento corresponde a un SPEI recibido, lo que indica un ingreso desde una fuente externa. La ",
+        "reglas_aplicadas": [
+          "SPEI → Transferencia",
+          "Monto positivo → Ingreso"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 18,
+      "fecha": "2025-07-17",
+      "descripcion": "STRIPE *SYSCOM MX         / ******0287      RFC: SSC 840823JT3 18:22 AUT: 097287",
+      "monto": -628.6,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Compras en línea",
+      "referencia_bancaria": "******0287",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un pago realizado a Stripe, probablemente por una compra en línea en SYS",
+        "reglas_aplicadas": [
+          "Monto negativo en cuenta BBVA",
+          "Descripción de compra en línea"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 19,
+      "fecha": "2025-07-17",
+      "descripcion": "PAGO CUENTA DE TERCERO    /  0072819561     BNET    0468469393 pago",
+      "monto": 400.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Pago a Terceros",
+      "referencia_bancaria": "0072819561",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.85,
+        "nota": "El movimiento indica un pago a una cuenta de terceros a través de BNET, sin coincidencia con cuentas",
+        "reglas_aplicadas": [
+          "Descripción contiene 'PAGO CUENTA DE TERCERO'"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 20,
+      "fecha": "2025-07-16",
+      "descripcion": "SISTEMAS Y SERVICIOS      / GUIA:2111649    REF:5390392              CIE:0669911",
+      "monto": -765.77,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Servicios Digitales",
+      "referencia_bancaria": "",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.85,
+        "nota": "El movimiento corresponde a un pago por servicios digitales o sistemas, posiblemente relacionado con",
+        "reglas_aplicadas": [
+          "Monto negativo en cuenta BBVA",
+          "Descripción incluye 'SISTEMAS Y SERVICIOS'"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 21,
+      "fecha": "2025-07-15",
+      "descripcion": "SPEI RECIBIDOHSBC         / 0165258183  021 0123456Internet Lourdes alvarado",
+      "monto": 270.0,
+      "tipo": "INGRESO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Servicios Profesionales",
+      "referencia_bancaria": "0165258183",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un SPEI recibido desde HSBC, asociado a un pago por servicios profesiona",
+        "reglas_aplicadas": [
+          "SPEI",
+          "Monto positivo a cuenta BBVA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 22,
+      "fecha": "2025-07-15",
+      "descripcion": "SPEI RECIBIDOHSBC         / 0165252000  021 0123456Internet marisol alvarado",
+      "monto": 270.0,
+      "tipo": "INGRESO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Servicios Profesionales",
+      "referencia_bancaria": "0165252000",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento es un SPEI recibido desde HSBC, lo que indica un ingreso desde una fuente externa, pos",
+        "reglas_aplicadas": [
+          "SPEI",
+          "Monto positivo a cuenta BBVA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 23,
+      "fecha": "2025-07-15",
+      "descripcion": "SPEI ENVIADO STP          / 0056793919  646 0906250comida",
+      "monto": -435.0,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Compra comida en la calle",
+      "referencia_bancaria": "0056793919",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento describe una compra de comida con el término 'comida' en la descripción.",
+        "reglas_aplicadas": [
+          "Si es monto negativo de cuenta BBVA → Generalmente gasto o transferencia saliente",
+          "Descripción contiene término relacionado con gasto"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 24,
+      "fecha": "2025-07-15",
+      "descripcion": "PAGO CUENTA DE TERCERO    /  0074280869     BNET    0194446569 paraTCBanoete",
+      "monto": 5833.32,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB BANORTE 3172",
+      "categoria": "Pagos de Tarjetas",
+      "referencia_bancaria": "0074280869",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.9,
+        "nota": "El movimiento describe un pago a una cuenta de terceros con referencia a BNET y un número de cuenta ",
+        "reglas_aplicadas": [
+          "Si contiene TDB + nombre banco → Es transferencia",
+          "Si es monto negativo de cuenta BBVA → Generalmente transferencia saliente"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 25,
+      "fecha": "2025-07-15",
+      "descripcion": "PAGO CUENTA DE TERCERO    /  0026149481     BNET    2914335600 abel",
+      "monto": 4000.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Pago a Terceros",
+      "referencia_bancaria": "0026149481",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.85,
+        "nota": "El movimiento indica un pago a una cuenta de terceros a través de BNET, sin coincidencia con cuentas",
+        "reglas_aplicadas": [
+          "Descripción contiene 'PAGO CUENTA DE TERCERO'",
+          "No coincide con cuentas propias conocidas"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 26,
+      "fecha": "2025-07-15",
+      "descripcion": "SPEI ENVIADO BANORTE      / 0054907843  072 0906250k",
+      "monto": -5835.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB BANORTE 3172",
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0054907843",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a una transferencia SPEI enviada a una cuenta Banorte, identificada por el",
+        "reglas_aplicadas": [
+          "SPEI",
+          "nombres de bancos",
+          "monto negativo de cuenta BBVA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 27,
+      "fecha": "2025-07-14",
+      "descripcion": "SPEI ENVIADO BAJIO        / 0099064105  030 09062504",
+      "monto": -65.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Transferencias Entre Cuentas",
+      "referencia_bancaria": "0099064105",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento contiene 'SPEI ENVIADO', lo que indica una transferencia saliente a otra cuenta, pero ",
+        "reglas_aplicadas": [
+          "Si contiene 'SPEI' o 'TRANSF' → Es transferencia",
+          "Si es monto negativo de cuenta BBVA → Generalmente gasto o transferencia saliente"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 28,
+      "fecha": "2025-07-13",
+      "descripcion": "SPEI RECIBIDOAZTECA       / 0149630874  127 5501950julio 2025 pinot 132",
+      "monto": 270.0,
+      "tipo": "INGRESO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS",
+      "categoria": "Rentas",
+      "referencia_bancaria": "0149630874",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un SPEI recibido relacionado con la renta de azotea, según la descripció",
+        "reglas_aplicadas": [
+          "SPEI",
+          "Monto positivo a cuenta BBVA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 29,
+      "fecha": "2025-07-12",
+      "descripcion": "SPEI RECIBIDOBANORTE      / 0147497664  072 0250712av higueras 249",
+      "monto": 270.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB BANORTE 3172",
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0147497664",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Movimiento identificado como transferencia SPEI recibida desde Banorte, posiblemente a una cuenta TD",
+        "reglas_aplicadas": [
+          "SPEI",
+          "nombres de bancos"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 30,
+      "fecha": "2025-07-12",
+      "descripcion": "SPEI RECIBIDOAZTECA       / 0145831657  127 5501950pago del mes de junio cruz",
+      "monto": 270.0,
+      "tipo": "INGRESO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS",
+      "categoria": "Rentas",
+      "referencia_bancaria": "0145831657",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un SPEI recibido relacionado con el pago de renta de la azotea, según la",
+        "reglas_aplicadas": [
+          "SPEI",
+          "Monto positivo en cuenta BBVA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 31,
+      "fecha": "2025-07-11",
+      "descripcion": "SPEI ENVIADO BANAMEX      / 0086553911  002 0906250julio 2025",
+      "monto": -8500.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB BANAMEX",
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0086553911",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Movimiento de salida por transferencia SPEI a Banamex, posiblemente a una cuenta propia o pago de se",
+        "reglas_aplicadas": [
+          "SPEI en descripción",
+          "Monto negativo en cuenta BBVA",
+          "Nombre de banco en descripción"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 32,
+      "fecha": "2025-07-11",
+      "descripcion": "RETIRO SIN TARJETA QR     / ******4662",
+      "monto": -500.0,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "CTA DEBITO EFECTIVO",
+      "categoria": "Efectivo",
+      "referencia_bancaria": "******4662",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Retiro de efectivo sin tarjeta, probablemente para uso personal o pago en efectivo.",
+        "reglas_aplicadas": [
+          "Si es monto negativo de cuenta BBVA → Generalmente gasto o transferencia saliente"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 33,
+      "fecha": "2025-07-10",
+      "descripcion": "SPEI ENVIADO SANTANDER    / 0083751678  014 0906250c142",
+      "monto": -800.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "SANTANDER",
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0083751678",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Transferencia SPEI enviada a una cuenta de Santander, posiblemente entre cuentas propias o pago a te",
+        "reglas_aplicadas": [
+          "SPEI",
+          "nombres de bancos",
+          "monto negativo de cuenta BBVA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 34,
+      "fecha": "2025-07-10",
+      "descripcion": "PAGO CUENTA DE TERCERO    /  0017653263     BNET    1506914864 jul 2025",
+      "monto": -500.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Pago a Terceros",
+      "referencia_bancaria": "0017653263",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.9,
+        "nota": "El movimiento corresponde a un pago a una cuenta de terceros a través de BNET.",
+        "reglas_aplicadas": [
+          "Si es monto negativo de cuenta BBVA → Generalmente gasto o transferencia saliente"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 35,
+      "fecha": "2025-07-10",
+      "descripcion": "SPEI RECIBIDOAZTECA       / 0133716599  127 5501950pago internet",
+      "monto": 270.0,
+      "tipo": "INGRESO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Servicios Profesionales",
+      "referencia_bancaria": "0133716599",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un SPEI recibido, lo que indica un ingreso desde una fuente externa, pos",
+        "reglas_aplicadas": [
+          "SPEI",
+          "Monto positivo a cuenta BBVA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 36,
+      "fecha": "2025-07-10",
+      "descripcion": "SPEI RECIBIDOSANTANDER    / 0132945181  014 3985282TRANSFERENCIA",
+      "monto": 270.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0132945181",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Movimiento identificado como transferencia SPEI recibida desde otro banco (Santander).",
+        "reglas_aplicadas": [
+          "SPEI",
+          "TRANSFERENCIA"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 37,
+      "fecha": "2025-07-10",
+      "descripcion": "SPEI RECIBIDOBANCOPPEL    / 0132927829  137 5041039Av higueras 215",
+      "monto": 270.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0132927829",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.9,
+        "nota": "Movimiento identificado como transferencia SPEI recibida desde Bancoppel, pero no se especifica cuen",
+        "reglas_aplicadas": [
+          "SPEI",
+          "Transferencia entrante"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 38,
+      "fecha": "2025-07-09",
+      "descripcion": "PAGO CUENTA DE TERCERO    /  0035016043     BNET    0194446569 traspaso",
+      "monto": 19639.54,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "BNET",
+      "categoria": "Transferencias Entre Cuentas",
+      "referencia_bancaria": "0035016043",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.9,
+        "nota": "El movimiento describe un traspaso a una cuenta de tercero, identificada como BNET.",
+        "reglas_aplicadas": [
+          "TRANSF",
+          "nombres bancarios"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 39,
+      "fecha": "2025-07-09",
+      "descripcion": "IVA COM SERV BCA INTERNET / IVA COM SERV BC",
+      "monto": -0.8,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Comisiones Bancarias",
+      "referencia_bancaria": "",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un cobro de IVA por servicios bancarios de internet, clasificado como ga",
+        "reglas_aplicadas": [
+          "Si es monto negativo de cuenta BBVA → Generalmente gasto o transferencia saliente"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 40,
+      "fecha": "2025-07-09",
+      "descripcion": "SERV BANCA INTERNET       / OPS SERV BCA IN",
+      "monto": -5.0,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Comisiones Bancarias",
+      "referencia_bancaria": "",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un cobro por servicios de banca en línea, común en cuentas bancarias.",
+        "reglas_aplicadas": [
+          "Si es monto negativo de cuenta BBVA → Generalmente gasto o transferencia saliente",
+          "Descripción relacionada con servicios bancarios"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 41,
+      "fecha": "2025-07-08",
+      "descripcion": "SPEI ENVIADO BANORTE      / 0074757497  072 0906250k",
+      "monto": -41680.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB BANORTE 3172",
+      "categoria": "Transferencias Entre Cuentas",
+      "referencia_bancaria": "0074757497",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Movimiento SPEI enviado a Banorte, probable transferencia entre cuentas propias.",
+        "reglas_aplicadas": [
+          "SPEI en descripción",
+          "Monto negativo en cuenta BBVA",
+          "Nombre de banco en descripción"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 42,
+      "fecha": "2025-07-08",
+      "descripcion": "SPEI RECIBIDOCONSUBANCO   / 0126852430  140 1847433K",
+      "monto": 366.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB UBER PRO CONSUBANCO",
+      "categoria": "Transferencia Entre Cuentas",
+      "referencia_bancaria": "0126852430",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento contiene 'SPEI RECIBIDOCONSUBANCO', lo que indica una transferencia entrante desde CON",
+        "reglas_aplicadas": [
+          "SPEI",
+          "Transferencia Entre Cuentas"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 43,
+      "fecha": "2025-07-08",
+      "descripcion": "SPEI RECIBIDOSPIN BY OXXO / 0126848795  728 0667421k",
+      "monto": 40.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB SPIN OXXO 2113",
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0126848795",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Movimiento identificado como transferencia SPEI recibida desde OXXO, vinculada a la cuenta TDB SPIN ",
+        "reglas_aplicadas": [
+          "SPEI",
+          "TDB SPIN OXXO 2113"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 44,
+      "fecha": "2025-07-08",
+      "descripcion": "PAGO CUENTA DE TERCERO    /  0049634135     BNET    0194446569 Prestamo",
+      "monto": 22000.0,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "PRESTAMOS REFIN25",
+      "categoria": "Pago de Prestamo",
+      "referencia_bancaria": "0049634135",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un pago de préstamo, identificado por la descripción 'Prestamo' y la ref",
+        "reglas_aplicadas": [
+          "Descripción contiene 'Prestamo'",
+          "Monto negativo indica salida de dinero"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 45,
+      "fecha": "2025-07-05",
+      "descripcion": "SPEI RECIBIDOSANTANDER    / 0113433647  014 9048460TRANSFERENCIA A ABELARDO INTER",
+      "monto": 270.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Transferencia Entre Cuentas",
+      "referencia_bancaria": "0113433647",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Movimiento identificado como transferencia por contener 'SPEI' y 'TRANSFERENCIA' en la descripción.",
+        "reglas_aplicadas": [
+          "SPEI",
+          "TRANSF"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 46,
+      "fecha": "2025-07-04",
+      "descripcion": "SPEI RECIBIDOBANORTE      / 0105556429  072 0250704pago",
+      "monto": 270.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB BANORTE 3172",
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0105556429",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "Movimiento identificado como transferencia SPEI recibida desde Banorte.",
+        "reglas_aplicadas": [
+          "SPEI",
+          "nombres de bancos"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 47,
+      "fecha": "2025-07-04",
+      "descripcion": "SAT                       / GUIA:6211617    REF:04254ITE630046581229 CIE:0844985",
+      "monto": -1682.0,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Impuestos/Servicios",
+      "referencia_bancaria": "6300465812",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento corresponde a un pago al SAT (Servicio de Administración Tributaria), indicado por la ",
+        "reglas_aplicadas": [
+          "monto negativo en cuenta BBVA",
+          "descripción con entidad gubernamental (SAT)"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 48,
+      "fecha": "2025-07-03",
+      "descripcion": "SPEI RECIBIDOSANTANDER    / 0100128207  014 44364050307",
+      "monto": 19720.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Transferencia SPEI",
+      "referencia_bancaria": "0100128207",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.9,
+        "nota": "Movimiento identificado como transferencia SPEI recibida desde Santander, pero no se especifica cuen",
+        "reglas_aplicadas": [
+          "SPEI",
+          "nombres bancarios"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 49,
+      "fecha": "2025-07-02",
+      "descripcion": "PAGO CUENTA DE TERCERO    /  0011778300     BNET    2767356773 depos junio 2025",
+      "monto": 670.0,
+      "tipo": "GASTO",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": null,
+      "categoria": "Servicios Básicos",
+      "referencia_bancaria": "0011778300",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.85,
+        "nota": "Pago a cuenta de tercero descrito como 'depos junio 2025', probablemente relacionado con servicios b",
+        "reglas_aplicadas": [
+          "Salida de dinero hacia servicios/productos/proveedores"
+        ],
+        "procesado_con_ia": true
+      }
+    },
+    {
+      "numero": 50,
+      "fecha": "2025-07-01",
+      "descripcion": "SPEI ENVIADO Mercado Pago / 0091397656  722 0906250ok",
+      "monto": -6200.0,
+      "tipo": "TRANSFERENCIA",
+      "cuenta_origen": "TDB BBVA 5019",
+      "cuenta_destino": "TDB MPAGO 6007",
+      "categoria": "Transferencias Entre Cuentas",
+      "referencia_bancaria": "0091397656",
+      "archivo_origen": "movimientos2.xlsx",
+      "decision_ia": {
+        "confianza": 0.95,
+        "nota": "El movimiento es un SPEI enviado a Mercado Pago, lo que indica una transferencia a otra cuenta propi",
+        "reglas_aplicadas": [
+          "SPEI",
+          "Transferencias Entre Cuentas"
+        ],
+        "procesado_con_ia": true
+      }
+    }
+  ]
+}

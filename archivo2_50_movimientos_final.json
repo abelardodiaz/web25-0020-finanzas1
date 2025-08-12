@@ -11,7 +11,7 @@
     {
       "numero": 1,
       "monto": 2036.49,
-      "fecha": "202025-07-30",
+      "fecha": "2025-07-30",
       "descripcion": "Pago TDC Banamex Costco 783 - compras julio",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "TDC BANAMEX COSTCO 783",
@@ -26,7 +26,7 @@
     {
       "numero": 2,
       "monto": 3200.0,
-      "fecha": "202025-07-30",
+      "fecha": "2025-07-30",
       "descripcion": "Ingresos Renta Yaris - SPEI Bancoppel 0141401703",
       "cuenta_origen": "Ingresos Renta Yaris",
       "cuenta_destino": "TDB BBVA 5019",
@@ -41,7 +41,7 @@
     {
       "numero": 3,
       "monto": 10961.4,
-      "fecha": "202025-07-28",
+      "fecha": "2025-07-28",
       "descripcion": "Pago TDC BBVA Platino 3358 - Ref 2734443810",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "TDC BBVA PLATINO 3358",
@@ -56,7 +56,7 @@
     {
       "numero": 4,
       "monto": 6350.0,
-      "fecha": "202025-07-28",
+      "fecha": "2025-07-28",
       "descripcion": "Préstamo refinanciamiento - SPEI Banorte 0130134951",
       "cuenta_origen": "PRESTAMOS REFIN25",
       "cuenta_destino": "TDB BBVA 5019",
@@ -71,7 +71,7 @@
     {
       "numero": 5,
       "monto": 6908.66,
-      "fecha": "202025-07-28",
+      "fecha": "2025-07-28",
       "descripcion": "Pago TDC Invex Cero 5616 - Ref DES051005PM6",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "TDC INVEX CERO 5616",
@@ -86,7 +86,7 @@
     {
       "numero": 6,
       "monto": 258.0,
-      "fecha": "202025-07-28",
+      "fecha": "2025-07-28",
       "descripcion": "Transferencia de SPIN OXXO 2113 - SPEI 0127619554",
       "cuenta_origen": "TDB SPIN OXXO 2113",
       "cuenta_destino": "TDB BBVA 5019",
@@ -101,7 +101,7 @@
     {
       "numero": 7,
       "monto": 14002.8,
-      "fecha": "202025-07-28",
+      "fecha": "2025-07-28",
       "descripcion": "Pago hipoteca Casa 142 - Ref 9810848652",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "CREDITO HIPOTECA CASA 142",
@@ -116,7 +116,7 @@
     {
       "numero": 8,
       "monto": 500.0,
-      "fecha": "202025-07-25",
+      "fecha": "2025-07-25",
       "descripcion": "Transferencia para gastos personales - SPEI STP 0052319722",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "TDB OPENBANK 9365",
@@ -131,7 +131,7 @@
     {
       "numero": 9,
       "monto": 374.72,
-      "fecha": "202025-07-24",
+      "fecha": "2025-07-24",
       "descripcion": "Pago cliente ISP - TEF Bank of America 3229935321",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -146,7 +146,7 @@
     {
       "numero": 10,
       "monto": 6094.0,
-      "fecha": "202025-07-20",
+      "fecha": "2025-07-20",
       "descripcion": "Ingresos por ventas en MercadoLibre - SPEI Mercado Pago 0190782902",
       "cuenta_origen": "TDB MPAGO 6007",
       "cuenta_destino": "TDB BBVA 5019",
@@ -161,7 +161,7 @@
     {
       "numero": 11,
       "monto": 270.0,
-      "fecha": "202025-07-20",
+      "fecha": "2025-07-20",
       "descripcion": "Pago cliente ISP - SPEI Azteca 0190050210 - mes julio",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -176,7 +176,7 @@
     {
       "numero": 12,
       "monto": 2040.4,
-      "fecha": "202025-07-21",
+      "fecha": "2025-07-21",
       "descripcion": "Pago TDC Liverpool I300005028 9045 - Compra internet",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "TDC LIVERPOOL I300005028 9045",
@@ -191,7 +191,7 @@
     {
       "numero": 13,
       "monto": 1100.0,
-      "fecha": "202025-07-21",
+      "fecha": "2025-07-21",
       "descripcion": "Pago Starlink Rincón 1 - Servicio internet satelital",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "STARLINK RINCON1",
@@ -206,7 +206,7 @@
     {
       "numero": 14,
       "monto": 500.0,
-      "fecha": "202025-07-18",
+      "fecha": "2025-07-18",
       "descripcion": "Transferencia para gastos personales - SPEI STP 0074463111",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "TDB OPENBANK 9365",
@@ -221,7 +221,7 @@
     {
       "numero": 15,
       "monto": 293.82,
-      "fecha": "202025-07-18",
+      "fecha": "2025-07-18",
       "descripcion": "Compra SYSCOM vía Stripe - Proyecto 180 fibra",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "COMPRAS PROYECTO 180 FIBRA",
@@ -236,7 +236,7 @@
     {
       "numero": 16,
       "monto": 399.0,
-      "fecha": "202025-07-18",
+      "fecha": "2025-07-18",
       "descripcion": "Pago cliente ISP - SPEI Banorte 0182558252 - Pedro Antonio Sanchez",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -251,7 +251,7 @@
     {
       "numero": 17,
       "monto": 8560.0,
-      "fecha": "202025-07-18",
+      "fecha": "2025-07-18",
       "descripcion": "Ingresos ISP - SPEI SPIN OXXO 0181442188",
       "cuenta_origen": "TDB SPIN OXXO 2113",
       "cuenta_destino": "TDB BBVA 5019",
@@ -266,7 +266,7 @@
     {
       "numero": 18,
       "monto": 628.6,
-      "fecha": "202025-07-17",
+      "fecha": "2025-07-17",
       "descripcion": "Compra SYSCOM vía Stripe - Proyecto 180 fibra",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "COMPRAS PROYECTO 180 FIBRA",
@@ -281,7 +281,7 @@
     {
       "numero": 19,
       "monto": 400.0,
-      "fecha": "202025-07-17",
+      "fecha": "2025-07-17",
       "descripcion": "Pago cliente ISP - BNET 0468469393",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -296,7 +296,7 @@
     {
       "numero": 20,
       "monto": 765.77,
-      "fecha": "202025-07-16",
+      "fecha": "2025-07-16",
       "descripcion": "Sistemas y servicios - Proyecto 180 fibra - Guía 2111649",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "COMPRAS PROYECTO 180 FIBRA",
@@ -311,7 +311,7 @@
     {
       "numero": 21,
       "monto": 270.0,
-      "fecha": "202025-07-15",
+      "fecha": "2025-07-15",
       "descripcion": "Pago cliente ISP - SPEI HSBC 0165258183 - Lourdes Alvarado",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -326,7 +326,7 @@
     {
       "numero": 22,
       "monto": 270.0,
-      "fecha": "202025-07-15",
+      "fecha": "2025-07-15",
       "descripcion": "Pago cliente ISP - SPEI HSBC 0165252000 - Marisol Alvarado",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -341,7 +341,7 @@
     {
       "numero": 23,
       "monto": 435.0,
-      "fecha": "202025-07-15",
+      "fecha": "2025-07-15",
       "descripcion": "Transferencia para gastos personales - SPEI STP 0056793919 - comida",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "TDB OPENBANK 9365",
@@ -356,7 +356,7 @@
     {
       "numero": 24,
       "monto": 5833.32,
-      "fecha": "202025-07-15",
+      "fecha": "2025-07-15",
       "descripcion": "Préstamo refinanciamiento - BNET 0194446569 - para TC Banorte",
       "cuenta_origen": "PRESTAMOS REFIN25",
       "cuenta_destino": "TDB BBVA 5019",
@@ -371,7 +371,7 @@
     {
       "numero": 25,
       "monto": 4000.0,
-      "fecha": "202025-07-15",
+      "fecha": "2025-07-15",
       "descripcion": "Pago de tercero - BNET 2914335600 - Abel",
       "cuenta_origen": "SIN CLASIFICAR",
       "cuenta_destino": "TDB BBVA 5019",
@@ -386,7 +386,7 @@
     {
       "numero": 26,
       "monto": 5835.0,
-      "fecha": "202025-07-15",
+      "fecha": "2025-07-15",
       "descripcion": "Transferencia para pago de tarjeta - SPEI Banorte 0054907843",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "TDB BANORTE 3172",
@@ -401,7 +401,7 @@
     {
       "numero": 27,
       "monto": 65.0,
-      "fecha": "202025-07-14",
+      "fecha": "2025-07-14",
       "descripcion": "Compra comida en la calle - SPEI Bajío 0099064105",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "Compra comida en la calle",
@@ -416,7 +416,7 @@
     {
       "numero": 28,
       "monto": 270.0,
-      "fecha": "202025-07-13",
+      "fecha": "2025-07-13",
       "descripcion": "Pago cliente ISP - SPEI Azteca 0149630874 - pinot 132 julio 2025",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -431,7 +431,7 @@
     {
       "numero": 29,
       "monto": 270.0,
-      "fecha": "202025-07-12",
+      "fecha": "2025-07-12",
       "descripcion": "Pago cliente ISP - SPEI Banorte 0147497664 - av higueras 249",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -446,7 +446,7 @@
     {
       "numero": 30,
       "monto": 270.0,
-      "fecha": "202025-07-12",
+      "fecha": "2025-07-12",
       "descripcion": "Pago cliente ISP - SPEI Azteca 0145831657 - cruz junio",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -461,7 +461,7 @@
     {
       "numero": 31,
       "monto": 8500.0,
-      "fecha": "202025-07-11",
+      "fecha": "2025-07-11",
       "descripcion": "Pago renta casa 170 - SPEI Banamex 0086553911 - julio 2025",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "RENTA DE CASA 170",
@@ -476,7 +476,7 @@
     {
       "numero": 32,
       "monto": 500.0,
-      "fecha": "202025-07-11",
+      "fecha": "2025-07-11",
       "descripcion": "Retiro de efectivo sin tarjeta QR - Ref 4662",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "CTA DEBITO EFECTIVO",
@@ -491,7 +491,7 @@
     {
       "numero": 33,
       "monto": 800.0,
-      "fecha": "202025-07-10",
+      "fecha": "2025-07-10",
       "descripcion": "Pago mantenimiento AC colonos coto 4 - SPEI Santander 0083751678",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "COTO 4 AC COLONOS SANTANDER MTTO Y MULTAS",
@@ -506,7 +506,7 @@
     {
       "numero": 34,
       "monto": 500.0,
-      "fecha": "202025-07-10",
+      "fecha": "2025-07-10",
       "descripcion": "Pago renta azotea Siquiem/Sanfrancisco Asis - BNET 1506914864 jul 2025",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "RENTA DE AZOTEA SIQUIEM / SNFCO ASIS",
@@ -521,7 +521,7 @@
     {
       "numero": 35,
       "monto": 270.0,
-      "fecha": "202025-07-10",
+      "fecha": "2025-07-10",
       "descripcion": "Pago cliente ISP - SPEI Azteca 0133716599 - pago internet",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -536,7 +536,7 @@
     {
       "numero": 36,
       "monto": 270.0,
-      "fecha": "202025-07-10",
+      "fecha": "2025-07-10",
       "descripcion": "Pago cliente ISP - SPEI Santander 0132945181",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -551,7 +551,7 @@
     {
       "numero": 37,
       "monto": 270.0,
-      "fecha": "202025-07-10",
+      "fecha": "2025-07-10",
       "descripcion": "Pago cliente ISP - SPEI Bancoppel 0132927829 - Av higueras 215",
       "cuenta_origen": "Ingresos ISP",
       "cuenta_destino": "TDB BBVA 5019",
@@ -566,7 +566,7 @@
     {
       "numero": 38,
       "monto": 19639.54,
-      "fecha": "202025-07-09",
+      "fecha": "2025-07-09",
       "descripcion": "Préstamo refinanciamiento - BNET 0194446569 traspaso",
       "cuenta_origen": "PRESTAMOS REFIN25",
       "cuenta_destino": "TDB BBVA 5019",
@@ -581,7 +581,7 @@
     {
       "numero": 39,
       "monto": 0.8,
-      "fecha": "202025-07-09",
+      "fecha": "2025-07-09",
       "descripcion": "IVA comisión servicios banca por internet",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "Comisiones Bancarias",
@@ -596,7 +596,7 @@
     {
       "numero": 40,
       "monto": 5.0,
-      "fecha": "202025-07-09",
+      "fecha": "2025-07-09",
       "descripcion": "Servicio banca por internet - Comisión BBVA",
       "cuenta_origen": "TDB BBVA 5019",
       "cuenta_destino": "Comisiones Bancarias",
