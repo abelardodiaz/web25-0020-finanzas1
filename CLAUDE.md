@@ -233,3 +233,7 @@ def save(self, commit: bool = True) -> ModelClass:
 
 ### Weird Moments
 - o que la chingada son 12 + 50 + 50, no te equivoques con eso
+
+### Abbreviations
+- FYI para tu informacion  
+- ASAP as soon as possible

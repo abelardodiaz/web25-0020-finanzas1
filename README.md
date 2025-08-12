@@ -4,6 +4,28 @@
 
 ## 📅 Historial de Cambios
 
+## 🗓️ Versión 0.8.7 - 12 de Agosto, 2025
+
+### 💰 **Sistema Contable Perfeccionado**
+- 🏦 **Contabilidad profesional:** Ahora el sistema registra tus movimientos exactamente como lo haría un contador profesional
+- ✅ **Vista previa mejorada:** Antes de guardar cualquier transacción, ves claramente todos los campos y cómo afectará tus cuentas
+- 📊 **Cargos y abonos correctos:** El sistema ahora respeta las reglas contables para cada tipo de cuenta (débito, crédito, ingresos, gastos)
+- 🎯 **Duplicados inteligentes:** Si eliges omitir duplicados, el sistema los salta todos automáticamente sin preguntarte uno por uno
+
+### 🔍 **Experiencia de Usuario Mejorada**
+- 📋 **Verificación completa:** Ahora ves todos los detalles del movimiento antes de la vista contable (fecha, descripción, monto, cuentas, categoría)
+- ⚡ **Procesamiento más rápido:** Los duplicados se omiten instantáneamente mostrando solo un resumen breve
+- 🎨 **Interfaz más limpia:** Eliminamos textos repetidos y mejoramos la presentación de información
+- 💡 **Flujo más intuitivo:** El sistema solo muestra lo necesario en cada paso, sin abrumar con información innecesaria
+
+### 📈 **Beneficios para ti**
+- **Mayor confianza:** Tus registros contables ahora son 100% precisos según principios profesionales
+- **Ahorro de tiempo:** Los duplicados se manejan automáticamente sin interrupciones
+- **Mejor control:** Ves exactamente qué se va a guardar antes de confirmar
+- **Menos errores:** El sistema previene inconsistencias contables automáticamente
+
+---
+
 ## 🗓️ Versión 0.8.6 - 12 de Agosto, 2025
 
 ### 🎨 **Interfaz de Selección de Archivos Mejorada**

@@ -13,10 +13,9 @@
         "ultima_aparicion": "2025-08-11T12:08:17.843295",
         "clasificacion": {
           "tipo": "TRANSFERENCIA",
-          "categoria": "Pagos de Tarjetas",
-          "cuenta_vinculada": "TDC BANAMEX COSTCO 783"
+          "categoria": "PAGOS DE TARJETAS"
         },
-        "confianza": 0.97,
+        "confianza": 0.99,
         "ejemplos": [
           {
             "fecha": "2025-08-11",
@@ -49,6 +48,133 @@
               "tipo": "TRANSFERENCIA",
               "categoria": "Pagos de Tarjetas",
               "cuenta_vinculada": "TDC BANAMEX COSTCO 783"
+            },
+            "clasificacion_correcta": {
+              "tipo": null,
+              "categoria": null
+            },
+            "nota": "",
+            "confianza_usuario": 1.0
+          },
+          {
+            "fecha": "2025-08-12T11:19:23.173500",
+            "accion": "correccion",
+            "clasificacion_original": {
+              "tipo": "TRANSFERENCIA",
+              "categoria": "Pagos de Tarjetas",
+              "cuenta_vinculada": "TDC BANAMEX COSTCO 783"
+            },
+            "clasificacion_correcta": {
+              "tipo": "TRANSFERENCIA",
+              "categoria": "PAGOS DE TARJETAS"
+            },
+            "nota": "Corregido por usuario",
+            "confianza_usuario": 1.0
+          },
+          {
+            "fecha": "2025-08-12T12:18:53.451076",
+            "accion": "confirmacion",
+            "clasificacion_original": {
+              "tipo": "TRANSFERENCIA",
+              "categoria": "PAGOS DE TARJETAS"
+            },
+            "clasificacion_correcta": {
+              "tipo": null,
+              "categoria": null
+            },
+            "nota": "",
+            "confianza_usuario": 1.0
+          },
+          {
+            "fecha": "2025-08-12T12:40:21.726348",
+            "accion": "confirmacion",
+            "clasificacion_original": {
+              "tipo": "TRANSFERENCIA",
+              "categoria": "PAGOS DE TARJETAS"
+            },
+            "clasificacion_correcta": {
+              "tipo": null,
+              "categoria": null
+            },
+            "nota": "",
+            "confianza_usuario": 1.0
+          },
+          {
+            "fecha": "2025-08-12T12:52:35.201819",
+            "accion": "confirmacion",
+            "clasificacion_original": {
+              "tipo": "TRANSFERENCIA",
+              "categoria": "PAGOS DE TARJETAS"
+            },
+            "clasificacion_correcta": {
+              "tipo": null,
+              "categoria": null
+            },
+            "nota": "",
+            "confianza_usuario": 1.0
+          },
+          {
+            "fecha": "2025-08-12T13:26:08.395580",
+            "accion": "confirmacion",
+            "clasificacion_original": {
+              "tipo": "TRANSFERENCIA",
+              "categoria": "PAGOS DE TARJETAS"
+            },
+            "clasificacion_correcta": {
+              "tipo": null,
+              "categoria": null
+            },
+            "nota": "",
+            "confianza_usuario": 1.0
+          },
+          {
+            "fecha": "2025-08-12T13:34:26.488346",
+            "accion": "confirmacion",
+            "clasificacion_original": {
+              "tipo": "TRANSFERENCIA",
+              "categoria": "PAGOS DE TARJETAS"
+            },
+            "clasificacion_correcta": {
+              "tipo": null,
+              "categoria": null
+            },
+            "nota": "",
+            "confianza_usuario": 1.0
+          },
+          {
+            "fecha": "2025-08-12T13:35:28.124388",
+            "accion": "confirmacion",
+            "clasificacion_original": {
+              "tipo": "TRANSFERENCIA",
+              "categoria": "PAGOS DE TARJETAS"
+            },
+            "clasificacion_correcta": {
+              "tipo": null,
+              "categoria": null
+            },
+            "nota": "",
+            "confianza_usuario": 1.0
+          },
+          {
+            "fecha": "2025-08-12T13:40:45.142259",
+            "accion": "confirmacion",
+            "clasificacion_original": {
+              "tipo": "TRANSFERENCIA",
+              "categoria": "PAGOS DE TARJETAS"
+            },
+            "clasificacion_correcta": {
+              "tipo": null,
+              "categoria": null
+            },
+            "nota": "",
+            "confianza_usuario": 1.0
+          },
+          {
+            "fecha": "2025-08-12T13:44:39.963818",
+            "accion": "confirmacion",
+            "clasificacion_original": {
+              "tipo": "TRANSFERENCIA",
+              "categoria": "PAGOS DE TARJETAS"
             },
             "clasificacion_correcta": {
               "tipo": null,

@@ -243,10 +243,15 @@ class ImportadorBBVA:
             ref_bancaria = mov.get('referencia_bancaria', '')
             descripcion = mov.get('descripcion', '')[:50]
             
-            # Buscar duplicados por fecha + monto + referencia
+            # Buscar duplicados por fecha + monto ABSOLUTO + referencia
+            # Comparamos valores absolutos porque el signo puede variar según el contexto
+            from django.db.models import Q
+            monto_abs = abs(Decimal(str(monto)))
+            
             query = Transaccion.objects.filter(
-                fecha=fecha,
-                monto=Decimal(str(monto))
+                fecha=fecha
+            ).filter(
+                Q(monto=monto_abs) | Q(monto=-monto_abs)
             )
             
             if ref_bancaria:
@@ -303,9 +308,15 @@ class ImportadorBBVA:
         monto = movimiento.get('monto')
         ref_bancaria = movimiento.get('referencia_bancaria', '')
         
+        # Usar la misma lógica que en verificar_duplicados_iniciales
+        # Comparar valores absolutos porque el signo puede variar
+        from django.db.models import Q
+        monto_abs = abs(Decimal(str(monto)))
+        
         query = Transaccion.objects.filter(
-            fecha=fecha,
-            monto=Decimal(str(monto))
+            fecha=fecha
+        ).filter(
+            Q(monto=monto_abs) | Q(monto=-monto_abs)
         )
         
         if ref_bancaria:
@@ -351,15 +362,16 @@ class ImportadorBBVA:
         total = len(self.movimientos)
         
         for idx, movimiento in enumerate(self.movimientos, 1):
-            print(f"\n{Colors.HEADER}{'='*60}{Colors.ENDC}")
-            print(f"{Colors.BOLD}Movimiento {idx}/{total}{Colors.ENDC}")
-            print(f"{Colors.HEADER}{'='*60}{Colors.ENDC}")
-            
             if modo_masivo:
+                # En modo masivo, siempre mostrar encabezado
+                print(f"\n{Colors.HEADER}{'='*60}{Colors.ENDC}")
+                print(f"{Colors.BOLD}Movimiento {idx}/{total}{Colors.ENDC}")
+                print(f"{Colors.HEADER}{'='*60}{Colors.ENDC}")
                 # Procesamiento automático
                 self.procesar_movimiento_automatico(movimiento, idx)
             else:
-                # Procesamiento interactivo
+                # En modo interactivo, el encabezado se muestra dentro de la función
+                # solo si el movimiento no es omitido
                 resultado = self.procesar_movimiento_interactivo(movimiento, idx)
                 if resultado == 'exit':
                     print(f"\n{Colors.WARNING}Proceso interrumpido por el usuario{Colors.ENDC}")
@@ -384,12 +396,15 @@ class ImportadorBBVA:
     
     def procesar_movimiento_interactivo(self, movimiento, numero):
         """Procesa un movimiento de forma interactiva"""
-        # Verificar si es duplicado
+        # Verificar si es duplicado ANTES de mostrar cualquier cosa
         transaccion_existente = self.verificar_duplicado_individual(movimiento)
         
         if transaccion_existente and self.modo_duplicados:
             if self.modo_duplicados == 'omitir':
-                print(f"\n{Colors.WARNING}⏭️  Movimiento {numero} omitido (duplicado){Colors.ENDC}")
+                # No mostrar el encabezado del movimiento, solo el mensaje de omisión
+                print(f"\n{Colors.WARNING}⏭️  Movimiento {numero}/{len(self.movimientos)} omitido (duplicado){Colors.ENDC}")
+                print(f"    Fecha: {movimiento.get('fecha')} | Monto: ${movimiento.get('monto'):,.2f}")
+                print(f"    Descripción: {movimiento.get('descripcion', '')[:50]}")
                 self.omitidos += 1
                 self.log_operaciones.append({
                     'numero': numero,
@@ -431,37 +446,102 @@ class ImportadorBBVA:
                 movimiento['transaccion_id_actualizar'] = transaccion_existente.id
                 print(f"\n{Colors.WARNING}🔄 Actualizando transacción existente ID: {transaccion_existente.id}{Colors.ENDC}")
         
+        # Mostrar encabezado del movimiento (solo si no fue omitido antes)
+        print(f"\n{Colors.HEADER}{'='*60}{Colors.ENDC}")
+        print(f"{Colors.BOLD}Movimiento {numero}/{len(self.movimientos)}{Colors.ENDC}")
+        print(f"{Colors.HEADER}{'='*60}{Colors.ENDC}")
+        
         # Mostrar datos actuales
         self.mostrar_movimiento_tabla(movimiento)
         
-        # NUEVA FUNCIÓN: Mostrar y revisar clasificación IA si existe
+        # PASO 1: Revisar clasificación IA si existe
         feedback_clasificacion = None
         if 'decision_ia' in movimiento and movimiento['decision_ia']:
             feedback_clasificacion = self.revisar_clasificacion_ia(movimiento)
         
-        # Opción de ver JSON completo
-        if input(f"\n{Colors.OKCYAN}¿Ver JSON completo? (s/n): {Colors.ENDC}").strip().lower() == 's':
-            print(f"\n{Colors.HEADER}JSON del movimiento:{Colors.ENDC}")
-            print(json.dumps(movimiento, indent=2, ensure_ascii=False))
-        
-        # Permitir edición
-        movimiento_editado = self.editar_movimiento(movimiento)
-        
         # Si hubo feedback sobre clasificación IA, aplicarlo
         if feedback_clasificacion and feedback_clasificacion.get('accion') == 'correccion':
-            movimiento_editado['tipo'] = feedback_clasificacion['clasificacion_correcta']['tipo']
-            movimiento_editado['categoria'] = feedback_clasificacion['clasificacion_correcta']['categoria']
+            movimiento['tipo'] = feedback_clasificacion['clasificacion_correcta']['tipo']
+            movimiento['categoria'] = feedback_clasificacion['clasificacion_correcta']['categoria']
         
-        # Aplicar reglas contables
+        # PASO 2: ¿Los campos son correctos?
+        print(f"\n{Colors.HEADER}{'='*60}{Colors.ENDC}")
+        print(f"{Colors.BOLD}VERIFICACIÓN DE CAMPOS{Colors.ENDC}")
+        print(f"{Colors.HEADER}{'='*60}{Colors.ENDC}")
+        
+        # Primero mostrar los campos actuales del movimiento
+        print(f"\n{Colors.OKCYAN}Campos actuales del movimiento:{Colors.ENDC}")
+        print(f"  📅 Fecha: {movimiento.get('fecha', '')}")
+        print(f"  📝 Descripción: {movimiento.get('descripcion', '')[:60]}")
+        print(f"  💰 Monto: ${movimiento.get('monto', 0):,.2f}")
+        print(f"  📤 Cuenta Origen: {movimiento.get('cuenta_origen', 'TDB BBVA 5019')}")
+        print(f"  📥 Cuenta Destino: {movimiento.get('cuenta_destino', '-')}")
+        print(f"  📁 Categoría: {movimiento.get('categoria', 'SIN CLASIFICAR')}")
+        print(f"  🏷️  Tipo: {movimiento.get('tipo', 'GASTO')}")
+        
+        # Aplicar reglas contables para mostrar vista previa
+        transaccion_preview = self.aplicar_reglas_contables(movimiento)
+        self.mostrar_vista_previa_contable(transaccion_preview)
+        
+        print(f"\n{Colors.OKCYAN}¿Los campos son correctos?{Colors.ENDC}")
+        print("1) ✅ Sí, todo correcto")
+        print("2) 🏦 Editar solo cuenta destino")  
+        print("3) ✏️  Editar todos los campos")
+        
+        opcion_campos = input(f"{Colors.OKCYAN}Seleccione (1/2/3) [Enter=1]: {Colors.ENDC}").strip() or '1'
+        
+        movimiento_editado = movimiento.copy()
+        
+        if opcion_campos == '2':
+            # Solo editar cuenta destino
+            cuenta_destino_actual = movimiento.get('cuenta_destino', '')
+            nueva_cuenta = input(f"\n{Colors.OKCYAN}Cuenta Destino [{cuenta_destino_actual}]: {Colors.ENDC}").strip()
+            if nueva_cuenta:
+                movimiento_editado['cuenta_destino'] = nueva_cuenta
+                
+        elif opcion_campos == '3':
+            # Editar todos los campos
+            print(f"\n{Colors.WARNING}Editar campos (Enter para mantener valor actual):{Colors.ENDC}")
+            desc = input(f"Descripción [{movimiento.get('descripcion', '')}]: ").strip()
+            if desc:
+                movimiento_editado['descripcion'] = desc
+                
+            monto_str = input(f"Monto [{movimiento.get('monto', 0)}]: ").strip()
+            if monto_str:
+                try:
+                    movimiento_editado['monto'] = float(monto_str)
+                except ValueError:
+                    print(f"{Colors.FAIL}Monto inválido, manteniendo original{Colors.ENDC}")
+                    
+            cuenta_origen = input(f"Cuenta Origen [{movimiento.get('cuenta_origen', '')}]: ").strip()
+            if cuenta_origen:
+                movimiento_editado['cuenta_origen'] = cuenta_origen
+                
+            cuenta_destino = input(f"Cuenta Destino [{movimiento.get('cuenta_destino', '')}]: ").strip()
+            if cuenta_destino:
+                movimiento_editado['cuenta_destino'] = cuenta_destino
+                
+            categoria = input(f"Categoría [{movimiento.get('categoria', '')}]: ").strip()
+            if categoria:
+                movimiento_editado['categoria'] = categoria
+        
+        # PASO 3: ¿Ver JSON completo?
+        ver_json = input(f"\n{Colors.OKCYAN}¿Ver JSON completo? (1=Sí, Enter=No): {Colors.ENDC}").strip()
+        if ver_json == '1':
+            print(f"\n{Colors.HEADER}JSON del movimiento:{Colors.ENDC}")
+            print(json.dumps(movimiento_editado, indent=2, ensure_ascii=False))
+        
+        # Aplicar reglas contables con movimiento editado
         try:
             transaccion = self.aplicar_reglas_contables(movimiento_editado)
             
-            # Mostrar vista previa contable
+            # Mostrar vista previa contable final
+            print(f"\n{Colors.OKGREEN}Vista previa contable FINAL:{Colors.ENDC}")
             self.mostrar_vista_previa_contable(transaccion)
             
-            # Confirmar
+            # PASO 4: Confirmar guardado
             while True:
-                confirmacion = input(f"\n{Colors.WARNING}¿Confirmar este movimiento? (s/n/exit): {Colors.ENDC}").lower()
+                confirmacion = input(f"\n{Colors.WARNING}¿Confirmar y guardar? (s/n/exit): {Colors.ENDC}").lower()
                 
                 if confirmacion == 's':
                     # Propagar ID de actualización si existe
@@ -651,7 +731,7 @@ class ImportadorBBVA:
                 nombre=nombre,
                 tipo=tipo,
                 naturaleza=naturaleza,
-                es_medio_pago=es_medio_pago,
+                medio_pago=es_medio_pago,
                 moneda='MXN',
                 saldo_inicial=0,
                 referencia=referencia if referencia else None
@@ -766,19 +846,25 @@ class ImportadorBBVA:
         print(f"\n{Colors.OKCYAN}Vista previa contable:{Colors.ENDC}")
         
         tipo = transaccion_data['tipo']
-        monto = transaccion_data['monto']
+        monto = abs(transaccion_data['monto'])  # Usar valor absoluto para mostrar
         cuenta_origen = transaccion_data['cuenta_origen']
         cuenta_destino = transaccion_data['cuenta_destino']
         
         if tipo == TransaccionTipo.GASTO:
-            print(f"  DEBE:  {cuenta_destino.nombre if cuenta_destino else 'Gasto'} ${monto:,.2f}")
-            print(f"  HABER: {cuenta_origen.nombre} ${monto:,.2f}")
+            # Gasto: Sale dinero de cuenta débito (ABONO) y se registra gasto (CARGO)
+            print(f"  CARGO:  {cuenta_destino.nombre if cuenta_destino else 'Gasto'} ${monto:,.2f}")
+            print(f"  ABONO:  {cuenta_origen.nombre} ${monto:,.2f}")
         elif tipo == TransaccionTipo.INGRESO:
-            print(f"  DEBE:  {cuenta_destino.nombre} ${monto:,.2f}")
-            print(f"  HABER: {cuenta_origen.nombre if cuenta_origen else 'Ingreso'} ${monto:,.2f}")
+            # Ingreso: Entra dinero a cuenta débito (CARGO) y se registra ingreso (ABONO)
+            # CORRECCIÓN: cuenta_origen es TDB BBVA que RECIBE dinero (CARGO)
+            # cuenta_destino es la cuenta de ingreso que GENERA el ingreso (ABONO)
+            print(f"  CARGO:  {cuenta_origen.nombre} ${monto:,.2f}")
+            print(f"  ABONO:  {cuenta_destino.nombre if cuenta_destino else 'Ingreso'} ${monto:,.2f}")
         else:  # TRANSFERENCIA
-            print(f"  DEBE:  {cuenta_destino.nombre} ${monto:,.2f}")
-            print(f"  HABER: {cuenta_origen.nombre} ${monto:,.2f}")
+            # Transferencia: Sale de una cuenta (ABONO) y entra a otra (CARGO)
+            # De cuenta_origen (ABONO porque sale) a cuenta_destino (CARGO porque entra)
+            print(f"  CARGO:  {cuenta_destino.nombre if cuenta_destino else cuenta_origen.nombre} ${monto:,.2f}")
+            print(f"  ABONO:  {cuenta_origen.nombre} ${monto:,.2f}")
     
     @transaction.atomic
     def guardar_movimiento(self, transaccion_data):
@@ -916,10 +1002,35 @@ class ImportadorBBVA:
                 tipo_map = {'1': 'GASTO', '2': 'INGRESO', '3': 'TRANSFERENCIA'}
                 tipo_correcto = tipo_map.get(tipo_opcion, decision_ia.get('tipo'))
                 
+                # Mostrar categorías existentes
+                from core.models import Categoria
+                categorias = list(Categoria.objects.all().order_by('nombre').values_list('nombre', flat=True))
+                
+                if categorias:
+                    print(f"\n{Colors.OKBLUE}📁 Categorías existentes:{Colors.ENDC}")
+                    # Mostrar en 4 columnas
+                    columnas = 4
+                    for i in range(0, len(categorias), columnas):
+                        fila = categorias[i:i+columnas]
+                        for j, cat in enumerate(fila):
+                            print(f"{i+j+1:3}) {cat:<30}", end="")
+                        print()
+                
                 # Ingresar categoría correcta
-                categoria_correcta = input(f"{Colors.OKCYAN}Categoría correcta (Enter para mantener '{decision_ia.get('categoria')}'): {Colors.ENDC}").strip()
-                if not categoria_correcta:
-                    categoria_correcta = decision_ia.get('categoria')
+                categoria_actual = decision_ia.get('categoria') or movimiento.get('categoria', 'N/A')
+                print(f"\n{Colors.OKCYAN}Categoría (número de lista, nueva categoría, o Enter para '{categoria_actual}'):{Colors.ENDC}")
+                categoria_input = input(">>> ").strip()
+                
+                if not categoria_input:
+                    categoria_correcta = categoria_actual
+                elif categoria_input.isdigit():
+                    idx = int(categoria_input) - 1
+                    if 0 <= idx < len(categorias):
+                        categoria_correcta = categorias[idx]
+                    else:
+                        categoria_correcta = categoria_actual
+                else:
+                    categoria_correcta = categoria_input
                 
                 print(f"{Colors.OKGREEN}✓ Corrección registrada{Colors.ENDC}")
                 return {
