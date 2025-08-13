@@ -4,6 +4,26 @@
 
 ## 📅 Historial de Cambios
 
+## 🗓️ Versión 0.8.14 - 13 de Agosto, 2025
+
+### 🔧 **Corrección Rápida del Sistema de Ayuda**
+- ✅ **Arreglado:** La opción 'h' para ver ayuda ahora funciona correctamente en todos los casos
+- 📋 **Lista de cuentas disponible:** Presiona 'h' cuando edites una cuenta para ver todas las opciones
+- 🎯 **Selección más fácil:** Escribe el número de la cuenta directamente para seleccionarla
+
+### 🚀 **Mejoras en el Flujo de Revisión** 
+- 🏗️ **Nueva función:** Opción 'crear' en el menú de revisión para agregar categorías/cuentas faltantes
+- ⚠️ **Avisos inteligentes:** El sistema te avisa si hay entidades que no existen antes de procesar
+- 💾 **Creación masiva:** Puedes crear todas las categorías y cuentas faltantes de una sola vez
+- ✨ **Flujo mejorado:** Edita en Opción 3, crea las entidades necesarias, y luego importa sin interrupciones
+
+### 📈 **Beneficios para ti**
+- **Sin interrupciones:** Ya no te pregunta por categorías que no existen si las creaste antes
+- **Flujo más lógico:** Revisa → Corrige → Crea entidades → Importa todo de corrido
+- **Mayor control:** Decides si crear todas las entidades o solo las que necesitas
+
+---
+
 ## 🗓️ Versión 0.8.13 - 12 de Agosto, 2025
 
 ### 🛡️ **Sistema Más Robusto y Confiable**

@@ -12,10 +12,11 @@
         "primera_deteccion": "2025-08-11T11:54:29.318045",
         "ultima_aparicion": "2025-08-11T12:08:17.843295",
         "clasificacion": {
-          "tipo": "TRANSFERENCIA",
-          "categoria": "PAGOS DE TARJETAS"
+          "tipo": "GASTO",
+          "categoria": "Pagos de Tarjetas",
+          "cuenta_vinculada": null
         },
-        "confianza": 0.99,
+        "confianza": 0.98,
         "ejemplos": [
           {
             "fecha": "2025-08-11",
@@ -181,6 +182,21 @@
               "categoria": null
             },
             "nota": "",
+            "confianza_usuario": 1.0
+          },
+          {
+            "fecha": "2025-08-12T17:37:19.361346",
+            "accion": "correccion",
+            "clasificacion_original": {
+              "tipo": "TRANSFERENCIA",
+              "categoria": "PAGOS DE TARJETAS"
+            },
+            "clasificacion_correcta": {
+              "tipo": "GASTO",
+              "categoria": "Pagos de Tarjetas",
+              "cuenta_vinculada": null
+            },
+            "nota": "Corregido por usuario",
             "confianza_usuario": 1.0
           }
         ],

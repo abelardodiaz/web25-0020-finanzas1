@@ -13,11 +13,11 @@ El sistema de ayuda para la creación de cuentas se implementó en el archivo:
 
 #### Flujo de Interacción
 ```
-Ingresa cuenta vinculada (nombre/número/9=ayuda/x=cancelar):
+Ingresa cuenta vinculada (nombre/número/h=ayuda/x=cancelar):
 ```
 
 #### Opciones Disponibles:
-- **9**: Muestra lista completa de cuentas disponibles
+- **h**: Muestra lista completa de cuentas disponibles (help/ayuda)
 - **Número (1-999)**: Selección directa por ID de cuenta
 - **0**: Crear nueva cuenta
 - **x**: Cancelar operación
@@ -53,7 +53,7 @@ OPCIONES:
 • Escribe el NOMBRE de la cuenta nueva
 • Escribe el NÚMERO de la cuenta que eliges
 • Escribe '0' para crear cuenta nueva
-• Escribe '9' para ver la lista otra vez
+• Escribe 'h' para ver la lista otra vez (help/ayuda)
 • Escribe 'x' para cancelar
 ```
 
@@ -116,7 +116,7 @@ En términos simples:
 
 ## Ventajas del Sistema
 
-1. **Accesibilidad**: El usuario puede escribir `9` en cualquier momento para ver las cuentas
+1. **Accesibilidad**: El usuario puede escribir `h` en cualquier momento para ver las cuentas (help/ayuda)
 2. **Rapidez**: Selección directa por ID numérico
 3. **Flexibilidad**: Permite crear cuentas nuevas sobre la marcha
 4. **Inteligencia**: Sugiere configuraciones basadas en el nombre
@@ -125,10 +125,10 @@ En términos simples:
 ## Flujo de Trabajo Típico
 
 1. Usuario necesita seleccionar una cuenta
-2. Escribe `9` para ver lista de cuentas
+2. Escribe `h` para ver lista de cuentas (help/ayuda)
 3. Ve todas las cuentas con sus IDs
 4. Puede:
-   - Escribir el ID para selección rápida
+   - Escribir el ID para selección rápida (incluyendo ID 9 si existe)
    - Escribir `0` para crear nueva
    - Escribir el nombre directamente
    - Cancelar con `x`
@@ -144,7 +144,7 @@ for cuenta in cuentas:
 
 ### Validación de Selección
 ```python
-if opcion_num != 9 and opcion_num > 0 and opcion_num in cuentas_dict:
+if opcion_num > 0 and opcion_num in cuentas_dict:
     nombre_seleccionado = cuentas_dict[opcion_num]
     movimiento_editado['cuenta_destino'] = nombre_seleccionado
 ```

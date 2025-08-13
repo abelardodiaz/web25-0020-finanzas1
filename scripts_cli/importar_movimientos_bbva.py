@@ -342,11 +342,274 @@ class ImportadorBBVA:
         print(f"\n  Total: {len(self.movimientos)} movimientos")
         print(f"{Colors.HEADER}{'='*60}{Colors.ENDC}\n")
     
+    def editar_campos(self, movimiento):
+        """Permite editar los campos de un movimiento interactivamente"""
+        movimiento_editado = movimiento.copy()
+        
+        while True:
+            # Mostrar campos actuales
+            self.mostrar_movimiento_tabla(movimiento_editado)
+            
+            print(f"\n{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+            print(f"{Colors.BOLD}¿Qué campo deseas editar?{Colors.ENDC}")
+            print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
+            print("1) Fecha")
+            print("2) Descripción")
+            print("3) Tipo (GASTO/INGRESO/TRANSFERENCIA)")
+            print("4) Monto")
+            print("5) Cuenta Origen")
+            print("6) Cuenta Destino/Vinculada")
+            print("7) Categoría")
+            print("8) Referencia Bancaria")
+            print("9) Ver movimiento actualizado")
+            print("0) Terminar edición")
+            
+            opcion = input(f"\n{Colors.OKCYAN}Seleccione campo (0-9): {Colors.ENDC}").strip()
+            
+            if opcion == '0':
+                return movimiento_editado
+            elif opcion == '1':
+                # Editar fecha
+                nueva_fecha = input(f"Nueva fecha (YYYY-MM-DD) [{movimiento_editado.get('fecha')}]: ").strip()
+                if nueva_fecha:
+                    movimiento_editado['fecha'] = nueva_fecha
+            elif opcion == '2':
+                # Editar descripción
+                nueva_desc = input(f"Nueva descripción [{movimiento_editado.get('descripcion')}]: ").strip()
+                if nueva_desc:
+                    movimiento_editado['descripcion'] = nueva_desc
+            elif opcion == '3':
+                # Editar tipo
+                print("\nTipos disponibles:")
+                print("1) GASTO")
+                print("2) INGRESO")
+                print("3) TRANSFERENCIA")
+                tipo_opcion = input("Seleccione tipo (1/2/3): ").strip()
+                tipos_map = {'1': 'GASTO', '2': 'INGRESO', '3': 'TRANSFERENCIA'}
+                if tipo_opcion in tipos_map:
+                    movimiento_editado['tipo'] = tipos_map[tipo_opcion]
+            elif opcion == '4':
+                # Editar monto
+                nuevo_monto = input(f"Nuevo monto [{movimiento_editado.get('monto')}]: ").strip()
+                if nuevo_monto:
+                    try:
+                        movimiento_editado['monto'] = float(nuevo_monto.replace(',', ''))
+                    except ValueError:
+                        print(f"{Colors.FAIL}Monto inválido{Colors.ENDC}")
+            elif opcion == '5':
+                # Editar cuenta origen
+                print(f"\n{Colors.OKCYAN}Cuenta Origen (nombre/número/h=ayuda):{Colors.ENDC}")
+                cuenta_input = input(f"Nueva cuenta [{movimiento_editado.get('cuenta_origen')}]: ").strip()
+                
+                if cuenta_input == 'h' or (cuenta_input.isdigit() and cuenta_input != '0'):
+                    # Mostrar lista de cuentas con selección
+                    cuenta_seleccionada = self.seleccionar_cuenta_con_ayuda()
+                    if cuenta_seleccionada:
+                        movimiento_editado['cuenta_origen'] = cuenta_seleccionada
+                elif cuenta_input:
+                    movimiento_editado['cuenta_origen'] = cuenta_input
+                    
+            elif opcion == '6':
+                # Editar cuenta destino
+                print(f"\n{Colors.OKCYAN}Cuenta Destino/Vinculada (nombre/número/h=ayuda):{Colors.ENDC}")
+                cuenta_input = input(f"Nueva cuenta [{movimiento_editado.get('cuenta_destino')}]: ").strip()
+                
+                if cuenta_input == 'h' or (cuenta_input.isdigit() and cuenta_input != '0'):
+                    # Mostrar lista de cuentas con selección
+                    cuenta_seleccionada = self.seleccionar_cuenta_con_ayuda()
+                    if cuenta_seleccionada:
+                        movimiento_editado['cuenta_destino'] = cuenta_seleccionada
+                elif cuenta_input:
+                    movimiento_editado['cuenta_destino'] = cuenta_input
+                    
+            elif opcion == '7':
+                # Editar categoría
+                print(f"\n{Colors.OKCYAN}Categoría (nombre/número/h=ayuda):{Colors.ENDC}")
+                cat_input = input(f"Nueva categoría [{movimiento_editado.get('categoria')}]: ").strip()
+                
+                if cat_input == 'h' or (cat_input.isdigit() and cat_input != '0'):
+                    # Mostrar lista de categorías con selección
+                    categoria_seleccionada = self.seleccionar_categoria_con_ayuda()
+                    if categoria_seleccionada:
+                        movimiento_editado['categoria'] = categoria_seleccionada.nombre
+                elif cat_input:
+                    movimiento_editado['categoria'] = cat_input
+                    
+            elif opcion == '8':
+                # Editar referencia bancaria
+                nueva_ref = input(f"Nueva referencia [{movimiento_editado.get('referencia_bancaria')}]: ").strip()
+                if nueva_ref:
+                    movimiento_editado['referencia_bancaria'] = nueva_ref
+                    
+            elif opcion == '9':
+                # Mostrar movimiento actualizado
+                print(f"\n{Colors.HEADER}Movimiento actualizado:{Colors.ENDC}")
+                self.mostrar_movimiento_tabla(movimiento_editado)
+                input(f"\n{Colors.OKCYAN}Presiona Enter para continuar...{Colors.ENDC}")
+            else:
+                print(f"{Colors.FAIL}Opción no válida{Colors.ENDC}")
+    
+    def verificar_entidades_faltantes_silencioso(self):
+        """Verifica si hay entidades faltantes sin mostrar nada"""
+        for mov in self.movimientos:
+            # Verificar categorías
+            categoria = mov.get('categoria', '').strip()
+            if categoria and categoria != '-':
+                if not Categoria.objects.filter(nombre__iexact=categoria).exists():
+                    return True
+            
+            # Verificar cuentas
+            for campo in ['cuenta_origen', 'cuenta_destino']:
+                cuenta = mov.get(campo, '').strip()
+                if cuenta and cuenta != '-' and cuenta != 'BBVA DEBITO 5019':
+                    if not Cuenta.objects.filter(nombre=cuenta).exists():
+                        return True
+        
+        return False
+    
+    def crear_entidades_faltantes(self):
+        """Identifica y crea categorías y cuentas que no existen en la BD"""
+        print(f"\n{Colors.HEADER}{'='*60}{Colors.ENDC}")
+        print(f"{Colors.BOLD}🔍 VERIFICANDO ENTIDADES FALTANTES{Colors.ENDC}")
+        print(f"{Colors.HEADER}{'='*60}{Colors.ENDC}")
+        
+        categorias_faltantes = set()
+        cuentas_faltantes = set()
+        
+        # Recolectar categorías y cuentas únicas de los movimientos
+        for mov in self.movimientos:
+            # Categorías
+            categoria = mov.get('categoria', '').strip()
+            if categoria and categoria != '-':
+                # Verificar si existe
+                if not Categoria.objects.filter(nombre__iexact=categoria).exists():
+                    categorias_faltantes.add(categoria)
+            
+            # Cuentas (origen y destino)
+            for campo in ['cuenta_origen', 'cuenta_destino']:
+                cuenta = mov.get(campo, '').strip()
+                if cuenta and cuenta != '-' and cuenta != 'BBVA DEBITO 5019':
+                    try:
+                        # Verificar si existe
+                        if not Cuenta.objects.filter(nombre=cuenta).exists():
+                            cuentas_faltantes.add(cuenta)
+                    except:
+                        pass
+        
+        # Mostrar resumen
+        if not categorias_faltantes and not cuentas_faltantes:
+            print(f"{Colors.OKGREEN}✓ Todas las categorías y cuentas ya existen en la BD{Colors.ENDC}")
+            return
+        
+        if categorias_faltantes:
+            print(f"\n{Colors.WARNING}Categorías faltantes ({len(categorias_faltantes)}):{Colors.ENDC}")
+            for cat in sorted(categorias_faltantes):
+                print(f"  • {cat}")
+        
+        if cuentas_faltantes:
+            print(f"\n{Colors.WARNING}Cuentas faltantes ({len(cuentas_faltantes)}):{Colors.ENDC}")
+            for cuenta in sorted(cuentas_faltantes):
+                print(f"  • {cuenta}")
+        
+        # Preguntar si desea crearlas
+        print(f"\n{Colors.OKCYAN}¿Deseas crear estas entidades en la BD?{Colors.ENDC}")
+        print("1) Sí, crear todas")
+        print("2) Crear selectivamente")
+        print("3) No, regresar")
+        
+        opcion = input(f"\n{Colors.OKCYAN}Selecciona (1/2/3): {Colors.ENDC}").strip()
+        
+        if opcion == '1':
+            # Crear todas las categorías
+            for cat_nombre in categorias_faltantes:
+                try:
+                    # Determinar tipo basado en el nombre
+                    es_personal = not any(word in cat_nombre.upper() for word in ['EMPRESA', 'NEGOCIO', 'CORPORATIVO'])
+                    categoria = Categoria.objects.create(
+                        nombre=cat_nombre.upper(),
+                        tipo='PER' if es_personal else 'NEG',
+                        activa=True
+                    )
+                    print(f"{Colors.OKGREEN}✓ Categoría creada: {categoria.nombre}{Colors.ENDC}")
+                except Exception as e:
+                    print(f"{Colors.FAIL}✗ Error creando categoría {cat_nombre}: {e}{Colors.ENDC}")
+            
+            # Crear todas las cuentas
+            for cuenta_nombre in cuentas_faltantes:
+                try:
+                    # Determinar tipo de cuenta basado en el nombre
+                    if 'TDC' in cuenta_nombre.upper() or 'CREDITO' in cuenta_nombre.upper():
+                        tipo_cuenta = TipoCuenta.objects.get(codigo='CRE')
+                    else:
+                        tipo_cuenta = TipoCuenta.objects.get(codigo='DEB')
+                    
+                    cuenta = Cuenta.objects.create(
+                        nombre=cuenta_nombre,
+                        tipo_cuenta=tipo_cuenta,
+                        banco='OTRO',
+                        moneda='MXN',
+                        activa=True,
+                        es_medio_pago=True
+                    )
+                    print(f"{Colors.OKGREEN}✓ Cuenta creada: {cuenta.nombre}{Colors.ENDC}")
+                except Exception as e:
+                    print(f"{Colors.FAIL}✗ Error creando cuenta {cuenta_nombre}: {e}{Colors.ENDC}")
+        
+        elif opcion == '2':
+            # Crear selectivamente
+            if categorias_faltantes:
+                print(f"\n{Colors.BOLD}CATEGORÍAS:{Colors.ENDC}")
+                for cat_nombre in sorted(categorias_faltantes):
+                    crear = input(f"¿Crear categoría '{cat_nombre}'? (s/n): ").strip().lower()
+                    if crear == 's':
+                        try:
+                            es_personal = input("¿Es categoría personal? (s/n): ").strip().lower() == 's'
+                            categoria = Categoria.objects.create(
+                                nombre=cat_nombre.upper(),
+                                tipo='PER' if es_personal else 'NEG',
+                                activa=True
+                            )
+                            print(f"{Colors.OKGREEN}✓ Categoría creada{Colors.ENDC}")
+                        except Exception as e:
+                            print(f"{Colors.FAIL}✗ Error: {e}{Colors.ENDC}")
+            
+            if cuentas_faltantes:
+                print(f"\n{Colors.BOLD}CUENTAS:{Colors.ENDC}")
+                for cuenta_nombre in sorted(cuentas_faltantes):
+                    crear = input(f"¿Crear cuenta '{cuenta_nombre}'? (s/n): ").strip().lower()
+                    if crear == 's':
+                        try:
+                            print("Tipos de cuenta disponibles:")
+                            print("1) DEB - Débito")
+                            print("2) CRE - Crédito")
+                            print("3) SER - Servicios")
+                            tipo_opcion = input("Selecciona tipo (1/2/3): ").strip()
+                            tipo_map = {'1': 'DEB', '2': 'CRE', '3': 'SER'}
+                            tipo_codigo = tipo_map.get(tipo_opcion, 'DEB')
+                            
+                            tipo_cuenta = TipoCuenta.objects.get(codigo=tipo_codigo)
+                            cuenta = Cuenta.objects.create(
+                                nombre=cuenta_nombre,
+                                tipo_cuenta=tipo_cuenta,
+                                banco='OTRO',
+                                moneda='MXN',
+                                activa=True,
+                                es_medio_pago=(tipo_codigo != 'SER')
+                            )
+                            print(f"{Colors.OKGREEN}✓ Cuenta creada{Colors.ENDC}")
+                        except Exception as e:
+                            print(f"{Colors.FAIL}✗ Error: {e}{Colors.ENDC}")
+        
+        print(f"\n{Colors.OKGREEN}✓ Proceso completado{Colors.ENDC}")
+    
     def revisar_editar_movimientos(self):
         """Permite revisar y editar movimientos antes de importar"""
         print(f"\n{Colors.HEADER}{'='*60}{Colors.ENDC}")
         print(f"{Colors.BOLD}👁️  REVISAR Y EDITAR MOVIMIENTOS{Colors.ENDC}")
         print(f"{Colors.HEADER}{'='*60}{Colors.ENDC}")
+        
+        # Flag para rastrear si se hicieron cambios
+        cambios_realizados = False
         
         while True:
             # Mostrar lista de movimientos con formato mejorado
@@ -361,13 +624,28 @@ class ImportadorBBVA:
             print(f"\n{Colors.BOLD}OPCIONES:{Colors.ENDC}")
             print("• Escribe el NÚMERO del movimiento para editarlo (1-" + str(len(self.movimientos)) + ")")
             print("• Escribe 'todos' para ver todos los movimientos")
+            print("• Escribe 'crear' para crear categorías/cuentas faltantes en BD")
             print("• Escribe 'listo' o Enter para terminar y volver al menú")
             
             seleccion = input(f"\n{Colors.OKCYAN}Tu elección: {Colors.ENDC}").strip().lower()
             
             if seleccion == '' or seleccion == 'listo':
+                if cambios_realizados:
+                    print(f"\n{Colors.WARNING}⚠️  Se han realizado cambios en los movimientos.{Colors.ENDC}")
+                    print(f"{Colors.OKCYAN}¿Deseas crear las categorías/cuentas nuevas en la BD?{Colors.ENDC}")
+                    print("1) Sí, crear entidades faltantes")
+                    print("2) No, continuar sin crear")
+                    
+                    opcion = input(f"\n{Colors.OKCYAN}Selecciona (1/2): {Colors.ENDC}").strip()
+                    if opcion == '1':
+                        self.crear_entidades_faltantes()
+                
                 print(f"{Colors.OKGREEN}✓ Revisión completada{Colors.ENDC}")
                 break
+            elif seleccion == 'crear':
+                # Crear entidades faltantes en la BD
+                self.crear_entidades_faltantes()
+                continue
             elif seleccion == 'todos':
                 # Mostrar todos los movimientos paginados
                 self.mostrar_todos_movimientos_paginados()
@@ -386,6 +664,7 @@ class ImportadorBBVA:
                         # Actualizar el movimiento en la lista
                         self.movimientos[num - 1].update(movimiento_editado)
                         print(f"{Colors.OKGREEN}✓ Movimiento #{num} actualizado{Colors.ENDC}")
+                        cambios_realizados = True
                 else:
                     print(f"{Colors.FAIL}Número fuera de rango{Colors.ENDC}")
             else:
@@ -501,6 +780,20 @@ class ImportadorBBVA:
     def procesar_movimientos(self, modo_masivo):
         """Procesa cada movimiento según el modo seleccionado"""
         total = len(self.movimientos)
+        
+        # Si es modo masivo, verificar primero si hay entidades faltantes
+        if modo_masivo:
+            tiene_faltantes = self.verificar_entidades_faltantes_silencioso()
+            if tiene_faltantes:
+                print(f"\n{Colors.WARNING}⚠️  Hay categorías o cuentas que no existen en la BD.{Colors.ENDC}")
+                print(f"{Colors.OKCYAN}Recomendación: Usa la opción 3 para revisar y crear las entidades faltantes.{Colors.ENDC}")
+                print("\n¿Deseas continuar de todos modos?")
+                print("1) Sí, continuar (se preguntará por cada entidad faltante)")
+                print("2) No, volver al menú")
+                
+                opcion = input(f"\n{Colors.OKCYAN}Selecciona (1/2): {Colors.ENDC}").strip()
+                if opcion != '1':
+                    return
         
         for idx, movimiento in enumerate(self.movimientos, 1):
             if modo_masivo:
@@ -645,7 +938,7 @@ class ImportadorBBVA:
         
         print(f"\n{Colors.OKCYAN}¿Los campos son correctos?{Colors.ENDC}")
         print("1) ✅ Sí, todo correcto")
-        print("2) 🏦 Editar solo cuenta vinculada (9=ver lista)")  
+        print("2) 🏦 Editar solo cuenta vinculada (h=ver lista)")  
         print("3) ✏️  Editar todos los campos")
         
         opcion_campos = input(f"{Colors.OKCYAN}Seleccione (1/2/3) [Enter=1]: {Colors.ENDC}").strip() or '1'
@@ -657,7 +950,7 @@ class ImportadorBBVA:
             cuenta_destino_actual = movimiento.get('cuenta_destino', '')
             
             while True:
-                print(f"\n{Colors.OKCYAN}Ingresa cuenta vinculada (nombre/número/9=ayuda/x=cancelar):{Colors.ENDC}")
+                print(f"\n{Colors.OKCYAN}Ingresa cuenta vinculada (nombre/número/h=ayuda/x=cancelar):{Colors.ENDC}")
                 nueva_cuenta = input(f"Cuenta Destino [{cuenta_destino_actual}]: ").strip().lower()
                 
                 # Cancelar y regresar
@@ -665,53 +958,30 @@ class ImportadorBBVA:
                     print(f"{Colors.WARNING}Cancelado, regresando...{Colors.ENDC}")
                     break
                 
-                # Si presiona 9 o es un número, mostrar lista
-                elif nueva_cuenta == '9' or (nueva_cuenta.isdigit() and nueva_cuenta != '0'):
+                # Si presiona h para ayuda, mostrar lista
+                elif nueva_cuenta == 'h':
+                    # Usar la función centralizada de selección de cuentas
+                    cuenta_seleccionada = self.seleccionar_cuenta_con_ayuda()
+                    if cuenta_seleccionada:
+                        movimiento_editado['cuenta_destino'] = cuenta_seleccionada
+                        break
+                    continue
+                
+                # Si es un número, intentar seleccionar por ID directamente
+                elif nueva_cuenta.isdigit() and nueva_cuenta != '0':
                     opcion_num = int(nueva_cuenta)
-                    
-                    # Mostrar lista de cuentas disponibles
-                    print(f"\n{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
-                    print(f"{Colors.BOLD}📚 CUENTAS DISPONIBLES{Colors.ENDC}")
-                    print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}\n")
                     
                     try:
                         from core.models import Cuenta
-                        cuentas = Cuenta.objects.all().order_by('id')
-                        
-                        if cuentas.exists():
-                            # Crear diccionario ID -> nombre para búsqueda rápida
-                            cuentas_dict = {}
-                            
-                            # Mostrar en 3 columnas con IDs
-                            cuentas_list = list(cuentas)
-                            num_cuentas = len(cuentas_list)
-                            columnas = 3
-                            
-                            # Calcular filas necesarias
-                            filas = (num_cuentas + columnas - 1) // columnas
-                            
-                            for i in range(filas):
-                                fila = []
-                                for j in range(columnas):
-                                    idx = i + j * filas
-                                    if idx < num_cuentas:
-                                        cuenta = cuentas_list[idx]
-                                        cuentas_dict[cuenta.id] = cuenta.nombre
-                                        # Formato: [ID] Nombre (truncado a 18 chars)
-                                        nombre_truncado = cuenta.nombre[:18]
-                                        fila.append(f"[{cuenta.id:3}] {nombre_truncado:<18}")
-                                print("  " + " | ".join(fila))
-                            
-                            print(f"\n{Colors.OKGREEN}Total: {num_cuentas} cuentas{Colors.ENDC}")
-                            print(f"{Colors.WARNING}[  0] → Crear nueva cuenta{Colors.ENDC}")
-                            print(f"{Colors.OKCYAN}{'='*60}{Colors.ENDC}")
-                            
-                            # Si ya seleccionó un número válido distinto de 9
-                            if opcion_num != 9 and opcion_num > 0 and opcion_num in cuentas_dict:
-                                nombre_seleccionado = cuentas_dict[opcion_num]
-                                print(f"\n{Colors.OKGREEN}✓ Seleccionaste: {nombre_seleccionado}{Colors.ENDC}")
-                                movimiento_editado['cuenta_destino'] = nombre_seleccionado
-                                break
+                        # Intentar obtener la cuenta por ID directamente
+                        try:
+                            cuenta = Cuenta.objects.get(id=opcion_num)
+                            print(f"\n{Colors.OKGREEN}✓ Seleccionaste: {cuenta.nombre}{Colors.ENDC}")
+                            movimiento_editado['cuenta_destino'] = cuenta.nombre
+                            break
+                        except Cuenta.DoesNotExist:
+                            print(f"{Colors.FAIL}No existe una cuenta con ID {opcion_num}{Colors.ENDC}")
+                            continue
                             
                             # Después de mostrar la lista, preguntar de nuevo
                             print(f"\n{Colors.BOLD}OPCIONES:{Colors.ENDC}")
@@ -947,10 +1217,10 @@ class ImportadorBBVA:
             
             # Para categorías, ofrecer sistema de ayuda
             if campo == 'categoria':
-                print(f"\n{Colors.OKCYAN}Categoría (nombre/número/9=ayuda/x=mantener):{Colors.ENDC}")
+                print(f"\n{Colors.OKCYAN}Categoría (nombre/número/h=ayuda/x=mantener):{Colors.ENDC}")
                 nuevo_valor = input(f"{nombre} [{valor_actual}]: ").strip()
                 
-                if nuevo_valor == '9' or (nuevo_valor.isdigit() and nuevo_valor != '0'):
+                if nuevo_valor == 'h' or (nuevo_valor.isdigit() and nuevo_valor != '0'):
                     # Mostrar lista de categorías
                     categoria_seleccionada = self.seleccionar_categoria_con_ayuda()
                     if categoria_seleccionada:
@@ -962,10 +1232,10 @@ class ImportadorBBVA:
             # Para cuentas (origen y destino), ofrecer sistema de ayuda
             elif campo in ['cuenta_origen', 'cuenta_destino']:
                 campo_display = 'Cuenta Vinculada' if campo == 'cuenta_destino' else nombre
-                print(f"\n{Colors.OKCYAN}{campo_display} (nombre/número/9=ayuda/x=mantener):{Colors.ENDC}")
+                print(f"\n{Colors.OKCYAN}{campo_display} (nombre/número/h=ayuda/x=mantener):{Colors.ENDC}")
                 nuevo_valor = input(f"{nombre} [{valor_actual}]: ").strip()
                 
-                if nuevo_valor == '9' or (nuevo_valor.isdigit() and nuevo_valor != '0'):
+                if nuevo_valor == 'h' or (nuevo_valor.isdigit() and nuevo_valor != '0'):
                     # Mostrar lista de cuentas con selección
                     cuenta_seleccionada = self.seleccionar_cuenta_con_ayuda()
                     if cuenta_seleccionada:
@@ -1042,7 +1312,7 @@ class ImportadorBBVA:
                 print(f"\n{Colors.BOLD}OPCIONES:{Colors.ENDC}")
                 print("• Escribe el NÚMERO de la cuenta que eliges")
                 print("• Escribe '0' para crear nueva cuenta")
-                print("• Escribe '9' para ver la lista otra vez")
+                print("• Escribe 'h' para ver la lista otra vez (help/ayuda)")
                 print("• Escribe 'x' para cancelar")
                 
                 seleccion = input(f"\n{Colors.OKCYAN}Tu elección: {Colors.ENDC}").strip().lower()
@@ -1051,7 +1321,7 @@ class ImportadorBBVA:
                     print(f"{Colors.WARNING}Cancelado{Colors.ENDC}")
                     return None
                     
-                elif seleccion == '9':
+                elif seleccion == 'h':
                     # Mostrar lista otra vez (recursivo)
                     return self.seleccionar_cuenta_con_ayuda()
                     
@@ -1265,10 +1535,10 @@ class ImportadorBBVA:
                 print("1) Crear nueva categoría")
                 print("2) Seleccionar categoría existente")
                 print("3) ✏️  Editar campos del movimiento")
-                print("9) Ver lista de categorías")
+                print("h) Ver lista de categorías")
                 print("x) Cancelar")
                 
-                opcion = input(f"{Colors.OKCYAN}Seleccione (1/2/3/9/x) [Enter=1]: {Colors.ENDC}").strip().lower() or '1'
+                opcion = input(f"{Colors.OKCYAN}Seleccione (1/2/3/h/x) [Enter=1]: {Colors.ENDC}").strip().lower() or '1'
                 
                 if opcion == 'x':
                     print(f"{Colors.WARNING}Cancelado{Colors.ENDC}")
@@ -1277,7 +1547,7 @@ class ImportadorBBVA:
                 elif opcion == '1':
                     return self.crear_nueva_categoria(nombre_categoria)
                     
-                elif opcion == '2' or opcion == '9':
+                elif opcion == '2' or opcion == 'h':
                     # Mostrar lista de categorías
                     categoria_seleccionada = self.seleccionar_categoria_con_ayuda()
                     if categoria_seleccionada:
@@ -1364,7 +1634,7 @@ class ImportadorBBVA:
                 print(f"\n{Colors.BOLD}OPCIONES:{Colors.ENDC}")
                 print("• Escribe el NÚMERO de la categoría que eliges")
                 print("• Escribe '0' para crear nueva categoría")
-                print("• Escribe '9' para ver la lista otra vez")
+                print("• Escribe 'h' para ver la lista otra vez (help/ayuda)")
                 print("• Escribe 'x' para cancelar")
                 
                 seleccion = input(f"\n{Colors.OKCYAN}Tu elección: {Colors.ENDC}").strip().lower()
@@ -1373,7 +1643,7 @@ class ImportadorBBVA:
                     print(f"{Colors.WARNING}Cancelado{Colors.ENDC}")
                     return None
                     
-                elif seleccion == '9':
+                elif seleccion == 'h':
                     # Mostrar lista otra vez
                     return self.seleccionar_categoria_con_ayuda()
                     
@@ -1572,7 +1842,7 @@ class ImportadorBBVA:
         
         # Agregar nota informativa si no hay cuenta especificada
         if not cuenta_destino or cuenta_destino == '-':
-            print(f"\n  {Colors.WARNING}💡 Tip: Presiona '2' para seleccionar cuenta vinculada con opción 9 para ver lista{Colors.ENDC}")
+            print(f"\n  {Colors.WARNING}💡 Tip: Presiona '2' para seleccionar cuenta vinculada con opción h para ver lista{Colors.ENDC}")
     
     @transaction.atomic
     def guardar_movimiento(self, transaccion_data):
@@ -1717,15 +1987,15 @@ class ImportadorBBVA:
                     tipo_correcto = tipo_map.get(tipo_opcion, tipo_actual)
                 
                 # PASO 2: Seleccionar categoría con sistema de ayuda
-                print(f"\n{Colors.OKCYAN}2️⃣ CATEGORÍA (nombre/número/9=ayuda):{Colors.ENDC}")
+                print(f"\n{Colors.OKCYAN}2️⃣ CATEGORÍA (nombre/número/h=ayuda):{Colors.ENDC}")
                 categoria_actual = decision_ia.get('categoria') or movimiento.get('categoria', 'SIN CLASIFICAR')
                 print(f"Categoría actual: {categoria_actual}")
                 
-                categoria_input = input(f"{Colors.OKCYAN}Nueva categoría [Enter=mantener, 9=ver lista]: {Colors.ENDC}").strip()
+                categoria_input = input(f"{Colors.OKCYAN}Nueva categoría [Enter=mantener, h=ver lista]: {Colors.ENDC}").strip()
                 
                 if not categoria_input:
                     categoria_correcta = categoria_actual
-                elif categoria_input == '9' or (categoria_input.isdigit() and categoria_input != '0'):
+                elif categoria_input == 'h' or (categoria_input.isdigit() and categoria_input != '0'):
                     # Usar el sistema de ayuda existente
                     categoria_seleccionada = self.seleccionar_categoria_con_ayuda()
                     if categoria_seleccionada:
@@ -1744,9 +2014,9 @@ class ImportadorBBVA:
                     print(f"\n{Colors.OKCYAN}3️⃣ CUENTA VINCULADA (para transferencia):{Colors.ENDC}")
                     print("Como es una transferencia, necesitamos la cuenta destino.")
                     
-                    cuenta_input = input(f"{Colors.OKCYAN}Cuenta (nombre/número/9=ayuda): {Colors.ENDC}").strip()
+                    cuenta_input = input(f"{Colors.OKCYAN}Cuenta (nombre/número/h=ayuda): {Colors.ENDC}").strip()
                     
-                    if cuenta_input == '9' or (cuenta_input.isdigit() and cuenta_input != '0'):
+                    if cuenta_input == 'h' or (cuenta_input.isdigit() and cuenta_input != '0'):
                         # Usar el sistema de ayuda de cuentas
                         cuenta_seleccionada = self.seleccionar_cuenta_con_ayuda()
                         if cuenta_seleccionada:

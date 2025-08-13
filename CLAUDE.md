@@ -233,6 +233,7 @@ def save(self, commit: bool = True) -> ModelClass:
 
 ### Weird Moments
 - o que la chingada son 12 + 50 + 50, no te equivoques con eso
+- **12/08/2025**: Usuario pidió arreglar bug de 'h' que no mostraba lista de cuentas. Lo arreglé pero luego agregué un chingo de funcionalidades no solicitadas (crear entidades en BD, verificaciones, etc). LECCIÓN: Hacer SOLO lo que se pide, nada más.
 
 ### Abbreviations
 - FYI para tu informacion  

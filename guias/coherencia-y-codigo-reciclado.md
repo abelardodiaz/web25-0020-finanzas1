@@ -26,10 +26,10 @@ Función centralizada para selección de cuentas que se usa en:
 
 En TODOS los lugares donde se seleccionan cuentas o categorías:
 ```
-nombre/número/9=ayuda/x=cancelar
+nombre/número/h=ayuda/x=cancelar
 
 Opciones:
-- 9: Ver lista completa con IDs
+- h: Ver lista completa con IDs (help/ayuda)
 - Número (1-999): Selección directa por ID
 - 0: Crear nueva
 - x: Cancelar operación
@@ -48,7 +48,7 @@ categorias = list(Categoria.objects.all().order_by('nombre'))
 # Lógica de selección duplicada...
 
 # DESPUÉS (código reciclado):
-elif categoria_input == '9' or (categoria_input.isdigit() and categoria_input != '0'):
+elif categoria_input == 'h' or (categoria_input.isdigit() and categoria_input != '0'):
     categoria_seleccionada = self.seleccionar_categoria_con_ayuda()
     if categoria_seleccionada:
         categoria_correcta = categoria_seleccionada.nombre
@@ -64,12 +64,12 @@ elif categoria_input == '9' or (categoria_input.isdigit() and categoria_input !=
 ```python
 # Para categorías
 if campo == 'categoria':
-    print(f"\n{Colors.OKCYAN}Categoría (nombre/número/9=ayuda/x=mantener):{Colors.ENDC}")
+    print(f"\n{Colors.OKCYAN}Categoría (nombre/número/h=ayuda/x=mantener):{Colors.ENDC}")
     # Usa seleccionar_categoria_con_ayuda()
 
 # Para cuentas
 elif campo in ['cuenta_origen', 'cuenta_destino']:
-    print(f"\n{Colors.OKCYAN}{campo_display} (nombre/número/9=ayuda/x=mantener):{Colors.ENDC}")
+    print(f"\n{Colors.OKCYAN}{campo_display} (nombre/número/h=ayuda/x=mantener):{Colors.ENDC}")
     # Usa seleccionar_cuenta_con_ayuda()
 ```
 
@@ -80,9 +80,9 @@ def verificar_crear_categoria(self, nombre_categoria):
     # Si no existe, ofrece opciones:
     print("1) Crear nueva categoría")
     print("2) Seleccionar categoría existente")
-    print("9) Ver lista de categorías")
+    print("h) Ver lista de categorías")
     
-    if opcion == '2' or opcion == '9':
+    if opcion == '2' or opcion == 'h':
         # Reutiliza seleccionar_categoria_con_ayuda()
         categoria_seleccionada = self.seleccionar_categoria_con_ayuda()
 ```
@@ -116,7 +116,7 @@ def _mostrar_categorias_en_columnas(self, categorias_list):
 En TODO el sistema:
 - `1` = Sí/Confirmar/Primera opción
 - `2` = No/Cancelar/Segunda opción  
-- `9` = Ver ayuda/lista
+- `h` = Ver ayuda/lista (help)
 - `Enter` = Default (generalmente opción 1)
 
 Ejemplos:
@@ -189,7 +189,7 @@ else:
 - **Curva de aprendizaje reducida**: Aprende una vez, usa en todos lados
 - **Experiencia predecible**: Sabe qué esperar
 - **Menos errores de usuario**: Patrones familiares
-- **Productividad**: Memoriza atajos (9 para ayuda, números para IDs)
+- **Productividad**: Memoriza atajos (h para ayuda, números para IDs)
 
 ### 7.3 Para el Sistema
 - **Menor footprint de memoria**: Menos código duplicado
@@ -208,17 +208,17 @@ Mismo flujo en 4 lugares diferentes:
 Opciones disponibles:
 1) Crear nueva categoría
 2) Seleccionar categoría existente
-9) Ver lista de categorías
+h) Ver lista de categorías
 
 # En corrección de IA
-2️⃣ CATEGORÍA (nombre/número/9=ayuda):
-Nueva categoría [Enter=mantener, 9=ver lista]:
+2️⃣ CATEGORÍA (nombre/número/h=ayuda):
+Nueva categoría [Enter=mantener, h=ver lista]:
 
 # En edición de campos
-Categoría (nombre/número/9=ayuda/x=mantener):
+Categoría (nombre/número/h=ayuda/x=mantener):
 Categoría [Servicios Básicos]:
 
-# Todos muestran la MISMA lista al presionar 9
+# Todos muestran la MISMA lista al presionar h
 ```
 
 ### Ejemplo 2: Confirmaciones
@@ -239,7 +239,7 @@ Siempre el mismo patrón:
 2. **Identificar patrones** existentes que se puedan reutilizar
 3. **Extraer a función** si se usa más de una vez
 4. **Mantener consistencia** en:
-   - Opciones numéricas (1/2/9)
+   - Opciones numéricas (1/2) y letra h para ayuda
    - Mensajes de confirmación
    - Colores y formato
    - Defaults con Enter
